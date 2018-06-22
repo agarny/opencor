@@ -392,7 +392,8 @@ bool SedmlFile::isSupported()
 
     if (   language.compare(Language::Cellml)
         && language.compare(Language::Cellml_1_0)
-        && language.compare(Language::Cellml_1_1)) {
+        && language.compare(Language::Cellml_1_1)
+        && language.compare(Language::Cellml_2_0)) {
         mIssues << SedmlFileIssue(SedmlFileIssue::Information,
                                   tr("only SED-ML files with a CellML file are supported"));
 
