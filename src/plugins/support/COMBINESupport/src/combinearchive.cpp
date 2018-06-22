@@ -95,6 +95,7 @@ bool CombineArchiveFile::isMaster() const
 static const auto CellmlFormat      = QStringLiteral("http://identifiers.org/combine.specifications/cellml");
 static const auto Cellml_1_0_Format = QStringLiteral("http://identifiers.org/combine.specifications/cellml.1.0");
 static const auto Cellml_1_1_Format = QStringLiteral("http://identifiers.org/combine.specifications/cellml.1.1");
+static const auto Cellml_2_0_Format = QStringLiteral("http://identifiers.org/combine.specifications/cellml.2.0");
 static const auto OmexFormat        = QStringLiteral("http://identifiers.org/combine.specifications/omex");
 static const auto SedmlFormat       = QStringLiteral("http://identifiers.org/combine.specifications/sed-ml");
 
@@ -110,6 +111,8 @@ CombineArchiveFile::Format CombineArchiveFile::format(const QString &pFormat)
         return Cellml_1_0;
     else if (!pFormat.compare(Cellml_1_1_Format))
         return Cellml_1_1;
+    else if (!pFormat.compare(Cellml_2_0_Format))
+        return Cellml_2_0;
     else if (!pFormat.compare(OmexFormat))
         return Omex;
     else if (!pFormat.compare(SedmlFormat))
@@ -267,6 +270,10 @@ bool CombineArchive::save(const QString &pFileName)
             break;
         case CombineArchiveFile::Cellml_1_1:
             fileFormat = Cellml_1_1_Format;
+
+            break;
+        case CombineArchiveFile::Cellml_2_0:
+            fileFormat = Cellml_2_0_Format;
 
             break;
         case CombineArchiveFile::Omex:
