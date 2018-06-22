@@ -18,18 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 
 //==============================================================================
-// CellML file CellML 1.1 exporter
+// CellML file CellML 2.0 exporter
 //==============================================================================
 
-#pragma once
-
-//==============================================================================
-
-#include "cellmlfilecellmlexporter.h"
-
-//==============================================================================
-
-#include <QString>
+#include "cellmlfilecellml20exporter.h"
 
 //==============================================================================
 
@@ -38,12 +30,14 @@ namespace CellMLSupport {
 
 //==============================================================================
 
-class CellmlFileCellml11Exporter : public CellmlFileCellmlExporter
+CellmlFileCellml20Exporter::CellmlFileCellml20Exporter(iface::cellml_api::Model *pModel,
+                                                       const QString &pFileName) :
+    CellmlFileCellmlExporter(pModel, L"2.0")
 {
-public:
-    explicit CellmlFileCellml11Exporter(iface::cellml_api::Model *pModel,
-                                        const QString &pFileName);
-};
+    // Save our exported model
+
+    mResult = saveModel(mExportedModel, pFileName);
+}
 
 //==============================================================================
 

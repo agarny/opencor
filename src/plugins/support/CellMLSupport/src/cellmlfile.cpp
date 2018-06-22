@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "cellmlfile.h"
 #include "cellmlfilecellml10exporter.h"
-#include "cellmlfilecellml11exporter.h"
+#include "cellmlfilecellml20exporter.h"
 #include "cellmlfilemanager.h"
 #include "corecliutils.h"
 #include "coreguiutils.h"
@@ -1024,39 +1024,44 @@ bool CellmlFile::exportTo(const QString &pFileName, Version pVersion,
     if (load()) {
         // Check that it actually makes sense to export the model
 
+        CellmlFile::Version modelVersion = version(mModel);
+
         switch (pVersion) {
         case Unknown:
-            // We clearly cannot export to an unknown version
+        case Cellml_1_1:
+            // We cannot export to an unknown or CellML 1.1 format
 
             return false;
         case Cellml_1_0:
-            // To export to CellML 1.0, the model must be in a non CellML 1.0
-            // format
+            // To export to CellML 1.0, the model must be in a CellML 1.1 format
 
-            if (version(mModel) == Cellml_1_0)
+            if (modelVersion != Cellml_1_1)
                 return false;
 
             break;
-        case Cellml_1_1:
-            // To export to CellML 1.1, the model must be in a non CellML 1.1
+        case Cellml_2_0:
+            // To export to CellML 2.0, the model must be in a CellML 1.0 or 1.1
             // format
 
-            if (version(mModel) == Cellml_1_1)
+            if ((modelVersion != Cellml_1_0) && (modelVersion != Cellml_1_1))
                 return false;
 
             break;
         }
 
-        // Fully instantiate all the imports
+        // Fully instantiate all the imports, if we are to export to CellML 1.0
 
-        if (!fullyInstantiateImports(mModel, mIssues, pWithBusyWidget))
+        if (    (pVersion == Cellml_1_0)
+            && !fullyInstantiateImports(mModel, mIssues, pWithBusyWidget)) {
             return false;
+        }
 
         // Do the actual export
 
         switch (pVersion) {
         case Unknown:
-            // We clearly cannot export to an unknown version
+        case Cellml_1_1:
+            // We cannot export to an unknown or CellML 1.1 format
 
             return false;
         case Cellml_1_0: {
@@ -1069,8 +1074,8 @@ bool CellmlFile::exportTo(const QString &pFileName, Version pVersion,
 
             return exporter.result();
         }
-        case Cellml_1_1: {
-            CellmlFileCellml11Exporter exporter(mModel, pFileName);
+        case Cellml_2_0: {
+            CellmlFileCellml20Exporter exporter(mModel, pFileName);
 
             if (!exporter.errorMessage().isEmpty()) {
                 mIssues << CellmlFileIssue(CellmlFileIssue::Error,
@@ -1187,6 +1192,8 @@ CellmlFile::Version CellmlFile::version(iface::cellml_api::Model *pModel)
         return Cellml_1_0;
     } else if (!cellmlVersion.compare(CellMLSupport::Cellml_1_1)) {
         return Cellml_1_1;
+    } else if (!cellmlVersion.compare(CellMLSupport::Cellml_2_0)) {
+        return Cellml_2_0;
     } else {
         qWarning("WARNING | %s:%d: a CellML version should not be unknown.", __FILE__, __LINE__);
 
@@ -1221,6 +1228,8 @@ QString CellmlFile::versionAsString(Version pVersion)
         return "CellML 1.0";
     case Cellml_1_1:
         return "CellML 1.1";
+    case Cellml_2_0:
+        return "CellML 2.0";
     }
 
     return "???";

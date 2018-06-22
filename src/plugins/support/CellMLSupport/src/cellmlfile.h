@@ -45,12 +45,14 @@ namespace CellMLSupport {
 
 static const auto Cellml_1_0       = QStringLiteral("1.0");
 static const auto Cellml_1_1       = QStringLiteral("1.1");
+static const auto Cellml_2_0       = QStringLiteral("2.0");
 static const auto CellmlRefVersion = Cellml_1_1;
 
 //==============================================================================
 
 static const auto Cellml_1_0_Namespace = QStringLiteral("http://www.cellml.org/cellml/1.0#");
 static const auto Cellml_1_1_Namespace = QStringLiteral("http://www.cellml.org/cellml/1.1#");
+static const auto Cellml_2_0_Namespace = QStringLiteral("http://www.cellml.org/cellml/2.0#");
 static const auto TmpDocumentation     = QStringLiteral("http://cellml.org/tmp-documentation");
 static const auto CmetaIdNamespace     = QStringLiteral("http://www.cellml.org/metadata/1.0#");
 static const auto MathmlNamespace      = QStringLiteral("http://www.w3.org/1998/Math/MathML");
@@ -80,7 +82,8 @@ public:
     enum Version {
         Unknown,
         Cellml_1_0,
-        Cellml_1_1
+        Cellml_1_1,
+        Cellml_2_0
     };
 
     explicit CellmlFile(const QString &pFileName);
