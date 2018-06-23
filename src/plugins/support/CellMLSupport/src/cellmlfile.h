@@ -151,8 +151,8 @@ public:
 
     Version version();
 
-    static Version version(iface::cellml_api::Model *pModel);
-    static Version version(const QString &pFileName);
+    static Version modelVersion(iface::cellml_api::Model *pModel);
+    static Version fileVersion(const QString &pFileName);
 
     static QString versionAsString(Version pVersion);
 

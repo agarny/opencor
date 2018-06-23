@@ -199,7 +199,7 @@ bool CellmlFile::fullyInstantiateImports(iface::cellml_api::Model *pModel,
     // and then keep track of that fact (so we don't fully instantiate everytime
     // we come here)
 
-    Version cellmlVersion = version(pModel);
+    Version cellmlVersion = modelVersion(pModel);
 
     if (   ((pModel != mModel) || mFullInstantiationNeeded)
         && (cellmlVersion != Unknown) && (cellmlVersion != Cellml_1_0)) {
@@ -1024,7 +1024,7 @@ bool CellmlFile::exportTo(const QString &pFileName, Version pVersion,
     if (load()) {
         // Check that it actually makes sense to export the model
 
-        CellmlFile::Version modelVersion = version(mModel);
+        CellmlFile::Version modelVersion = CellmlFile::modelVersion(mModel);
 
         switch (pVersion) {
         case Unknown:
@@ -1172,14 +1172,14 @@ CellmlFile::Version CellmlFile::version()
     // Return our version
 
     if (load())
-        return CellmlFile::version(mModel);
+        return modelVersion(mModel);
     else
         return CellmlFile::Unknown;
 }
 
 //==============================================================================
 
-CellmlFile::Version CellmlFile::version(iface::cellml_api::Model *pModel)
+CellmlFile::Version CellmlFile::modelVersion(iface::cellml_api::Model *pModel)
 {
     // Return the version of the given CellML model, if any
 
@@ -1203,7 +1203,7 @@ CellmlFile::Version CellmlFile::version(iface::cellml_api::Model *pModel)
 
 //==============================================================================
 
-CellmlFile::Version CellmlFile::version(const QString &pFileName)
+CellmlFile::Version CellmlFile::fileVersion(const QString &pFileName)
 {
     // Return the version of the given CellML file
 
