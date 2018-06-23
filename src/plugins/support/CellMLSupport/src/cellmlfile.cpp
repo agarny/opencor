@@ -1217,6 +1217,25 @@ CellmlFile::Version CellmlFile::fileVersion(const QString &pFileName)
 
 //==============================================================================
 
+CellmlFile::Version CellmlFile::fileContentsVersion(const QString &pFileContents)
+{
+    // Return the version of the given CellML file contents
+
+    ObjRef<iface::cellml_api::CellMLBootstrap> cellmlBootstrap = CreateCellMLBootstrap();
+    ObjRef<iface::cellml_api::DOMModelLoader> modelLoader = cellmlBootstrap->modelLoader();
+    ObjRef<iface::cellml_api::Model> model;
+
+    try {
+        model = modelLoader->createFromText(pFileContents.toStdWString());
+    } catch (...) {
+        return Unknown;
+    }
+
+    return modelVersion(model);
+}
+
+//==============================================================================
+
 QString CellmlFile::versionAsString(Version pVersion)
 {
     // Return the string corresponding to the given version
