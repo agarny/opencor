@@ -68,7 +68,7 @@ void CliTests::importTests()
     // Try to import an invalid CellML file
 
     QCOMPARE(OpenCOR::runCli(QStringList() << "-c" << "CellMLTextView::import" << OpenCOR::fileName("src/plugins/editing/CellMLTextView/tests/data/cli/invalid_model.cellml")),
-             QStringList() << "The file could not be imported:" << " [13:-1] A 'diff' element must have two siblings." << QString());
+             QStringList() << "The file could not be imported:" << " [13:26] A 'diff' element must have two siblings." << QString());
 
     // Import the Noble 1962 model to the CellML Text format
 
