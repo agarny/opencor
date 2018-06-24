@@ -111,11 +111,6 @@ void CellMLToolsPlugin::updateGui(Plugin *pViewPlugin, const QString &pFileName)
     mExportToCellml10Action->setEnabled(   cellmlFile && cellmlFile->model()
                                         && (cellmlVersion != CellMLSupport::CellmlFile::Unknown)
                                         && (cellmlVersion != CellMLSupport::CellmlFile::Cellml_1_0));
-    mExportToCellml11Action->setEnabled(   cellmlFile && cellmlFile->model()
-                                        && (cellmlVersion != CellMLSupport::CellmlFile::Unknown)
-                                        && (cellmlVersion != CellMLSupport::CellmlFile::Cellml_1_1));
-//---OPENCOR--- DISABLED UNTIL WE ACTUALLY SUPPORT EXPORT TO CellML 1.1...
-Core::showEnableAction(mExportToCellml11Action, false);
 
     mExportToUserDefinedFormatAction->setEnabled(cellmlFile && cellmlFile->model());
 
@@ -155,8 +150,6 @@ void CellMLToolsPlugin::retranslateUi()
 
     retranslateAction(mExportToCellml10Action, tr("CellML 1.0..."),
                       tr("Export the CellML file to CellML 1.0"));
-    retranslateAction(mExportToCellml11Action, tr("CellML 1.1..."),
-                      tr("Export the CellML file to CellML 1.1"));
 
     retranslateAction(mExportToUserDefinedFormatAction, tr("User-Defined Format..."),
                       tr("Export the CellML file to some user-defined format"));
@@ -204,12 +197,10 @@ void CellMLToolsPlugin::initializePlugin()
     // Tools | Export To menu
 
     mExportToCellml10Action = Core::newAction(Core::mainWindow());
-    mExportToCellml11Action = Core::newAction(Core::mainWindow());
 
     mExportToUserDefinedFormatAction = Core::newAction(Core::mainWindow());
 
     mCellmlFileExportToMenu->addAction(mExportToCellml10Action);
-    mCellmlFileExportToMenu->addAction(mExportToCellml11Action);
     mCellmlFileExportToMenu->addSeparator();
     mCellmlFileExportToMenu->addAction(mExportToUserDefinedFormatAction);
 
@@ -217,8 +208,6 @@ void CellMLToolsPlugin::initializePlugin()
 
     connect(mExportToCellml10Action, &QAction::triggered,
             this, &CellMLToolsPlugin::exportToCellml10);
-    connect(mExportToCellml11Action, &QAction::triggered,
-            this, &CellMLToolsPlugin::exportToCellml11);
 
     connect(mExportToUserDefinedFormatAction, &QAction::triggered,
             this, &CellMLToolsPlugin::exportToUserDefinedFormat);
@@ -273,11 +262,18 @@ void CellMLToolsPlugin::handleUrl(const QUrl &pUrl)
 
 void CellMLToolsPlugin::exportTo(CellMLSupport::CellmlFile::Version pVersion)
 {
+    // Make sure that we want to export either to CellML 1.0 or CellML 2.0
+
+    if (   (pVersion != CellMLSupport::CellmlFile::Cellml_1_0)
+        && (pVersion != CellMLSupport::CellmlFile::Cellml_2_0)) {
+        return;
+    }
+
     // Ask for the name of the file that will contain the export
 
     QString format = (pVersion == CellMLSupport::CellmlFile::Cellml_1_0)?
                          "CellML 1.0":
-                         "CellML 1.1";
+                         "CellML 2.0";
     QStringList cellmlFilters = Core::filters(FileTypeInterfaces() << CellMLSupport::fileTypeInterface());
     QString firstCellmlFilter = cellmlFilters.first();
     QString fileName = Core::getSaveFileName(tr("Export CellML File To %1").arg(format),
@@ -463,15 +459,6 @@ void CellMLToolsPlugin::exportToCellml10()
     // Export the current file to CellML 1.0
 
     exportTo(CellMLSupport::CellmlFile::Cellml_1_0);
-}
-
-//==============================================================================
-
-void CellMLToolsPlugin::exportToCellml11()
-{
-    // Export the current file to CellML 1.1
-
-    exportTo(CellMLSupport::CellmlFile::Cellml_1_1);
 }
 
 //==============================================================================
