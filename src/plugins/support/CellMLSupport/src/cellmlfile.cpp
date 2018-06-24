@@ -1049,22 +1049,13 @@ bool CellmlFile::exportTo(const QString &pFileName, Version pVersion,
             break;
         }
 
-        // Fully instantiate all the imports, if we are to export to CellML 1.0
+        // Do the actual export to CellML 1.0 or CellML 2.0, after having fully
+        // instantiated all the imports, if we are to export to CellML 1.0
 
-        if (    (pVersion == Cellml_1_0)
-            && !fullyInstantiateImports(mModel, mIssues, pWithBusyWidget)) {
-            return false;
-        }
+        if (pVersion == Cellml_1_0) {
+            if (!fullyInstantiateImports(mModel, mIssues, pWithBusyWidget))
+                return false;
 
-        // Do the actual export
-
-        switch (pVersion) {
-        case Unknown:
-        case Cellml_1_1:
-            // We cannot export to an unknown or CellML 1.1 format
-
-            return false;
-        case Cellml_1_0: {
             CellmlFileCellml10Exporter exporter(mModel, pFileName);
 
             if (!exporter.errorMessage().isEmpty()) {
@@ -1073,8 +1064,7 @@ bool CellmlFile::exportTo(const QString &pFileName, Version pVersion,
             }
 
             return exporter.result();
-        }
-        case Cellml_2_0: {
+        } else {
             CellmlFileCellml20Exporter exporter(mModel, pFileName);
 
             if (!exporter.errorMessage().isEmpty()) {
@@ -1083,7 +1073,6 @@ bool CellmlFile::exportTo(const QString &pFileName, Version pVersion,
             }
 
             return exporter.result();
-        }
         }
     }
 
