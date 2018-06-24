@@ -1065,7 +1065,7 @@ bool CellmlFile::exportTo(const QString &pFileName, Version pVersion,
 
             return exporter.result();
         } else {
-            CellmlFileCellml20Exporter exporter(mModel, pFileName);
+            CellmlFileCellml20Exporter exporter(pFileName);
 
             if (!exporter.errorMessage().isEmpty()) {
                 mIssues << CellmlFileIssue(CellmlFileIssue::Error,

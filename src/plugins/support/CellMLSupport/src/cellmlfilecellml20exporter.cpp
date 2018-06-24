@@ -30,13 +30,15 @@ namespace CellMLSupport {
 
 //==============================================================================
 
-CellmlFileCellml20Exporter::CellmlFileCellml20Exporter(iface::cellml_api::Model *pModel,
-                                                       const QString &pFileName) :
-    CellmlFileCellmlExporter(pModel, L"2.0")
+CellmlFileCellml20Exporter::CellmlFileCellml20Exporter(const QString &pFileName) :
+    CellmlFileExporter()
 {
-    // Save our exported model
+//---ISSUE1703--- TO BE DONE...
+Q_UNUSED(pFileName);
 
-    mResult = saveModel(mExportedModel, pFileName);
+    mResult = false;
+
+    mErrorMessage = "To be done...";
 }
 
 //==============================================================================

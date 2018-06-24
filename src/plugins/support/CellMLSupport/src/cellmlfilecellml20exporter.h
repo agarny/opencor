@@ -25,11 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //==============================================================================
 
-#include "cellmlfilecellmlexporter.h"
-
-//==============================================================================
-
-#include <QString>
+#include "cellmlfileexporter.h"
 
 //==============================================================================
 
@@ -38,11 +34,10 @@ namespace CellMLSupport {
 
 //==============================================================================
 
-class CellmlFileCellml20Exporter : public CellmlFileCellmlExporter
+class CellmlFileCellml20Exporter : public CellmlFileExporter
 {
 public:
-    explicit CellmlFileCellml20Exporter(iface::cellml_api::Model *pModel,
-                                        const QString &pFileName);
+    explicit CellmlFileCellml20Exporter(const QString &pFileName);
 };
 
 //==============================================================================
