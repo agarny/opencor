@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //==============================================================================
 
 #include "cellmlfilecellml20exporter.h"
+#include "corecliutils.h"
+#include "xsltransformer.h"
 
 //==============================================================================
 
@@ -30,15 +32,75 @@ namespace CellMLSupport {
 
 //==============================================================================
 
-CellmlFileCellml20Exporter::CellmlFileCellml20Exporter(const QString &pFileName) :
+CellmlFileCellml20Exporter::CellmlFileCellml20Exporter(const QString &pOldFileName,
+                                                       const QString &pNewFileName) :
     CellmlFileExporter()
 {
-//---ISSUE1703--- TO BE DONE...
-Q_UNUSED(pFileName);
+    // Create our XSL transformer
 
-    mResult = false;
+    Core::XslTransformer *xslTransformer = new Core::XslTransformer();
 
-    mErrorMessage = "not yet implemented";
+    // Determine whether we are dealing with a local/remote file, and retrieve
+    // its contents
+
+    bool isLocalFile;
+    QString fileNameOrUrl;
+
+    Core::checkFileNameOrUrl(pOldFileName, isLocalFile, fileNameOrUrl);
+
+    QString fileContents;
+
+    if ((isLocalFile?
+              Core::readFileContentsFromFile(fileNameOrUrl, fileContents):
+              Core::readFileContentsFromUrl(fileNameOrUrl, fileContents))) {
+        mErrorMessage = tr("the contents of the CellML file could not be read");
+
+        return;
+    }
+
+    // Convert the given file to CellML 2.0 through an XSL transformation
+
+    static const QString Xsl = Core::resource(":/CellMLSupport/cellml1to2.xsl");
+
+    xslTransformer->transform(fileContents, Xsl);
+
+    // Wait for the transformation to be done
+
+    QEventLoop eventLoop;
+
+    connect(xslTransformer, &Core::XslTransformer::done,
+            this, &CellmlFileCellml20Exporter::xslTransformationDone);
+    connect(xslTransformer, &Core::XslTransformer::done,
+            &eventLoop, &QEventLoop::quit);
+
+    eventLoop.exec();
+
+    // Our CellML 2.0 conversion is done, so save the output
+
+    Core::writeFileContentsToFile(pNewFileName, mOutput);
+
+    // Stop our XSL transformer
+    // Note: we don't need to delete it since it will be done as part of its
+    //       thread being stopped...
+
+    xslTransformer->stop();
+
+    // We are always successful
+
+    mResult = true;
+}
+
+//==============================================================================
+
+void CellmlFileCellml20Exporter::xslTransformationDone(const QString &pInput,
+                                                       const QString &pOutput)
+{
+    Q_UNUSED(pInput);
+
+    // Our CellML 2.0 conversion is done, so keep track of it
+
+    mOutput = pOutput;
+    mOutput = mOutput.remove(" xmlns=\"\"");
 }
 
 //==============================================================================

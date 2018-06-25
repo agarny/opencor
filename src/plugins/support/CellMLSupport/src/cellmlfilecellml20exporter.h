@@ -37,7 +37,14 @@ namespace CellMLSupport {
 class CellmlFileCellml20Exporter : public CellmlFileExporter
 {
 public:
-    explicit CellmlFileCellml20Exporter(const QString &pFileName);
+    explicit CellmlFileCellml20Exporter(const QString &pOldFileName,
+                                        const QString &pNewFileName);
+
+private:
+    QString mOutput;
+
+private slots:
+    void xslTransformationDone(const QString &pInput, const QString &pOutput);
 };
 
 //==============================================================================

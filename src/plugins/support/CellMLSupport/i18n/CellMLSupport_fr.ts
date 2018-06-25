@@ -67,6 +67,13 @@
     </message>
 </context>
 <context>
+    <name>OpenCOR::CellMLSupport::CellmlFileCellml20Exporter</name>
+    <message>
+        <source>the contents of the CellML file could not be read</source>
+        <translation>le contenu du fichier CellML n&apos;a pas pu être lu</translation>
+    </message>
+</context>
+<context>
     <name>OpenCOR::CellMLSupport::CellmlFileRuntime</name>
     <message>
         <source>the model code could not be generated (%1)</source>

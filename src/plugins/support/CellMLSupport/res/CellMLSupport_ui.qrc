@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/CellMLSupport">
         <file>algebraic.png</file>
+        <file>cellml1to2.xsl</file>
         <file>componentNode.png</file>
         <file>computedConstant.png</file>
         <file>connectionNode.png</file>
