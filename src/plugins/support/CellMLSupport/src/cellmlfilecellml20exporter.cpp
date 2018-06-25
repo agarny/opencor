@@ -75,19 +75,21 @@ CellmlFileCellml20Exporter::CellmlFileCellml20Exporter(const QString &pOldFileNa
 
     eventLoop.exec();
 
-    // Our CellML 2.0 conversion is done, so save the output
-
-    Core::writeFileContentsToFile(pNewFileName, mOutput);
-
     // Stop our XSL transformer
     // Note: we don't need to delete it since it will be done as part of its
     //       thread being stopped...
 
     xslTransformer->stop();
 
-    // We are always successful
+    // Our CellML 2.0 conversion is done, so save/output the output
 
-    mResult = true;
+    if (pNewFileName.isEmpty()) {
+        std::wcout << mOutput.toStdWString() << std::endl;
+
+        mResult = true;
+    } else {
+        mResult = Core::writeFileContentsToFile(pNewFileName, mOutput);
+    }
 }
 
 //==============================================================================

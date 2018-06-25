@@ -35,7 +35,9 @@ class Tests : public QObject
 
 private slots:
     void helpTests();
-    void exportTests();
+    void exportToUserDefinedFormatTests();
+    void exportToCellml10Tests();
+    void exportToCellml20Tests();
 };
 
 //==============================================================================

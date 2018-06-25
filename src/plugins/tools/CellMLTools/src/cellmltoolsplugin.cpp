@@ -324,6 +324,7 @@ void CellMLToolsPlugin::runHelpCommand()
     std::cout << "      export <file> <predefined_format>|<user_defined_format_file>" << std::endl;
     std::cout << "   <predefined_format> can take one of the following values:" << std::endl;
     std::cout << "      cellml_1_0: to export a CellML 1.1 file to CellML 1.0" << std::endl;
+    std::cout << "      cellml_2_0: to export a CellML 1.0/1.1 file to CellML 2.0" << std::endl;
 }
 
 //==============================================================================
@@ -401,24 +402,32 @@ int CellMLToolsPlugin::runExportCommand(const QStringList &pArguments)
                     // At this stage, everything is fine with the file, so now
                     // we need to check the type of export the user wants
 
-                    QString predefinedFormatOrUserDefinedFormatFileName = pArguments[1];
-                    bool wantExportToUserDefinedFormat = predefinedFormatOrUserDefinedFormatFileName.compare("cellml_1_0");
+                    static const QString Cellml10Export = "cellml_1_0";
+                    static const QString Cellml20Export = "cellml_2_0";
 
-                    // If we want to export to CellML 1.0, then we need to make
-                    // sure that the file is not already in that format
+                    QString formatOrFileName = pArguments[1];
+                    bool isCellml10Format = !formatOrFileName.compare(Cellml10Export);
+                    bool isCellml20Format = !formatOrFileName.compare(Cellml20Export);
+                    bool isFileName = !isCellml10Format && !isCellml20Format;
+                    CellMLSupport::CellmlFile::Version cellmlVersion = cellmlFile->version();
 
-                    if (    wantExportToUserDefinedFormat
-                        && !QFile::exists(predefinedFormatOrUserDefinedFormatFileName)) {
+                    if (    isFileName
+                        && !QFile::exists(formatOrFileName)) {
                         errorMessage = "The user-defined format file could not be found.";
-                    } else if (   !wantExportToUserDefinedFormat
-                               && (cellmlFile->version() == CellMLSupport::CellmlFile::Cellml_1_0)) {
-                        errorMessage = "The file is already a CellML 1.0 file.";
+                    } else if (   isCellml10Format
+                               && (cellmlFile->version() != CellMLSupport::CellmlFile::Cellml_1_1)) {
+                        errorMessage = "The file must be a CellML 1.1 file.";
+                    } else if (   isCellml20Format
+                               && (cellmlVersion != CellMLSupport::CellmlFile::Cellml_1_0)
+                               && (cellmlVersion != CellMLSupport::CellmlFile::Cellml_1_1)) {
+                        errorMessage = "The file must be a CellML 1.0/1.1 file.";
                     } else {
                         // Everything seems to be fine, so attempt the export
                         // itself
 
-                        if (   ( wantExportToUserDefinedFormat && !cellmlFile->exportTo(QString(), predefinedFormatOrUserDefinedFormatFileName))
-                            || (!wantExportToUserDefinedFormat && !cellmlFile->exportTo(QString(), CellMLSupport::CellmlFile::Cellml_1_0))) {
+                        if (   (isFileName && !cellmlFile->exportTo(QString(), formatOrFileName))
+                            || (isCellml10Format && !cellmlFile->exportTo(QString(), CellMLSupport::CellmlFile::Cellml_1_0))
+                            || (isCellml20Format && !cellmlFile->exportTo(QString(), CellMLSupport::CellmlFile::Cellml_2_0))) {
                             errorMessage = "The file could not be exported";
 
                             if (cellmlFile->issues().count()) {
