@@ -109,8 +109,10 @@ void CellMLToolsPlugin::updateGui(Plugin *pViewPlugin, const QString &pFileName)
     CellMLSupport::CellmlFile::Version cellmlVersion = cellmlFile?cellmlFile->version():CellMLSupport::CellmlFile::Unknown;
 
     mExportToCellml10Action->setEnabled(   cellmlFile && cellmlFile->model()
-                                        && (cellmlVersion != CellMLSupport::CellmlFile::Unknown)
-                                        && (cellmlVersion != CellMLSupport::CellmlFile::Cellml_1_0));
+                                        && (cellmlVersion == CellMLSupport::CellmlFile::Cellml_1_1));
+    mExportToCellml20Action->setEnabled(   cellmlFile && cellmlFile->model()
+                                        && (   (cellmlVersion != CellMLSupport::CellmlFile::Cellml_1_0)
+                                            || (cellmlVersion != CellMLSupport::CellmlFile::Cellml_1_1)));
 
     mExportToUserDefinedFormatAction->setEnabled(cellmlFile && cellmlFile->model());
 
@@ -150,6 +152,8 @@ void CellMLToolsPlugin::retranslateUi()
 
     retranslateAction(mExportToCellml10Action, tr("CellML 1.0..."),
                       tr("Export the CellML file to CellML 1.0"));
+    retranslateAction(mExportToCellml20Action, tr("CellML 2.0..."),
+                      tr("Export the CellML file to CellML 2.0"));
 
     retranslateAction(mExportToUserDefinedFormatAction, tr("User-Defined Format..."),
                       tr("Export the CellML file to some user-defined format"));
@@ -197,10 +201,12 @@ void CellMLToolsPlugin::initializePlugin()
     // Tools | Export To menu
 
     mExportToCellml10Action = Core::newAction(Core::mainWindow());
+    mExportToCellml20Action = Core::newAction(Core::mainWindow());
 
     mExportToUserDefinedFormatAction = Core::newAction(Core::mainWindow());
 
     mCellmlFileExportToMenu->addAction(mExportToCellml10Action);
+    mCellmlFileExportToMenu->addAction(mExportToCellml20Action);
     mCellmlFileExportToMenu->addSeparator();
     mCellmlFileExportToMenu->addAction(mExportToUserDefinedFormatAction);
 
@@ -208,6 +214,8 @@ void CellMLToolsPlugin::initializePlugin()
 
     connect(mExportToCellml10Action, &QAction::triggered,
             this, &CellMLToolsPlugin::exportToCellml10);
+    connect(mExportToCellml20Action, &QAction::triggered,
+            this, &CellMLToolsPlugin::exportToCellml20);
 
     connect(mExportToUserDefinedFormatAction, &QAction::triggered,
             this, &CellMLToolsPlugin::exportToUserDefinedFormat);
@@ -459,6 +467,15 @@ void CellMLToolsPlugin::exportToCellml10()
     // Export the current file to CellML 1.0
 
     exportTo(CellMLSupport::CellmlFile::Cellml_1_0);
+}
+
+//==============================================================================
+
+void CellMLToolsPlugin::exportToCellml20()
+{
+    // Export the current file to CellML 2.0
+
+    exportTo(CellMLSupport::CellmlFile::Cellml_2_0);
 }
 
 //==============================================================================

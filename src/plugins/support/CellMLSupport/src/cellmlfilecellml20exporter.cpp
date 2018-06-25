@@ -38,7 +38,7 @@ Q_UNUSED(pFileName);
 
     mResult = false;
 
-    mErrorMessage = "To be done...";
+    mErrorMessage = "not yet implemented";
 }
 
 //==============================================================================
