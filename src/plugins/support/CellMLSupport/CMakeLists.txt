@@ -27,6 +27,7 @@ add_plugin(CellMLSupport
 
         src/cellmlfile.h
         src/cellmlfilecellml10exporter.h
+        src/cellmlfilecellml20exporter.h
         src/cellmlfilemanager.h
         src/cellmlfileruntime.h
         src/cellmlsupportplugin.h

@@ -36,6 +36,8 @@ namespace CellMLSupport {
 
 class CellmlFileCellml20Exporter : public CellmlFileExporter
 {
+    Q_OBJECT
+
 public:
     explicit CellmlFileCellml20Exporter(const QString &pOldFileName,
                                         const QString &pNewFileName);
