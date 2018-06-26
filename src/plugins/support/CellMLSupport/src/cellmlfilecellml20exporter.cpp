@@ -34,7 +34,8 @@ namespace CellMLSupport {
 
 CellmlFileCellml20Exporter::CellmlFileCellml20Exporter(const QString &pOldFileName,
                                                        const QString &pNewFileName) :
-    CellmlFileExporter()
+    CellmlFileExporter(),
+    mOutput(QString())
 {
     // Create our XSL transformer
 
