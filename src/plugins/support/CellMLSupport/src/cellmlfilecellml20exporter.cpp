@@ -100,7 +100,7 @@ void CellmlFileCellml20Exporter::xslTransformationDone(const QString &pInput,
 {
     Q_UNUSED(pInput);
 
-    // Our CellML 2.0 conversion is done, so keep track of it
+    // Our CellML 2.0 conversion is done, so keep track of it and clean it a bit
 
     mOutput = pOutput;
     mOutput = mOutput.remove(" xmlns=\"\"");
