@@ -106,12 +106,11 @@ void Tests::exportToCellml10Tests()
 void Tests::exportToCellml20Tests()
 {
     // Try to export a CellML 2.0 file to CellML 2.0
-//---ISSUE1703--- TO BE ENABLED ONCE WE CAN ACTUALLY HANDLE CellML 2.0 FILES...
 
     QString fileName = OpenCOR::fileName("src/plugins/tools/CellMLTools/tests/data/noble_model_1962_cellml_2_0_export.out");
 
-//    QCOMPARE(OpenCOR::runCli(QStringList() << "-c" << "CellMLTools::export" << fileName << "cellml_2_0"),
-//             QStringList() << "The file must be a CellML 1.0/1.1 file." << QString());
+    QCOMPARE(OpenCOR::runCli(QStringList() << "-c" << "CellMLTools::export" << fileName << "cellml_2_0"),
+             QStringList() << "The file must be a CellML 1.0/1.1 file." << QString());
 
     // Export a CellML 1.0 file to CellML 2.0
 
