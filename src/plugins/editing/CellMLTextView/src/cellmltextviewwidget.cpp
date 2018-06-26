@@ -494,10 +494,16 @@ void CellmlTextViewWidget::initialize(const QString &pFileName, bool pUpdate)
         if (!fileIsEmpty && mConverter.hasWarnings()) {
             foreach (const CellMLTextViewConverterWarning &warning, mConverter.warnings()) {
                 editingWidget->editorListWidget()->addItem(EditorWidget::EditorListItem::Warning,
-                                                           successfulConversion?-1:warning.lineNumber(),
                                                            successfulConversion?
-                                                               QString("[%1] %2").arg(warning.lineNumber())
-                                                                                 .arg(warning.message()):
+                                                               -1:
+                                                               warning.lineNumber(),
+                                                           successfulConversion?
+                                                               -1:
+                                                               warning.columnNumber(),
+                                                           successfulConversion?
+                                                               QString("[%1:%2] %3").arg(warning.lineNumber())
+                                                                                    .arg(warning.columnNumber())
+                                                                                    .arg(warning.message()):
                                                                warning.message().arg(QString()));
             }
         }
