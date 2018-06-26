@@ -415,7 +415,7 @@ int CellMLToolsPlugin::runExportCommand(const QStringList &pArguments)
                         && !QFile::exists(formatOrFileName)) {
                         errorMessage = "The user-defined format file could not be found.";
                     } else if (   isCellml10Format
-                               && (cellmlFile->version() != CellMLSupport::CellmlFile::Cellml_1_1)) {
+                               && (cellmlVersion != CellMLSupport::CellmlFile::Cellml_1_1)) {
                         errorMessage = "The file must be a CellML 1.1 file.";
                     } else if (   isCellml20Format
                                && (cellmlVersion != CellMLSupport::CellmlFile::Cellml_1_0)
