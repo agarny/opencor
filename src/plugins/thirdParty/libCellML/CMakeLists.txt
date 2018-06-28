@@ -13,9 +13,10 @@ set(LIBRARY_VERSION 0.1.0)
 
 set(GIT_TAG opencor)
 
-# Package repository
+# Package repository and release tag
 
 set(PACKAGE_REPOSITORY libcellml)
+set(RELEASE_TAG opencor)
 
 # Specify where our local package will be installed
 
@@ -70,6 +71,7 @@ if(USE_PREBUILT_LIBCELLML_PACKAGE)
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
                                   ${RELATIVE_PROJECT_SOURCE_DIR} 0fdd68d071b4d12f0d9b2265f0b188ed70af5958
                                   PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
+                                  RELEASE_TAG ${RELEASE_TAG}
                                   SHA1_FILES ${SHA1_FILES}
                                   SHA1_VALUES a45c504d8de06cb9b43e4a5604d50172dbc53726
                                               1e5754e29de00339f3b91d58d7b8ca9a01671eff)
@@ -77,6 +79,7 @@ if(USE_PREBUILT_LIBCELLML_PACKAGE)
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
                                   ${RELATIVE_PROJECT_SOURCE_DIR} 4aae04bf5b95835d81137b5ad52ce3a4b5ba2ccf
                                   PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
+                                  RELEASE_TAG ${RELEASE_TAG}
                                   SHA1_FILES ${SHA1_FILES}
                                   SHA1_VALUES ec9954ed24f57262d88917069008bf46418f5e6d
                                               ae099f8614867e941a7ed96ef233519c0b285b55)
@@ -85,12 +88,14 @@ if(USE_PREBUILT_LIBCELLML_PACKAGE)
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
                               ${RELATIVE_PROJECT_SOURCE_DIR} 530b98eff20e1c662cdbf93fe4925d5243bf994d
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
+                              RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
                               SHA1_VALUES 27dc7c08c4103fa3a8230a7e83272b3acff2a4a9)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
                               ${RELATIVE_PROJECT_SOURCE_DIR} 477f4e4b28539af7fa3929700768ab105afac01c
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
+                              RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
                               SHA1_VALUES cb5b28ed938d7bbf64101e0d80ab5ba754c3708c)
     endif()
@@ -136,6 +141,7 @@ else()
     create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
                         ${LOCAL_EXTERNAL_PACKAGE_DIR}
                         PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
+                        RELEASE_TAG ${RELEASE_TAG}
                         PACKAGED_FILES include ${SHA1_FILES}
                         SHA1_FILES ${SHA1_FILES}
                         TARGET ${PACKAGE_BUILD})
