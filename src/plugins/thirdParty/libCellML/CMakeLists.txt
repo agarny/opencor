@@ -24,8 +24,14 @@ set(FULL_LOCAL_EXTERNAL_PACKAGE_DIR ${PROJECT_SOURCE_DIR}/${LOCAL_EXTERNAL_PACKA
 # Name of our package's shared library (and of its import library, if any)
 
 if(WIN32)
-    set(SHARED_LIBRARY libcellml${CMAKE_SHARED_LIBRARY_SUFFIX})
-    set(IMPORT_LIBRARY libcellml${CMAKE_IMPORT_LIBRARY_SUFFIX})
+    if(RELEASE_MODE)
+        set(DEBUG_TAG)
+    else()
+        set(DEBUG_TAG d)
+    endif()
+
+    set(SHARED_LIBRARY libcellml${DEBUG_TAG}${CMAKE_SHARED_LIBRARY_SUFFIX})
+    set(IMPORT_LIBRARY libcellml${DEBUG_TAG}${CMAKE_IMPORT_LIBRARY_SUFFIX})
 else()
     set(SHARED_LIBRARY ${CMAKE_SHARED_LIBRARY_PREFIX}cellml${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST})
     set(IMPORT_LIBRARY ${SHARED_LIBRARY})
@@ -62,11 +68,11 @@ if(USE_PREBUILT_LIBCELLML_PACKAGE)
     if(WIN32)
         if(RELEASE_MODE)
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${RELATIVE_PROJECT_SOURCE_DIR} XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                                  ${RELATIVE_PROJECT_SOURCE_DIR} 309d646c7d442db59a888309dfe300dbd6e273bc
                                   PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-                                              XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX)
+                                  SHA1_VALUES f40f09d79091ad221be13b07506bb1217ae0a76c
+                                              251b62abb0eb23831fddb382bfa5fcf54bbed1b9)
         else()
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
                                   ${RELATIVE_PROJECT_SOURCE_DIR} XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -77,16 +83,16 @@ if(USE_PREBUILT_LIBCELLML_PACKAGE)
         endif()
     elseif(APPLE)
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${RELATIVE_PROJECT_SOURCE_DIR} XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                              ${RELATIVE_PROJECT_SOURCE_DIR} 2f363d13f8f8906a8fb453c2a8d2ac4e7b9c985b
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX)
+                              SHA1_VALUES 27dc7c08c4103fa3a8230a7e83272b3acff2a4a9)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${RELATIVE_PROJECT_SOURCE_DIR} XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                              ${RELATIVE_PROJECT_SOURCE_DIR} bddec75e43c85068332764d6798fdd9780d2365f
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX)
+                              SHA1_VALUES cb5b28ed938d7bbf64101e0d80ab5ba754c3708c)
     endif()
 else()
     # Build libCellML as an external project
