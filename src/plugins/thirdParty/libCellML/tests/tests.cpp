@@ -54,12 +54,7 @@ void Tests::basicTests()
 
     QCOMPARE(cellmlModel->getName(), ModelName);
 
-//---ISSUE1703--- THE INCLUDE FILES SHOULD BE REMOVED ONCE
-//                https://github.com/cellml/libcellml/pull/240
-//                HAS BEEN MERGED...
-#include "libcellmlbegin.h"
     delete cellmlModel;
-#include "libcellmlend.h"
 }
 
 //==============================================================================
