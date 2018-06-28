@@ -19,6 +19,7 @@ option(USE_PREBUILT_QTWEBKIT_PACKAGE "Use the pre-built version of the QtWebKit 
 
 option(USE_PREBUILT_BIOSIGNALML_PACKAGE "Use the pre-built version of the BioSignalML package" ON)
 option(USE_PREBUILT_CELLMLAPI_PACKAGE "Use the pre-built version of the CellML API package" ON)
+option(USE_PREBUILT_LIBCELLML_PACKAGE "Use the pre-built version of the libCellML package" ON)
 option(USE_PREBUILT_LIBGIT2_PACKAGE "Use the pre-built version of the libgit2 package" ON)
 option(USE_PREBUILT_LIBNUML_PACKAGE "Use the pre-built version of the libNuML package" ON)
 option(USE_PREBUILT_LIBSBML_PACKAGE "Use the pre-built version of the libSBML package" ON)
@@ -892,6 +893,7 @@ set(PLUGINS
 
     thirdParty/BioSignalML
     thirdParty/CellMLAPI
+    thirdParty/libCellML
     thirdParty/libgit2
     thirdParty/libNuML
     thirdParty/libSEDML
