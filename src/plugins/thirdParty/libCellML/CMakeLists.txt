@@ -68,18 +68,18 @@ if(USE_PREBUILT_LIBCELLML_PACKAGE)
     if(WIN32)
         if(RELEASE_MODE)
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${RELATIVE_PROJECT_SOURCE_DIR} 309d646c7d442db59a888309dfe300dbd6e273bc
+                                  ${RELATIVE_PROJECT_SOURCE_DIR} a27f0ab9e41a46031154794ff50326520afe7376
                                   PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES f40f09d79091ad221be13b07506bb1217ae0a76c
-                                              251b62abb0eb23831fddb382bfa5fcf54bbed1b9)
+                                  SHA1_VALUES 888c51facdc02631b8b4245d47a37d320ba8451e
+                                              6971a1f35c3d47963e17a776eb3dc4dfa203e21f)
         else()
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${RELATIVE_PROJECT_SOURCE_DIR} XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                                  ${RELATIVE_PROJECT_SOURCE_DIR} 40149c01051925bcc893073d794eb984a6a6012c
                                   PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-                                              XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX)
+                                  SHA1_VALUES 1a625e711e7832b4b87d7d6b64d4ee85e1bae7a1
+                                              09ba9cc21960a80ec3418e4254be0a574d2b3b97)
         endif()
     elseif(APPLE)
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
