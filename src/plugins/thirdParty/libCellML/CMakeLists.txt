@@ -69,35 +69,35 @@ if(USE_PREBUILT_LIBCELLML_PACKAGE)
     if(WIN32)
         if(RELEASE_MODE)
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${RELATIVE_PROJECT_SOURCE_DIR} 0fdd68d071b4d12f0d9b2265f0b188ed70af5958
+                                  ${RELATIVE_PROJECT_SOURCE_DIR} 4d42f0b15214ded774976fd743cb54e3bfedfed5
                                   PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                                   RELEASE_TAG ${RELEASE_TAG}
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES a45c504d8de06cb9b43e4a5604d50172dbc53726
-                                              1e5754e29de00339f3b91d58d7b8ca9a01671eff)
+                                  SHA1_VALUES c46a26154aaf74e179148626bca7e3a649808ca3
+                                              13407a8905d1537a741108dfb36630d401e6ed87)
         else()
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${RELATIVE_PROJECT_SOURCE_DIR} 4aae04bf5b95835d81137b5ad52ce3a4b5ba2ccf
+                                  ${RELATIVE_PROJECT_SOURCE_DIR} 3a426910f9612860d26ccc2972a617c4eea11ebe
                                   PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                                   RELEASE_TAG ${RELEASE_TAG}
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES ec9954ed24f57262d88917069008bf46418f5e6d
-                                              ae099f8614867e941a7ed96ef233519c0b285b55)
+                                  SHA1_VALUES 5e26af6cc42ad84033e20d5e6f1ac95d120b9beb
+                                              d9a1b4414586767b1a2b8dba0973adc9c9781d26)
         endif()
     elseif(APPLE)
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${RELATIVE_PROJECT_SOURCE_DIR} 530b98eff20e1c662cdbf93fe4925d5243bf994d
+                              ${RELATIVE_PROJECT_SOURCE_DIR} 735f23d0710eff7831da63f345c2d942a6236a5c
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
                               SHA1_VALUES 27dc7c08c4103fa3a8230a7e83272b3acff2a4a9)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${RELATIVE_PROJECT_SOURCE_DIR} 477f4e4b28539af7fa3929700768ab105afac01c
+                              ${RELATIVE_PROJECT_SOURCE_DIR} 1bed9e48c3383fad76fdcfecd3ac149024448287
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES cb5b28ed938d7bbf64101e0d80ab5ba754c3708c)
+                              SHA1_VALUES c6f915182f21ba3ff58d16c210cc6adae1b85fab)
     endif()
 else()
     # Build libCellML as an external project
