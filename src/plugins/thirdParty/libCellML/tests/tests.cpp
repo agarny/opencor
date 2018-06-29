@@ -29,10 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //==============================================================================
 
-#include "libcellmlbegin.h"
-    #include "libcellml/model.h"
-    #include "libcellml/version.h"
-#include "libcellmlend.h"
+#include "libcellml/model.h"
+#include "libcellml/version.h"
 
 //==============================================================================
 
