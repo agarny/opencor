@@ -69,31 +69,31 @@ if(USE_PREBUILT_LIBCELLML_PACKAGE)
     if(WIN32)
         if(RELEASE_MODE)
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${RELATIVE_PROJECT_SOURCE_DIR} 4d42f0b15214ded774976fd743cb54e3bfedfed5
+                                  ${RELATIVE_PROJECT_SOURCE_DIR} 91985bf606dcff529ea238d1a4ddc40fa79d47d9
                                   PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                                   RELEASE_TAG ${RELEASE_TAG}
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES c46a26154aaf74e179148626bca7e3a649808ca3
-                                              13407a8905d1537a741108dfb36630d401e6ed87)
+                                  SHA1_VALUES 45101bbc728bf0b7e1ee136ffa1d9d14b765770e
+                                              0ae78fc6013472837c89bf7afd92a2a8b12403ce)
         else()
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${RELATIVE_PROJECT_SOURCE_DIR} 3a426910f9612860d26ccc2972a617c4eea11ebe
+                                  ${RELATIVE_PROJECT_SOURCE_DIR} c7c9cadbcaa144bbba6bbe77be40999b89e1db3e
                                   PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                                   RELEASE_TAG ${RELEASE_TAG}
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 5e26af6cc42ad84033e20d5e6f1ac95d120b9beb
-                                              d9a1b4414586767b1a2b8dba0973adc9c9781d26)
+                                  SHA1_VALUES 7d4380cbfab51a07f69437749bad29402e3b41ae
+                                              4ecfb7999eeeea6688f36d9e1f662282e6553fc1)
         endif()
     elseif(APPLE)
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${RELATIVE_PROJECT_SOURCE_DIR} 735f23d0710eff7831da63f345c2d942a6236a5c
+                              ${RELATIVE_PROJECT_SOURCE_DIR} 1153dae3305123f52424fb772b62d8272bb08e70
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
                               SHA1_VALUES 27dc7c08c4103fa3a8230a7e83272b3acff2a4a9)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${RELATIVE_PROJECT_SOURCE_DIR} 1bed9e48c3383fad76fdcfecd3ac149024448287
+                              ${RELATIVE_PROJECT_SOURCE_DIR} cc0c79afd249efd795c02a8049713f8762126313
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
