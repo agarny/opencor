@@ -67,6 +67,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //==============================================================================
 
+#include "libcellml/parser.h"
+
+//==============================================================================
+
 namespace OpenCOR {
 namespace CellMLSupport {
 
@@ -340,7 +344,37 @@ bool CellmlFile::load(const QString &pFileContents,
 
     pIssues.clear();
 
-    // Get a bootstrap object and its model loader
+    // Try to load the model using libCellML and consider it as loaded, if no
+    // errors were found (i.e. we consider it as a CellML 2.0 file)
+
+    bool validFile = true;
+    libcellml::Parser parser;
+
+    if (pFileContents.isEmpty()) {
+        bool isLocalFile;
+        QString fileNameOrUrl;
+
+        Core::checkFileNameOrUrl(mFileName, isLocalFile, fileNameOrUrl);
+
+        QByteArray fileContents;
+
+        if (isLocalFile) {
+            validFile =    QFile::exists(fileNameOrUrl)
+                        && Core::readFileContentsFromFile(fileNameOrUrl, fileContents);
+        } else {
+            validFile = Core::readFileContentsFromUrl(fileNameOrUrl, fileContents);
+        }
+
+        parser.parseModel(fileContents.toStdString());
+    } else {
+        parser.parseModel(pFileContents.toStdString());
+    }
+
+    if (validFile && !parser.errorCount())
+        return true;
+
+    // We couldn't load the model using libCellML, so try with the CellML API,
+    // which first means getting a bootstrap object and its model loader
 
     ObjRef<iface::cellml_api::CellMLBootstrap> cellmlBootstrap = CreateCellMLBootstrap();
     ObjRef<iface::cellml_api::DOMModelLoader> modelLoader = cellmlBootstrap->modelLoader();
@@ -457,6 +491,13 @@ bool CellmlFile::load()
 
     if (!load(QString(), &mModel, mIssues))
         return false;
+
+    // If mModel is still null, then it means that we are dealing with a CellML
+    // 2.0 file, so just confirm that we were able to load the file (but haven't
+    // done anything with it)
+
+    if (!mModel)
+        return true;
 
     // Retrieve all the RDF triples associated with the model and initialise our
     // list of original RDF triples
@@ -1161,7 +1202,7 @@ CellmlFile::Version CellmlFile::version()
     // Return our version
 
     if (load())
-        return modelVersion(mModel);
+        return mModel?modelVersion(mModel):Cellml_2_0;
     else
         return CellmlFile::Unknown;
 }

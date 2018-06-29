@@ -34,6 +34,7 @@ add_plugin(CellMLSupport
     PLUGINS
         CellMLAPI
         Compiler
+        libCellML
         StandardSupport
     TESTS
         tests
