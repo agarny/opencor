@@ -67,7 +67,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //==============================================================================
 
-#include "libcellml/parser.h"
+#include "libcellmlbegin.h"
+    #include "libcellml/parser.h"
+#include "libcellmlend.h"
 
 //==============================================================================
 
