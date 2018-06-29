@@ -9,7 +9,6 @@ project(OpenCOR)
 option(ENABLE_SAMPLE_PLUGINS "Enable the sample plugins to be built" OFF)
 option(ENABLE_TEST_PLUGINS "Enable the test plugins to be built" OFF)
 option(ENABLE_TESTS "Enable the tests to be built" OFF)
-set(ENABLE_TESTS ON)
 
 if(NOT WIN32 AND NOT APPLE)
     option(USE_PREBUILT_ICU_PACKAGE "Use the pre-built version of the ICU package" ON)
@@ -35,7 +34,6 @@ option(USE_PREBUILT_QSCINTILLA_PACKAGE "Use the pre-built version of the QScinti
 option(USE_PREBUILT_QWT_PACKAGE "Use the pre-built version of the Qwt package" ON)
 option(USE_PREBUILT_SUNDIALS_PACKAGE "Use the pre-built version of the SUNDIALS package" ON)
 option(USE_PREBUILT_ZLIB_PACKAGE "Use the pre-built version of the zlib package" ON)
-set(USE_PREBUILT_LIBCELLML_PACKAGE OFF)
 
 if(ENABLE_TEST_PLUGINS)
     option(USE_PREBUILT_ZINC_PACKAGE "Use the pre-built version of the Zinc package" ON)
@@ -912,9 +910,6 @@ set(PLUGINS
     widget/GraphPanelWidget
     widget/MathMLViewerWidget
     widget/WebViewerWidget
-)
-set(PLUGINS
-    thirdParty/libCellML
 )
 
 if(ENABLE_TEST_PLUGINS)
