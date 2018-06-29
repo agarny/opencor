@@ -1203,10 +1203,13 @@ CellmlFile::Version CellmlFile::version()
 {
     // Return our version
 
-    if (load())
-        return mModel?modelVersion(mModel):Cellml_2_0;
-    else
+    if (load()) {
+        return mModel?
+            modelVersion(mModel):
+            Cellml_2_0;
+    } else {
         return CellmlFile::Unknown;
+    }
 }
 
 //==============================================================================
