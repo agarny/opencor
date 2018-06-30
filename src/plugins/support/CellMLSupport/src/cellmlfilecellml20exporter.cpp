@@ -51,9 +51,7 @@ CellmlFileCellml20Exporter::CellmlFileCellml20Exporter(const QString &pOldFileNa
 
     QString fileContents;
 
-    if (!(isLocalFile?
-              Core::readFileContentsFromFile(fileNameOrUrl, fileContents):
-              Core::readFileContentsFromUrl(fileNameOrUrl, fileContents))) {
+    if (!Core::readFile(fileNameOrUrl, fileContents)) {
         mErrorMessage = tr("the contents of the CellML file could not be read");
 
         return;
@@ -89,7 +87,7 @@ CellmlFileCellml20Exporter::CellmlFileCellml20Exporter(const QString &pOldFileNa
 
         mResult = true;
     } else {
-        mResult = Core::writeFileContentsToFile(pNewFileName, mOutput);
+        mResult = Core::writeFile(pNewFileName, mOutput);
     }
 }
 
