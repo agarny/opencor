@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cellmlfilecellml10exporter.h"
 #include "cellmlfilecellml20exporter.h"
 #include "cellmlfilemanager.h"
+#include "centralwidget.h"
 #include "corecliutils.h"
 #include "coreguiutils.h"
 #include "filemanager.h"
@@ -271,12 +272,18 @@ bool CellmlFile::fullyInstantiateImports(iface::cellml_api::Model *pModel,
                         // so now, with a busy widget if requested and if we are
                         // not dealing with a local file
 
+                        bool showAndHideBusyWidget = !isLocalFile && pWithBusyWidget;
                         QString fileContents;
 
-                        if (   (   !isLocalFile
-                                &&  pWithBusyWidget
-                                &&  Core::readFileWithBusyWidget(fileNameOrUrl, fileContents))
-                            || Core::readFile(fileNameOrUrl, fileContents)) {
+                        if (showAndHideBusyWidget)
+                            Core::centralWidget()->showBusyWidget();
+
+                        bool res = Core::readFile(fileNameOrUrl, fileContents);
+
+                        if (showAndHideBusyWidget)
+                            Core::centralWidget()->hideBusyWidget();
+
+                        if (res) {
                             // We were able to retrieve the import contents, so
                             // instantiate the import with it
 

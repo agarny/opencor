@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //==============================================================================
 
 #include "cellmlfile.h"
+#include "centralwidget.h"
 #include "corecliutils.h"
 #include "coreguiutils.h"
 #include "filemanager.h"
@@ -1257,7 +1258,9 @@ CellMLSupport::CellmlFile * SedmlFile::cellmlFile()
             QByteArray fileContents;
             QString errorMessage;
 
-            if (Core::readFileWithBusyWidget(modelSource, fileContents, &errorMessage)) {
+            Core::centralWidget()->showBusyWidget();
+
+            if (Core::readFile(modelSource, fileContents, &errorMessage)) {
                 // Save the contents of our model source to a local file and use
                 // that to create a CellML file object after having asked our
                 // file manager to manage it (so that CellML 1.1 files can be
@@ -1278,6 +1281,8 @@ CellMLSupport::CellmlFile * SedmlFile::cellmlFile()
                                           tr("%1 could not be retrieved (%2)").arg(modelSource)
                                                                               .arg(Core::formatMessage(errorMessage)));
             }
+
+            Core::centralWidget()->hideBusyWidget();
         }
     }
 
