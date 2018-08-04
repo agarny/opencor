@@ -120,7 +120,6 @@ public:
 private:
     QString mDirName;
 
-    bool mNew;
     bool mLoadingNeeded;
 
     SEDMLSupport::SedmlFile *mSedmlFile;
