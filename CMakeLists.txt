@@ -893,8 +893,8 @@ set(PLUGINS
     support/StandardSupport
     support/ZIPSupport
 
-    thirdParty/BioSignalML
     thirdParty/CellMLAPI
+    thirdParty/libBioSignalML
     thirdParty/libCellML
     thirdParty/libgit2
     thirdParty/libNuML
