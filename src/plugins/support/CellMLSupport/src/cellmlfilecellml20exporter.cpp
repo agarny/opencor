@@ -74,12 +74,6 @@ CellmlFileCellml20Exporter::CellmlFileCellml20Exporter(const QString &pOldFileNa
 
     eventLoop.exec();
 
-    // Stop our XSL transformer
-    // Note: we don't need to delete it since it will be done as part of its
-    //       thread being stopped...
-
-    xslTransformer->stop();
-
     // Our CellML 2.0 conversion is done, so save/output the output
 
     if (pNewFileName.isEmpty()) {
