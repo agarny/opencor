@@ -72,7 +72,7 @@ FileManager::~FileManager()
 
     // Remove all the managed files
 
-    foreach (File *file, mFiles)
+    for (auto file : mFiles.values())
         delete file;
 }
 
@@ -244,7 +244,7 @@ QString FileManager::fileName(const QString &pUrl) const
 {
     // Return the given file's file name, if it is being managed
 
-    foreach (File *file, mFiles.values()) {
+    for (auto file : mFiles.values()) {
         if (!pUrl.compare(file->url()))
             return file->fileName();
     }
@@ -715,8 +715,10 @@ void FileManager::checkFiles()
     //       them, and to check a file that has been removed will crash
     //       OpenCOR...
 
-    foreach (File *file, mFiles) {
-        if (!mFiles.values().contains(file))
+    auto files = mFiles.values();
+
+    for (auto file : files) {
+        if (!files.contains(file))
             continue;
 
         QString fileName = file->fileName();
