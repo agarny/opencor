@@ -439,14 +439,14 @@ bool SedmlFile::isSupported()
     double outputEndTime = uniformTimeCourse->getOutputEndTime();
     int nbOfPoints = uniformTimeCourse->getNumberOfPoints();
 
-    if (!qIsNull(initialTime-outputStartTime)) {
+    if (!qFuzzyCompare(initialTime, outputStartTime)) {
         mIssues << SedmlFileIssue(SedmlFileIssue::Information,
                                   tr("only SED-ML files with the same values for 'initialTime' and 'outputStartTime' are supported"));
 
         return false;
     }
 
-    if (qIsNull(outputStartTime-outputEndTime)) {
+    if (qFuzzyCompare(outputStartTime, outputEndTime)) {
         mIssues << SedmlFileIssue(SedmlFileIssue::Error,
                                   tr("the values for 'outputStartTime' and 'outputEndTime' must be different"));
 
@@ -698,7 +698,7 @@ bool SedmlFile::isSupported()
                     libsedml::SedVectorRange *vectorRange = static_cast<libsedml::SedVectorRange *>(range);
 
                     if (   (vectorRange->getNumValues() == 1)
-                        && (qIsNull(vectorRange->getValues().front()-1.0))) {
+                        && (qFuzzyCompare(vectorRange->getValues().front(), 1.0))) {
                         // Make sure that the one/two sub-tasks have the correct
                         // order and retrieve their id
 
