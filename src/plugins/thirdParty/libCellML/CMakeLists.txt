@@ -86,7 +86,7 @@ if(USE_PREBUILT_LIBCELLML_PACKAGE)
         endif()
     elseif(APPLE)
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${RELATIVE_PROJECT_SOURCE_DIR} 1d57adaf0bd24bea4c400c6001b4e24d071897ad
+                              ${RELATIVE_PROJECT_SOURCE_DIR} 3a986b868cd23b8412a5b4452f4f22c73625dd80
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
