@@ -104,6 +104,12 @@ else()
 
     set(PACKAGE_BUILD ${PACKAGE_NAME}Build)
 
+    if(WIN32)
+        set(LIBCELLML_BUILD_TYPE ${CMAKE_BUILD_TYPE})
+    else()
+        set(LIBCELLML_BUILD_TYPE Release)
+    endif()
+
     ExternalProject_Add(${PACKAGE_BUILD}
         SOURCE_DIR
             ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME}
@@ -118,7 +124,7 @@ else()
         CMAKE_ARGS
             ${CMAKE_ARGS}
             -DLIBCELLML_BINDINGS_PYTHON=OFF
-            -DLIBCELLML_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+            -DLIBCELLML_BUILD_TYPE=${LIBCELLML_BUILD_TYPE}
             -DLIBCELLML_COVERAGE=OFF
             -DLIBCELLML_INSTALL_PREFIX:PATH=<INSTALL_DIR>
             -DLIBCELLML_TREAT_WARNINGS_AS_ERRORS=OFF
