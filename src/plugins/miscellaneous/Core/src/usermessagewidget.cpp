@@ -24,9 +24,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "coreguiutils.h"
 #include "usermessagewidget.h"
 
+#ifdef Q_OS_MAC
+    #include "macos.h"
+#endif
+
 //==============================================================================
 
 #include <QBuffer>
+#include <QEvent>
 #include <QFont>
 #include <QIcon>
 #include <QSizePolicy>
@@ -56,10 +61,11 @@ UserMessageWidget::UserMessageWidget(const QString &pIcon,
     setContextMenuPolicy(Qt::NoContextMenu);
     setScale(1.0);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    setStyleSheet("QLabel {"
-                  "     background-color: white;"
-                  "}");
     setWordWrap(true);
+
+    // Initialise our "palette"
+
+    paletteChanged();
 }
 
 //==============================================================================
@@ -83,6 +89,20 @@ UserMessageWidget::UserMessageWidget(const QString &pIcon, QWidget *pParent) :
 UserMessageWidget::UserMessageWidget(QWidget *pParent) :
     UserMessageWidget(QString(), QString(), QString(), pParent)
 {
+}
+
+//==============================================================================
+
+void UserMessageWidget::changeEvent(QEvent *pEvent)
+{
+    // Default handling of the event
+
+    QLabel::changeEvent(pEvent);
+
+    // Do a few more things for some changes
+
+    if (pEvent->type() == QEvent::PaletteChange)
+        paletteChanged();
 }
 
 //==============================================================================
@@ -151,6 +171,29 @@ void UserMessageWidget::updateGui()
                                                      QString():
                                                      IconSpace,
                                                  mExtraMessage)));
+    }
+}
+
+//==============================================================================
+
+void UserMessageWidget::paletteChanged()
+{
+    // Our palette has changed, so update our background colour, but only if it
+    // has really changed (otherwise we get into a recursive loop)
+
+    QString backgroundColor = "white";
+
+#ifdef Q_OS_MAC
+    if (isDarkMode())
+        backgroundColor = Core::windowColor().name();
+#endif
+
+    if (backgroundColor.compare(mBackgroundColor)) {
+        mBackgroundColor = backgroundColor;
+
+        setStyleSheet(QString("QLabel {"
+                              "     background-color: %1;"
+                              "}").arg(mBackgroundColor));
     }
 }
 

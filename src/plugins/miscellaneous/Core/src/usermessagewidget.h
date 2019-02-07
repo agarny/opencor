@@ -65,6 +65,9 @@ public:
                     const QString &pExtraMessage = QString());
     void resetMessage();
 
+protected:
+    void changeEvent(QEvent *pEvent) override;
+
 private:
     double mScale;
     double mDefaultFontScale;
@@ -73,7 +76,11 @@ private:
     QString mMessage;
     QString mExtraMessage;
 
+    QString mBackgroundColor;
+
     void updateGui();
+
+    void paletteChanged();
 };
 
 //==============================================================================
