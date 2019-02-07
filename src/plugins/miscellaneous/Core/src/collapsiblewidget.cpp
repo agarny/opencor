@@ -87,7 +87,7 @@ CollapsibleHeaderWidget::CollapsibleHeaderWidget(bool pCollapsible,
     QColor winColor = windowColor();
 
     setStyleSheet(QString("QWidget {"
-                          "    background: rgb(%1, %2, %3);"
+                          "    background-color: rgb(%1, %2, %3);"
                           "}").arg(winColor.red())
                               .arg(winColor.green())
                               .arg(winColor.blue()));
