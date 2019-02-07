@@ -57,6 +57,17 @@ void removeMacosSpecificMenuItems()
 
 //==============================================================================
 
+bool isDarkMode()
+{
+    // Return whether we are in Dark mode
+
+    NSString *mode = [[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"];
+
+    return [mode isEqualToString:@"Dark"];
+}
+
+//==============================================================================
+
 }   // namespace OpenCOR
 
 //==============================================================================

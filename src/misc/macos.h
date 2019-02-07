@@ -31,6 +31,8 @@ namespace OpenCOR {
 
 void removeMacosSpecificMenuItems();
 
+bool isDarkMode();
+
 //==============================================================================
 
 }   // namespace OpenCOR
