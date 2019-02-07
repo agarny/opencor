@@ -148,10 +148,6 @@ WebViewerWidget::WebViewerWidget(QWidget *pParent) :
 
     mWebView->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
 
-    mWebView->setStyleSheet("QWebView {"
-                            "    background-color: white;"
-                            "}");
-
     // Create our progress bar object and customise it
 
     mProgressBarWidget = new Core::ProgressBarWidget(this);
