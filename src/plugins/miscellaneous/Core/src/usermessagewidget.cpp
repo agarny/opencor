@@ -24,10 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "coreguiutils.h"
 #include "usermessagewidget.h"
 
-#ifdef Q_OS_MAC
-    #include "macos.h"
-#endif
-
 //==============================================================================
 
 #include <QBuffer>
@@ -54,7 +50,8 @@ UserMessageWidget::UserMessageWidget(const QString &pIcon,
     mDefaultFontScale(1.35*font().pointSize()),
     mIcon(pIcon),
     mMessage(pMessage),
-    mExtraMessage(pExtraMessage)
+    mExtraMessage(pExtraMessage),
+    mBackgroundColor(QString())
 {
     // Some customisations
 
@@ -181,12 +178,7 @@ void UserMessageWidget::paletteChanged()
     // Our palette has changed, so update our background colour, but only if it
     // has really changed (otherwise we get into a recursive loop)
 
-    QString backgroundColor = "white";
-
-#ifdef Q_OS_MAC
-    if (isDarkMode())
-        backgroundColor = Core::windowColor().name();
-#endif
+    QString backgroundColor = Core::baseColor().name();
 
     if (backgroundColor.compare(mBackgroundColor)) {
         mBackgroundColor = backgroundColor;
