@@ -95,6 +95,10 @@ PmrWindowWindow::PmrWindowWindow(QWidget *pParent) :
 
     mGui->layout->addWidget(toolBarWidget);
 
+    // Initialise our "palette"
+
+    paletteChanged();
+
     // Make the filter value our focus proxy
 
     setFocusProxy(mFilterValue);
@@ -208,6 +212,20 @@ void PmrWindowWindow::retranslateUi()
 
 //==============================================================================
 
+void PmrWindowWindow::changeEvent(QEvent *pEvent)
+{
+    // Default handling of the event
+
+    Core::OrganisationWidget::changeEvent(pEvent);
+
+    // Do a few more things for some changes
+
+    if (pEvent->type() == QEvent::PaletteChange)
+        paletteChanged();
+}
+
+//==============================================================================
+
 void PmrWindowWindow::resizeEvent(QResizeEvent *pEvent)
 {
     // Default handling of the event
@@ -217,6 +235,19 @@ void PmrWindowWindow::resizeEvent(QResizeEvent *pEvent)
     // Resize our busy widget
 
     mPmrWindowWidget->resizeBusyWidget();
+}
+
+//==============================================================================
+
+void PmrWindowWindow::paletteChanged()
+{
+    // Our palette has changed, so update the colour of our filter label
+    // Note: this shouldn't be needed, but there is a bug in Qt (see
+    //       https://bugreports.qt.io/browse/QTBUG-72486)...
+
+    mFilterLabel->setStyleSheet(QString("QLabel {"
+                                        "     color: %1;"
+                                        "}").arg(Core::windowTextColor().name()));
 }
 
 //==============================================================================

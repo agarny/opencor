@@ -74,6 +74,7 @@ public:
     void update(const QString &pPmrUrl);
 
 protected:
+    void changeEvent(QEvent *pEvent) override;
     void resizeEvent(QResizeEvent *pEvent) override;
 
 private:
@@ -93,6 +94,8 @@ private:
     PmrWindowWidget *mPmrWindowWidget;
 
     bool mItemDoubleClicked;
+
+    void paletteChanged();
 
     void retrieveExposures(bool pVisible, bool pForceRetrieval);
 
