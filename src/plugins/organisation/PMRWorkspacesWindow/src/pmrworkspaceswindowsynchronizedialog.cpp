@@ -33,6 +33,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "toolbarwidget.h"
 #include "webviewerwidget.h"
 
+#ifdef Q_OS_MAC
+    #include "macos.h"
+#endif
+
 //==============================================================================
 
 #include <QCheckBox>
@@ -256,10 +260,6 @@ PmrWorkspacesWindowSynchronizeDialog::PmrWorkspacesWindowSynchronizeDialog(const
 
     layout->addWidget(mHorizontalSplitter);
 
-    // Initialise our "palette"
-
-    paletteChanged();
-
     // Retrieve our user's settings
 
     QSettings settings;
@@ -433,9 +433,31 @@ void PmrWorkspacesWindowSynchronizeDialog::paletteChanged()
     // Note: this shouldn't be needed, but there is a bug in Qt (see
     //       https://bugreports.qt.io/browse/QTBUG-72486)...
 
+    QString fontColor = Core::windowTextColor().name();
+
     mWebViewerLabel->setStyleSheet(QString("QLabel {"
                                            "     color: %1;"
-                                           "}").arg(Core::windowTextColor().name()));
+                                           "}").arg(fontColor));
+
+    // Update some colours in our diff
+
+    for (auto element : mWebViewer->webView()->page()->mainFrame()->documentElement().findAll("table tr.default"))
+        element.setStyleProperty("color", fontColor);
+
+#ifdef Q_OS_MAC
+    int rgb = isDarkMode()?255:0;
+    double alpha = isDarkMode()?0.39:0.09;
+
+    for (auto element : mWebViewer->webView()->page()->mainFrame()->documentElement().findAll("table td.rightborder")) {
+        element.setStyleProperty("border-right-color", QString("rgba(%1, %1, %1, %2)").arg(rgb)
+                                                                                      .arg(alpha));
+    }
+
+    for (auto element : mWebViewer->webView()->page()->mainFrame()->documentElement().findAll("table tr.last")) {
+        element.setStyleProperty("border-bottom-color", QString("rgba(%1, %1, %1, %2)").arg(rgb)
+                                                                                       .arg(alpha));
+    }
+#endif
 }
 
 //==============================================================================
@@ -1138,6 +1160,10 @@ void PmrWorkspacesWindowSynchronizeDialog::updateDiffInformation()
         html += "</table>\n";
 
         mWebViewer->webView()->setHtml(mDiffTemplate.arg(html));
+
+        // Initialise our "palette"
+
+        paletteChanged();
     }
 }
 
