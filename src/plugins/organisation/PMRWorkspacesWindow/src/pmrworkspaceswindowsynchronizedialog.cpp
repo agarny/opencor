@@ -201,18 +201,21 @@ PmrWorkspacesWindowSynchronizeDialog::PmrWorkspacesWindowSynchronizeDialog(const
     webViewerWidget->setLayout(webViewerLayout);
 
     Core::ToolBarWidget *webViewerToolBarWidget = new Core::ToolBarWidget();
-    QLabel *webViewerLabel = new QLabel(tr("Changes:"), webViewerWidget);
+
+    mWebViewerLabel = new QLabel(tr("Changes:"), webViewerWidget);
+
+    mWebViewerLabel->setAlignment(Qt::AlignBottom);
+    mWebViewerLabel->setFont(newFont);
+
     QWidget *webViewerSpacer = new QWidget(webViewerToolBarWidget);
+
+    webViewerSpacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     QAction *webViewerNormalSizeAction = Core::newAction(QIcon(":/oxygen/actions/zoom-original.png"), webViewerToolBarWidget);
     QAction *webViewerZoomInAction = Core::newAction(QIcon(":/oxygen/actions/zoom-in.png"), webViewerToolBarWidget);
     QAction *webViewerZoomOutAction = Core::newAction(QIcon(":/oxygen/actions/zoom-out.png"), webViewerToolBarWidget);
 
     mWebViewerCellmlTextFormatAction = Core::newAction(QIcon(":/CellMLSupport/logo.png"), webViewerToolBarWidget);
-
-    webViewerLabel->setAlignment(Qt::AlignBottom);
-    webViewerLabel->setFont(newFont);
-
-    webViewerSpacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     I18nInterface::retranslateAction(mWebViewerCellmlTextFormatAction, tr("CellML Text Format"),
                                      tr("Try to use the CellML Text format whenever possible"));
@@ -225,7 +228,7 @@ PmrWorkspacesWindowSynchronizeDialog::PmrWorkspacesWindowSynchronizeDialog(const
 
     mWebViewerCellmlTextFormatAction->setCheckable(true);
 
-    webViewerToolBarWidget->addWidget(webViewerLabel);
+    webViewerToolBarWidget->addWidget(mWebViewerLabel);
     webViewerToolBarWidget->addWidget(webViewerSpacer);
     webViewerToolBarWidget->addAction(mWebViewerCellmlTextFormatAction);
     webViewerToolBarWidget->addSeparator();
@@ -252,6 +255,10 @@ PmrWorkspacesWindowSynchronizeDialog::PmrWorkspacesWindowSynchronizeDialog(const
     mHorizontalSplitter->setStretchFactor(1, 1);
 
     layout->addWidget(mHorizontalSplitter);
+
+    // Initialise our "palette"
+
+    paletteChanged();
 
     // Retrieve our user's settings
 
@@ -385,6 +392,20 @@ PmrWorkspacesWindowSynchronizeDialog::~PmrWorkspacesWindowSynchronizeDialog()
 
 //==============================================================================
 
+void PmrWorkspacesWindowSynchronizeDialog::changeEvent(QEvent *pEvent)
+{
+    // Default handling of the event
+
+    Core::Dialog::changeEvent(pEvent);
+
+    // Do a few more things for some changes
+
+    if (pEvent->type() == QEvent::PaletteChange)
+        paletteChanged();
+}
+
+//==============================================================================
+
 void PmrWorkspacesWindowSynchronizeDialog::keyPressEvent(QKeyEvent *pEvent)
 {
     // Check whether we are trying to quick synchronise
@@ -402,6 +423,19 @@ void PmrWorkspacesWindowSynchronizeDialog::keyPressEvent(QKeyEvent *pEvent)
 
         Core::Dialog::keyPressEvent(pEvent);
     }
+}
+
+//==============================================================================
+
+void PmrWorkspacesWindowSynchronizeDialog::paletteChanged()
+{
+    // Our palette has changed, so update the colour of our Web viewer label
+    // Note: this shouldn't be needed, but there is a bug in Qt (see
+    //       https://bugreports.qt.io/browse/QTBUG-72486)...
+
+    mWebViewerLabel->setStyleSheet(QString("QLabel {"
+                                           "     color: %1;"
+                                           "}").arg(Core::windowTextColor().name()));
 }
 
 //==============================================================================

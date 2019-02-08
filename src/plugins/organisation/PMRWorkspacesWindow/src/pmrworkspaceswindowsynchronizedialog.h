@@ -104,6 +104,7 @@ public:
     QStringList fileNames() const;
 
 protected:
+    void changeEvent(QEvent *pEvent) override;
     void keyPressEvent(QKeyEvent *pEvent) override;
 
 private:
@@ -132,6 +133,8 @@ private:
     QTextEdit *mMessageValue;
     QListView *mChangesValue;
 
+    QLabel *mWebViewerLabel;
+
     WebViewerWidget::WebViewerWidget *mWebViewer;
     QAction *mWebViewerCellmlTextFormatAction;
 
@@ -151,6 +154,8 @@ private:
     QStringList mInvalidCellmlCode;
 
     bool mNeedUpdateDiffInformation;
+
+    void paletteChanged();
 
     PmrWorkspacesWindowSynchronizeDialogItems populateModel(PMRSupport::PmrWorkspaceFileNode *pFileNode);
 
