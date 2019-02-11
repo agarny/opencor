@@ -60,6 +60,49 @@ namespace Core {
 
 //==============================================================================
 
+LineWidget::LineWidget(QWidget *pParent) :
+    QFrame(pParent),
+    mColor(QString())
+{
+    // Initialise our "palette"
+
+    paletteChanged();
+}
+
+//==============================================================================
+
+void LineWidget::changeEvent(QEvent *pEvent)
+{
+    // Default handling of the event
+
+    QFrame::changeEvent(pEvent);
+
+    // Do a few more things for some changes
+
+    if (pEvent->type() == QEvent::PaletteChange)
+        paletteChanged();
+}
+
+//==============================================================================
+
+void LineWidget::paletteChanged()
+{
+    // Our palette has changed, so update our colour, but only if it has really
+    // changed (otherwise we get into a recursive loop)
+
+    QString color = borderColor().name();
+
+    if (color.compare(mColor)) {
+        mColor = color;
+
+        setStyleSheet(QString("QFrame {"
+                              "    border: 1px solid %1;"
+                              "}").arg(mColor));
+    }
+}
+
+//==============================================================================
+
 CentralWidget * centralWidget()
 {
     // Retrieve and return our central widget
@@ -526,14 +569,9 @@ QAction * newSeparator(QWidget *pParent)
 
 QFrame * newLineWidget(bool pHorizontal, QWidget *pParent)
 {
-    // Create and return a 'real' line widget, i.e. one which is 1 pixel wide,
-    // using a QFrame widget
+    // Create and return a line widget
 
-    QFrame *res = new QFrame(pParent);
-
-    res->setStyleSheet(QString("QFrame {"
-                               "    border: 1px solid %1;"
-                               "}").arg(borderColor().name()));
+    QFrame *res = new LineWidget(pParent);
 
     if (pHorizontal) {
         res->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);

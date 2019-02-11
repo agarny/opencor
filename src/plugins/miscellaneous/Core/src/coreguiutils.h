@@ -103,6 +103,24 @@ public:
 
 //==============================================================================
 
+class LineWidget : public QFrame
+{
+    Q_OBJECT
+
+public:
+    explicit LineWidget(QWidget *pParent);
+
+protected:
+    void changeEvent(QEvent *pEvent) override;
+
+private:
+    QString mColor;
+
+    void paletteChanged();
+};
+
+//==============================================================================
+
 CentralWidget CORE_EXPORT * centralWidget();
 
 QString CORE_EXPORT getOpenFileName(const QString &pCaption,
