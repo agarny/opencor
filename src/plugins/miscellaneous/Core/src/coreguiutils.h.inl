@@ -36,6 +36,7 @@ QColor CORE_EXPORT borderColor();
 QColor CORE_EXPORT highlightColor();
 QColor CORE_EXPORT shadowColor();
 QColor CORE_EXPORT windowColor();
+QColor CORE_EXPORT windowTextColor();
 
 QMessageBox::StandardButton CORE_EXPORT informationMessageBox(const QString &pTitle,
                                                               const QString &pText,

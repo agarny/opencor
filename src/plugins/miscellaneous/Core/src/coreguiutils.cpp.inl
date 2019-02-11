@@ -328,6 +328,15 @@ QColor windowColor()
 
 //==============================================================================
 
+QColor windowTextColor()
+{
+    // Return the window text colour
+
+    return qApp->palette().color(QPalette::WindowText);
+}
+
+//==============================================================================
+
 QMessageBox::StandardButton showMessageBox(QWidget *pParent,
                                            const QMessageBox::Icon &pIcon,
                                            const Qt::TextInteractionFlags &pFlags,
