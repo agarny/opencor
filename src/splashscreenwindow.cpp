@@ -63,27 +63,6 @@ SplashScreenWindow::SplashScreenWindow() :
 
     mGui->setupUi(this);
 
-    setStyleSheet(QString("QLabel#splashScreenImage {"
-                          "     background-color: white;"
-                          "}"
-#ifdef Q_OS_MAC
-                          "QWidget#infoWidget {"
-                          "    border-top: %1;"
-                          "}"
-#else
-                          "QLabel#splashScreenImage {"
-                          "    border-top: %1;"
-                          "    border-left: %1;"
-                          "    border-right: %1;"
-                          "}"
-                          ""
-                          "QWidget#infoWidget {"
-                          "    border: %1;"
-                          "}"
-#endif
-                          ).arg(QString("1px solid %1").arg(borderColor().name()))
-                 );
-
     QFont newFont = mGui->infoWidget->font();
 
 #if defined(Q_OS_WIN)
@@ -102,6 +81,10 @@ SplashScreenWindow::SplashScreenWindow() :
     mGui->copyrightValue->setText(copyright());
     mGui->versionValue->setText(shortVersion());
 
+    // Initialise our "palette"
+
+    paletteChanged();
+
     // Adjust the size of our splash screen and then move it to the center of
     // our screen
 
@@ -116,6 +99,20 @@ SplashScreenWindow::~SplashScreenWindow()
     // Delete the GUI
 
     delete mGui;
+}
+
+//==============================================================================
+
+void SplashScreenWindow::changeEvent(QEvent *pEvent)
+{
+    // Default handling of the event
+
+    QWidget::changeEvent(pEvent);
+
+    // Do a few more things for some changes
+
+    if (pEvent->type() == QEvent::PaletteChange)
+        paletteChanged();
 }
 
 //==============================================================================
@@ -178,6 +175,35 @@ void SplashScreenWindow::mousePressEvent(QMouseEvent *pEvent)
     pEvent->accept();
 
     hide();
+}
+
+//==============================================================================
+
+void SplashScreenWindow::paletteChanged()
+{
+    // Our palette has changed, so update our style sheet
+
+    setStyleSheet(QString("QLabel#splashScreenImage {"
+                          "     background-color: %1;"
+                          "}"
+#ifdef Q_OS_MAC
+                          "QWidget#infoWidget {"
+                          "    border-top: %2;"
+                          "}"
+#else
+                          "QLabel#splashScreenImage {"
+                          "    border-top: %2;"
+                          "    border-left: %2;"
+                          "    border-right: %2;"
+                          "}"
+                          ""
+                          "QWidget#infoWidget {"
+                          "    border: %2;"
+                          "}"
+#endif
+                          ).arg(baseColor().name())
+                           .arg(QString("1px solid %1").arg(borderColor().name()))
+                 );
 }
 
 //==============================================================================

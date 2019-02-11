@@ -51,11 +51,14 @@ public:
     void closeAndDeleteAfter(QWidget *pWindow);
 
 protected:
+    void changeEvent(QEvent *pEvent) override;
     void closeEvent(QCloseEvent *pEvent) override;
     void mousePressEvent(QMouseEvent *pEvent) override;
 
 private:
     Ui::SplashScreenWindow *mGui;
+
+    void paletteChanged();
 };
 
 //==============================================================================
