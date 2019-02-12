@@ -637,6 +637,35 @@ QIcon standardIcon(QStyle::StandardPixmap pStandardIcon,
 
 //==============================================================================
 
+QIcon invertedIcon(const QIcon &pIcon)
+{
+    // Create and return an inverted version of (all the sizes of) the given
+    // icon
+
+    QIcon res = QIcon();
+
+    for (const auto &size : pIcon.availableSizes()) {
+        QImage image = pIcon.pixmap(size).toImage();
+
+        image.invertPixels();
+
+        res.addPixmap(QPixmap::fromImage(image));
+    }
+
+    return res;
+}
+
+//==============================================================================
+
+QIcon invertedIcon(const QString &pIcon)
+{
+    // Return an inverted version of the given icon
+
+    return invertedIcon(QIcon(pIcon));
+}
+
+//==============================================================================
+
 QIcon tintedIcon(const QIcon &pIcon, const QColor &pColor)
 {
     // Create and return a tinted icon using (all the sizes of) the given icon

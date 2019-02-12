@@ -24,8 +24,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "collapsiblewidget.h"
 #include "coreguiutils.h"
 
+#ifdef Q_OS_MAC
+    #include "macos.h"
+#endif
+
 //==============================================================================
 
+#include <QEvent>
 #include <QMenu>
 #include <QSettings>
 #include <QToolButton>
@@ -63,7 +68,9 @@ CollapsibleHeaderWidget::CollapsibleHeaderWidget(bool pCollapsible,
                                                  QWidget *pParent) :
     QWidget(pParent),
     mCollapsed(false),
-    mLastHeader(false)
+    mLastHeader(false),
+    mMenuMenu(nullptr),
+    mBackgroundColor(QString())
 {
     // Create and set our vertical layout
 
@@ -84,22 +91,10 @@ CollapsibleHeaderWidget::CollapsibleHeaderWidget(bool pCollapsible,
 
     subWidget->setLayout(subLayout);
 
-    setStyleSheet(QString("QWidget {"
-                          "    background-color: %1;"
-                          "}").arg(windowColor().name()));
-
     // Create and customise our button and title
 
     static const QIcon NoIcon   = QIcon();
     static const QIcon DownIcon = QIcon(":/oxygen/actions/arrow-down.png");
-
-    static const QString IconStyleSheet = "QToolButton {"
-                                          "    border: none;"
-                                          "}"
-                                          ""
-                                          "QToolButton:pressed {"
-                                          "    margin: 0px;"
-                                          "}";
 
     mButton = new QToolButton(subWidget);
     mTitle = new CollapsibleHeaderTitleWidget(subWidget);
@@ -109,13 +104,15 @@ CollapsibleHeaderWidget::CollapsibleHeaderWidget(bool pCollapsible,
 
     mButton->setIcon(pCollapsible?DownIcon:NoIcon);
     mButton->setIconSize(QSize(iconSize, iconSize));
-    mButton->setStyleSheet(IconStyleSheet);
 
     mTitle->setAlignment(Qt::AlignCenter);
 
     mMenu->setIcon(NoIcon);
     mMenu->setIconSize(QSize(iconSize, iconSize));
-    mMenu->setStyleSheet(IconStyleSheet);
+
+    // Initialise our "palette"
+
+    paletteChanged();
 
     // Add our button and title to our sub-layout
 
@@ -143,6 +140,20 @@ CollapsibleHeaderWidget::CollapsibleHeaderWidget(bool pCollapsible,
         connect(mTitle, &CollapsibleHeaderTitleWidget::doubleClicked,
                 this, &CollapsibleHeaderWidget::toggleCollapsedState);
     }
+}
+
+//==============================================================================
+
+void CollapsibleHeaderWidget::changeEvent(QEvent *pEvent)
+{
+    // Default handling of the event
+
+    QWidget::changeEvent(pEvent);
+
+    // Do a few more things for some changes
+
+    if (pEvent->type() == QEvent::PaletteChange)
+        paletteChanged();
 }
 
 //==============================================================================
@@ -227,14 +238,10 @@ QMenu * CollapsibleHeaderWidget::menu() const
 
 void CollapsibleHeaderWidget::setMenu(QMenu *pMenu)
 {
-    // Set our menu
+    // Set our menu and update our palette to make sure that our menu icon is
+    // correct
 
     if (pMenu != mMenuMenu) {
-        static const QIcon NoIcon   = QIcon();
-        static const QIcon MenuIcon = QIcon(":/menu.png");
-
-        mMenu->setIcon(pMenu?MenuIcon:NoIcon);
-
         mMenuMenu = pMenu;
 
         if (pMenu) {
@@ -244,6 +251,8 @@ void CollapsibleHeaderWidget::setMenu(QMenu *pMenu)
             disconnect(mMenu, &QToolButton::clicked,
                        this, &CollapsibleHeaderWidget::showMenu);
         }
+
+        paletteChanged();
     }
 }
 
@@ -255,6 +264,56 @@ void CollapsibleHeaderWidget::updateBottomSeparatorVisibleStatus()
     // whether we are the last header
 
     mBottomSeparator->setVisible(!mCollapsed || mLastHeader);
+}
+
+//==============================================================================
+
+void CollapsibleHeaderWidget::paletteChanged()
+{
+    // Our palette has changed, so update our background colour, but only if it
+    // has really changed (otherwise we get into a recursive loop)
+
+    QString backgroundColor = Core::windowColor().name();
+
+    if (backgroundColor.compare(mBackgroundColor)) {
+        static const QString IconStyleSheet = "QToolButton {"
+                                              "     background-color: %1;"
+                                              "    border: none;"
+                                              "}"
+                                              ""
+                                              "QToolButton:pressed {"
+                                              "    margin: 0px;"
+                                              "}";
+        static const QString TitleStyleSheet = "QLabel {"
+                                               "     background-color: %1;"
+                                               "}";
+
+        mBackgroundColor = backgroundColor;
+
+        mButton->setStyleSheet(IconStyleSheet.arg(mBackgroundColor));
+        mTitle->setStyleSheet(TitleStyleSheet.arg(mBackgroundColor));
+        mMenu->setStyleSheet(IconStyleSheet.arg(mBackgroundColor));
+    }
+
+    // Also update our menu icon, if needed
+    // Note: unlike for our background colour, we must always do it since we can
+    //       set/reset our menu using setMenu()...
+
+    static const QIcon NoIcon   = QIcon();
+    static const QIcon MenuIcon = QIcon(":/menu.png");
+#ifdef Q_OS_MAC
+    static const QIcon InvertedMenuIcon = invertedIcon(MenuIcon);
+#endif
+
+#ifdef Q_OS_MAC
+    mMenu->setIcon(mMenuMenu?
+                       isDarkMode()?
+                           InvertedMenuIcon:
+                           MenuIcon:
+                       NoIcon);
+#else
+    mMenu->setIcon(mMenuMenu?MenuIcon:NoIcon);
+#endif
 }
 
 //==============================================================================

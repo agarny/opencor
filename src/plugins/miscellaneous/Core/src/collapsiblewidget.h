@@ -83,6 +83,9 @@ public:
     QMenu * menu() const;
     void setMenu(QMenu *pMenu);
 
+protected:
+    void changeEvent(QEvent *pEvent) override;
+
 private:
     bool mCollapsed;
 
@@ -97,7 +100,11 @@ private:
 
     QMenu *mMenuMenu;
 
+    QString mBackgroundColor;
+
     void updateBottomSeparatorVisibleStatus();
+
+    void paletteChanged();
 
 signals:
     void widgetVisible(bool pVisible);
