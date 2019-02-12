@@ -2,8 +2,14 @@ project(CorePlugin)
 
 # Add the plugin
 
+if(APPLE)
+    set(MACOS_MM ../../../misc/macos.mm)
+endif()
+
 add_plugin(Core
     SOURCES
+        ${MACOS_MM}
+
         ../../cliinterface.cpp
         ../../datastoreinterface.cpp
         ../../coreinterface.cpp
