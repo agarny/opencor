@@ -666,16 +666,6 @@ QIcon tintedIcon(const QIcon &pIcon, int pWidth, int pHeight,
 
 //==============================================================================
 
-QIcon tintedIcon(const QString &pIcon, int pWidth, int pHeight,
-                 const QColor &pColor)
-{
-    // Create and return a tinted icon using the given icon and colour
-
-    return tintedIcon(QIcon(pIcon), pWidth, pHeight, pColor);
-}
-
-//==============================================================================
-
 QIcon overlayedIcon(const QIcon &pBaseIcon, const QIcon &pOverlayIcon,
                     int pBaseWidth, int pBaseHeight, int pOverlayLeft,
                     int pOverlayTop, int pOverlayWidth, int pOverlayHeight)
