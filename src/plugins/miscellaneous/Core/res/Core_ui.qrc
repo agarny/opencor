@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/Core">
         <file>web-xslt/ctopff.xsl</file>
-        <file>logo.png</file>
     </qresource>
 </RCC>

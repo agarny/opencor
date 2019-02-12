@@ -30,6 +30,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //==============================================================================
 
+class QSvgWidget;
+
+//==============================================================================
+
 namespace Ui {
     class SplashScreenWindow;
 }   // namespace Ui
@@ -57,6 +61,8 @@ protected:
 
 private:
     Ui::SplashScreenWindow *mGui;
+
+    QSvgWidget *mSvgWidget;
 
     void paletteChanged();
 };

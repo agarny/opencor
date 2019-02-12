@@ -73,6 +73,7 @@ add_plugin(Core
         src/xsltransformer.h
     QT_MODULES
         Network
+        Svg
         Widgets
         Xml
         XmlPatterns

@@ -42,6 +42,7 @@ class QDialogButtonBox;
 class QLabel;
 class QLineEdit;
 class QStackedWidget;
+class QSvgWidget;
 
 //==============================================================================
 
@@ -122,6 +123,7 @@ public:
     bool selectView(const QString &pViewName);
 
 protected:
+    void changeEvent(QEvent *pEvent) override;
     void dragEnterEvent(QDragEnterEvent *pEvent) override;
     void dragMoveEvent(QDragMoveEvent *pEvent) override;
     void dropEvent(QDropEvent *pEvent) override;
@@ -156,7 +158,8 @@ private:
 
     QStackedWidget *mContents;
 
-    QWidget *mLogoView;
+    Widget *mLogoView;
+    QSvgWidget *mLogo;
 
     UserMessageWidget *mNoViewMsg;
 
@@ -171,6 +174,8 @@ private:
 
     Plugin * viewPlugin(int pIndex) const;
     Plugin * viewPlugin(const QString &pFileName) const;
+
+    void paletteChanged();
 
     void updateNoViewMsg();
 

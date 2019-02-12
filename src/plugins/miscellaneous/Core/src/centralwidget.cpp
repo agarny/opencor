@@ -56,6 +56,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QSizePolicy>
 #include <QStackedWidget>
 #include <QStatusBar>
+#include <QSvgWidget>
 #include <QUrl>
 #include <QVariant>
 #include <QVBoxLayout>
@@ -189,16 +190,23 @@ CentralWidget::CentralWidget(QWidget *pParent) :
 
     // Create our logo view which simply displays OpenCOR's logo
 
-    mLogoView = new QWidget(this);
+    mLogoView = new Widget(this);
+    mLogo = new QSvgWidget(this);
 
-    mLogoView->setStyleSheet("QWidget {"
-                             "    background-color: white;"
-                             "    background-image: url(:/Core/logo.png);"
-                             "    background-position: center;"
-                             "    background-repeat: no-repeat;"
-                             "}");
+    mLogo->setFixedSize(292, 248);
+
+    mLogo->load(QString(":/app_logo"));
+
+    QLayout *logoViewLayout = mLogoView->createLayout();
+
+    logoViewLayout->addWidget(mLogo);
+    logoViewLayout->setAlignment(mLogo, Qt::AlignCenter);
 
     mContents->addWidget(mLogoView);
+
+    // Initialise our "palette"
+
+    paletteChanged();
 
     // Create our no view message widget which will display a customised message
     // to let the user know that there view doesn't support the type of the
@@ -1516,6 +1524,20 @@ void CentralWidget::addView(Plugin *pPlugin)
 
 //==============================================================================
 
+void CentralWidget::changeEvent(QEvent *pEvent)
+{
+    // Default handling of the event
+
+    Widget::changeEvent(pEvent);
+
+    // Do a few more things for some changes
+
+    if (pEvent->type() == QEvent::PaletteChange)
+        paletteChanged();
+}
+
+//==============================================================================
+
 void CentralWidget::dragEnterEvent(QDragEnterEvent *pEvent)
 {
     // Accept the proposed action for the event, but only if at least one mode
@@ -1970,6 +1992,23 @@ TabBarWidget *CentralWidget::newTabBarWidget(QTabBar::Shape pShape,
     res->setTabsClosable(pFileTabs);
 
     return res;
+}
+
+//==============================================================================
+
+void CentralWidget::paletteChanged()
+{
+    // Our palette has changed, so update our logo view
+
+    QString backgroundColor = Core::baseColor().name();
+
+    mContents->setStyleSheet(QString("QStackedWidget {"
+                                     "    background-color: %1;"
+                                     "}").arg(backgroundColor));
+
+    mLogo->setStyleSheet(QString("QSvgWidget {"
+                                 "    background-color: %1;"
+                                 "}").arg(backgroundColor));
 }
 
 //==============================================================================

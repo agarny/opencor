@@ -368,6 +368,7 @@ endif()
 
 set(REQUIRED_QT_MODULES
     Network
+    Svg
     ${TEST}
     Widgets
 )

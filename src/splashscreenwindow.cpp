@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QCloseEvent>
 #include <QElapsedTimer>
 #include <QScreen>
+#include <QSvgWidget>
 #include <QTimer>
 #include <QWindow>
 
@@ -62,6 +63,14 @@ SplashScreenWindow::SplashScreenWindow() :
     // Set up the GUI
 
     mGui->setupUi(this);
+
+    mSvgWidget = new QSvgWidget();
+
+    mSvgWidget->setFixedSize(413, 351);
+
+    mSvgWidget->load(QString(":/app_logo"));
+
+    mGui->layout->insertWidget(0, mSvgWidget);
 
     QFont newFont = mGui->infoWidget->font();
 
@@ -183,7 +192,7 @@ void SplashScreenWindow::paletteChanged()
 {
     // Our palette has changed, so update our style sheet
 
-    setStyleSheet(QString("QLabel#splashScreenImage {"
+    setStyleSheet(QString("QSvgWidget {"
                           "     background-color: %1;"
                           "}"
 #ifdef Q_OS_MAC
@@ -191,7 +200,7 @@ void SplashScreenWindow::paletteChanged()
                           "    border-top: %2;"
                           "}"
 #else
-                          "QLabel#splashScreenImage {"
+                          "QSvgWidget {"
                           "    border-top: %2;"
                           "    border-left: %2;"
                           "    border-right: %2;"
