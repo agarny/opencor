@@ -31,6 +31,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QStyleOption>
 #include <QWheelEvent>
 
+#ifdef Q_OS_MAC
+    #include "macos.h"
+#endif
+
 //==============================================================================
 
 namespace OpenCOR {
@@ -100,10 +104,17 @@ void TabBarStyle::drawControl(ControlElement pElement,
 
             drawItemText(pPainter, tabRect, alignment, tab->palette,
                          tab->state & State_Enabled, tab->text,
-                         (   (tab->state & State_Selected)
-                          && pWidget->isActiveWindow())?
-                             QPalette::BrightText:
-                             QPalette::WindowText);
+#ifdef Q_OS_MAC
+                         isDarkMode()?
+                             (    (tab->state & State_Selected)
+                              && !pWidget->isActiveWindow())?
+                                 QPalette::BrightText:
+                                 QPalette::WindowText:
+#endif
+                             (   (tab->state & State_Selected)
+                              && pWidget->isActiveWindow())?
+                                 QPalette::BrightText:
+                                 QPalette::WindowText);
 
             if (verticalTab)
                 pPainter->restore();
