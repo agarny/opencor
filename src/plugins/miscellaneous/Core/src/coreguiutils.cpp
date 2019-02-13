@@ -60,10 +60,20 @@ namespace Core {
 
 //==============================================================================
 
-LineWidget::LineWidget(QWidget *pParent) :
+LineWidget::LineWidget(bool pHorizontal, QWidget *pParent) :
     QFrame(pParent),
     mColor(QString())
 {
+    // Make our line horizontal/vertical and one pixel wide
+
+    if (pHorizontal) {
+        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        setFixedHeight(1);
+    } else {
+        setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+        setFixedWidth(1);
+    }
+
     // Initialise our "palette"
 
     paletteChanged();
@@ -569,28 +579,18 @@ QAction * newSeparator(QWidget *pParent)
 
 QFrame * newLineWidget(bool pHorizontal, QWidget *pParent)
 {
-    // Create and return a line widget
+    // Create and return a horizontal/vertical line widget
 
-    QFrame *res = new LineWidget(pParent);
-
-    if (pHorizontal) {
-        res->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        res->setFixedHeight(1);
-    } else {
-        res->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
-        res->setFixedWidth(1);
-    }
-
-    return res;
+    return new LineWidget(pHorizontal, pParent);
 }
 
 //==============================================================================
 
 QFrame * newLineWidget(QWidget *pParent)
 {
-    // Return a new horizontal line widget
+    // Create and return a horizontal line widget
 
-    return newLineWidget(true, pParent);
+    return new LineWidget(true, pParent);
 }
 
 //==============================================================================

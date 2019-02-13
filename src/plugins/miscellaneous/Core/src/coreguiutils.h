@@ -108,7 +108,7 @@ class LineWidget : public QFrame
     Q_OBJECT
 
 public:
-    explicit LineWidget(QWidget *pParent);
+    explicit LineWidget(bool pHorizontal, QWidget *pParent);
 
 protected:
     void changeEvent(QEvent *pEvent) override;
