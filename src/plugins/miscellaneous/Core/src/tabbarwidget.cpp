@@ -88,9 +88,7 @@ void TabBarStyle::drawControl(ControlElement pElement,
 
             if (!tab->icon.isNull()) {
                 pPainter->drawPixmap(iconRect.x(), iconRect.y(),
-                                     tab->icon.pixmap(pWidget?
-                                                          pWidget->window()->windowHandle():
-                                                          nullptr,
+                                     tab->icon.pixmap(pWidget->window()->windowHandle(),
                                                       tab->iconSize,
                                                       (tab->state & State_Enabled)?
                                                           QIcon::Normal:
@@ -103,7 +101,7 @@ void TabBarStyle::drawControl(ControlElement pElement,
             drawItemText(pPainter, tabRect, alignment, tab->palette,
                          tab->state & State_Enabled, tab->text,
                          (   (tab->state & State_Selected)
-                          && pWidget && pWidget->isActiveWindow())?
+                          && pWidget->isActiveWindow())?
                              QPalette::BrightText:
                              QPalette::WindowText);
 
