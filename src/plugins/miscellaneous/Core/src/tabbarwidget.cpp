@@ -25,15 +25,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "tabbarwidget.h"
 
+#ifdef Q_OS_MAC
+    #include "macos.h"
+#endif
+
 //==============================================================================
 
 #include <QPainter>
 #include <QStyleOption>
 #include <QWheelEvent>
-
-#ifdef Q_OS_MAC
-    #include "macos.h"
-#endif
 
 //==============================================================================
 
@@ -42,7 +42,7 @@ namespace Core {
 
 //==============================================================================
 
-void TabBarStyle::drawControl(ControlElement pElement,
+void MacTabBarStyle::drawControl(ControlElement pElement,
                               const QStyleOption *pOption, QPainter *pPainter,
                               const QWidget *pWidget) const
 {
@@ -143,7 +143,7 @@ void TabBarStyle::drawControl(ControlElement pElement,
 
 //==============================================================================
 
-QRect TabBarStyle::subElementRect(SubElement pElement,
+QRect MacTabBarStyle::subElementRect(SubElement pElement,
                                   const QStyleOption *pOption,
                                   const QWidget *pWidget) const
 {
@@ -168,7 +168,7 @@ QRect TabBarStyle::subElementRect(SubElement pElement,
 
 //==============================================================================
 
-void TabBarStyle::tabLayout(const QStyleOptionTab *pOption,
+void MacTabBarStyle::tabLayout(const QStyleOptionTab *pOption,
                             const QWidget *pWidget, QRect *pTextRect,
                             QRect *pIconRect) const
 {
@@ -272,7 +272,7 @@ TabBarWidget::TabBarWidget(QWidget *pParent) :
     //          keep using our customised style...
 
 #ifdef Q_OS_MAC
-    setStyle(new TabBarStyle());
+    setStyle(new MacTabBarStyle());
 #endif
 
     // Force the size of the icons to be 16 by 16 pixels

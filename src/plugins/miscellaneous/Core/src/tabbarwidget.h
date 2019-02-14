@@ -39,7 +39,7 @@ namespace Core {
 
 //==============================================================================
 
-class TabBarStyle : public QProxyStyle
+class MacTabBarStyle : public QProxyStyle
 {
     Q_OBJECT
 
