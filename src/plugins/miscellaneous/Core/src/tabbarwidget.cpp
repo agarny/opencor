@@ -108,12 +108,12 @@ void TabBarStyle::drawControl(ControlElement pElement,
 #ifdef Q_OS_MAC
                          isDarkMode()?
                              (    (tab->state & State_Selected)
-                              && !pWidget->isActiveWindow())?
+                              && !(tab->state & State_Active))?
                                  QPalette::BrightText:
                                  QPalette::WindowText:
 #endif
                              (   (tab->state & State_Selected)
-                              && pWidget->isActiveWindow())?
+                              && (tab->state & State_Active))?
                                  QPalette::BrightText:
                                  QPalette::WindowText);
 
