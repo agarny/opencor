@@ -61,9 +61,15 @@ bool isDarkMode()
 {
     // Return whether we are in Dark mode
 
-    NSString *mode = [[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"];
+#ifdef AVAILABLE_MAC_OS_X_VERSION_10_14_AND_LATER
+    if (__builtin_available(macOS 10.14, *)) {
+        auto appearance = [NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
 
-    return [mode isEqualToString:@"Dark"];
+        return [appearance isEqualToString:NSAppearanceNameDarkAqua];
+    }
+#endif
+
+    return false;
 }
 
 //==============================================================================
