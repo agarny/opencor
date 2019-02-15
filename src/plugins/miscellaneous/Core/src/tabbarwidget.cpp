@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //==============================================================================
 
 #include "tabbarwidget.h"
-
 #ifdef Q_OS_MAC
     #include "tabbarwidgetmacstyle.h"
 #endif

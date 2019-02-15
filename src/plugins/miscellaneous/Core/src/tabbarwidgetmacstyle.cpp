@@ -21,11 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Tab bar widget Mac style
 //==============================================================================
 
+#include "macos.h"
 #include "tabbarwidgetmacstyle.h"
-
-#ifdef Q_OS_MAC
-    #include "macos.h"
-#endif
 
 //==============================================================================
 
@@ -101,13 +98,11 @@ void TabBarWidgetMacStyle::drawControl(ControlElement pElement,
 
             drawItemText(pPainter, tabRect, alignment, tab->palette,
                          tab->state & State_Enabled, tab->text,
-#ifdef Q_OS_MAC
                          isDarkMode()?
                              (    (tab->state & State_Selected)
                               && !(tab->state & State_Active))?
                                  QPalette::BrightText:
                                  QPalette::WindowText:
-#endif
                              (   (tab->state & State_Selected)
                               && (tab->state & State_Active))?
                                  QPalette::BrightText:
