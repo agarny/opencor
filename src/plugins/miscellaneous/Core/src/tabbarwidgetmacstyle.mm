@@ -36,7 +36,8 @@ namespace Core {
 //==============================================================================
 
 void TabBarWidgetMacStyle::drawControl(ControlElement pElement,
-                                       const QStyleOption *pOption, QPainter *pPainter,
+                                       const QStyleOption *pOption,
+                                       QPainter *pPainter,
                                        const QWidget *pWidget) const
 {
     // Draw a control
