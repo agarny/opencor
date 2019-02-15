@@ -36,8 +36,8 @@ namespace Core {
 //==============================================================================
 
 void TabBarWidgetMacStyle::drawControl(ControlElement pElement,
-                              const QStyleOption *pOption, QPainter *pPainter,
-                              const QWidget *pWidget) const
+                                       const QStyleOption *pOption, QPainter *pPainter,
+                                       const QWidget *pWidget) const
 {
     // Draw a control
     // Note: this is adapted from QCommonStyle::drawControl()...
@@ -135,8 +135,8 @@ void TabBarWidgetMacStyle::drawControl(ControlElement pElement,
 //==============================================================================
 
 QRect TabBarWidgetMacStyle::subElementRect(SubElement pElement,
-                                  const QStyleOption *pOption,
-                                  const QWidget *pWidget) const
+                                           const QStyleOption *pOption,
+                                           const QWidget *pWidget) const
 {
     // Determine and return the size of a sub-element
     // Note: this is adapted from QCommonStyle::subElementRect()...
@@ -160,8 +160,8 @@ QRect TabBarWidgetMacStyle::subElementRect(SubElement pElement,
 //==============================================================================
 
 void TabBarWidgetMacStyle::tabLayout(const QStyleOptionTab *pOption,
-                            const QWidget *pWidget, QRect *pTextRect,
-                            QRect *pIconRect) const
+                                     const QWidget *pWidget, QRect *pTextRect,
+                                     QRect *pIconRect) const
 {
     // Compute the tab layout
     // Note: this is adapted from QCommonStylePrivate::tabLayout()...
