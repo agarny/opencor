@@ -89,6 +89,22 @@ TabBarWidget::~TabBarWidget()
 
 //==============================================================================
 
+int TabBarWidget::insertTab(int pIndex, const QString &pText)
+{
+    // Add a tab with the given text at the given index, and make sure that it
+    // uses our style
+    // Note: regarding the style of our tab, it's important if we want our close
+    //       button to be styled properly in Dark mode on macOS...
+
+    int res = QTabBar::insertTab(pIndex, pText);
+
+    tabButton(res, ButtonPosition(style()->styleHint(QStyle::SH_TabBar_CloseButtonPosition, nullptr, this)))->setStyle(style());
+
+    return res;
+}
+
+//==============================================================================
+
 int TabBarWidget::oldIndex() const
 {
     // Return our old index

@@ -46,6 +46,8 @@ public:
     explicit TabBarWidget(QWidget *pParent);
     ~TabBarWidget() override;
 
+    int insertTab(int pIndex, const QString &pText);
+
     int oldIndex() const;
     void setOldIndex(int pOldIndex);
 

@@ -42,6 +42,8 @@ class TabBarWidgetMacStyle : public QProxyStyle
 public:
     void drawControl(ControlElement pElement, const QStyleOption *pOption,
                      QPainter *pPainter, const QWidget *pWidget = nullptr) const override;
+    void drawPrimitive(PrimitiveElement pElement, const QStyleOption *pOption,
+                       QPainter *pPainter, const QWidget *pWidget = nullptr) const override;
 
     QRect subElementRect(SubElement pElement, const QStyleOption *pOption,
                          const QWidget *pWidget) const override;

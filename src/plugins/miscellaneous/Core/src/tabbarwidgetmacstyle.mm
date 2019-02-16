@@ -137,6 +137,70 @@ void TabBarWidgetMacStyle::drawControl(ControlElement pElement,
 
 //==============================================================================
 
+void TabBarWidgetMacStyle::drawPrimitive(PrimitiveElement pElement,
+                                         const QStyleOption *pOption,
+                                         QPainter *pPainter,
+                                         const QWidget *pWidget) const
+{
+    // Draw a tab close button
+    // Note: anything else is done by our parent...
+
+    if (pElement == PE_IndicatorTabClose) {
+        // Note: adapted from QMacStyle::drawPrimitive()...
+
+        pPainter->setRenderHints(QPainter::Antialiasing);
+
+        static const int CloseButtonSize = 14;
+
+        QRect rect(0, 0, CloseButtonSize, CloseButtonSize);
+        bool isSelected = pOption->state & State_Selected;
+
+        if (pOption->state & State_MouseOver) {
+            static const QColor TabBarCloseButtonBackgroundSelectedHovered = QColor(255, 255, 255, 100);
+            static const QColor TabBarCloseButtonBackgroundSelectedPressed = QColor(255, 255, 255, 150);
+            static const QColor TabBarCloseButtonBackgroundHovered = QColor(227, 227, 227);
+            static const QColor TabBarCloseButtonBackgroundPressed = QColor(207, 207, 207);
+
+            pPainter->setBrush(isSelected?
+                                   (pOption->state & State_Sunken)?
+                                       TabBarCloseButtonBackgroundSelectedPressed:
+                                       TabBarCloseButtonBackgroundSelectedHovered:
+                                   (pOption->state & State_Sunken)?
+                                       TabBarCloseButtonBackgroundPressed:
+                                       TabBarCloseButtonBackgroundHovered);
+            pPainter->setPen(Qt::transparent);
+
+            static const double CloseButtonCornerRadius = 2.0;
+
+            pPainter->drawRoundedRect(rect, CloseButtonCornerRadius, CloseButtonCornerRadius);
+        }
+
+        static const QColor TabBarCloseButtonCross = QColor(100, 100, 100);
+
+        QPen crossPen;
+
+        crossPen.setCapStyle(Qt::FlatCap);
+        crossPen.setColor(isSelected?
+                              Qt::white:
+                              TabBarCloseButtonCross);
+        crossPen.setWidthF(1.1);
+
+        pPainter->setPen(crossPen);
+
+        static const int Margin = 3;
+
+        int width = rect.width()-Margin;
+        int height = rect.height()-Margin;
+
+        pPainter->drawLine(Margin, Margin, width, height);
+        pPainter->drawLine(Margin, height, width, Margin);
+    } else {
+        QProxyStyle::drawPrimitive(pElement, pOption, pPainter, pWidget);
+    }
+}
+
+//==============================================================================
+
 QRect TabBarWidgetMacStyle::subElementRect(SubElement pElement,
                                            const QStyleOption *pOption,
                                            const QWidget *pWidget) const
