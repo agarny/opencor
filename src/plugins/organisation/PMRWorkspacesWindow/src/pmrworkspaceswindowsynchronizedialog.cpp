@@ -433,11 +433,13 @@ void PmrWorkspacesWindowSynchronizeDialog::paletteChanged()
     // Note: this shouldn't be needed, but there is a bug in Qt (see
     //       https://bugreports.qt.io/browse/QTBUG-72486)...
 
+    static const QString StyleSheet = "QLabel {"
+                                      "     color: %1;"
+                                      "}";
+
     QString fontColor = Core::windowTextColor().name();
 
-    mWebViewerLabel->setStyleSheet(QString("QLabel {"
-                                           "     color: %1;"
-                                           "}").arg(fontColor));
+    mWebViewerLabel->setStyleSheet(StyleSheet.arg(fontColor));
 
     // Update some colours in our diff
 

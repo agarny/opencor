@@ -105,9 +105,11 @@ void LineWidget::paletteChanged()
     if (color.compare(mColor)) {
         mColor = color;
 
-        setStyleSheet(QString("QFrame {"
-                              "    border: 1px solid %1;"
-                              "}").arg(mColor));
+        static const QString StyleSheet = "QFrame {"
+                                          "    border: 1px solid %1;"
+                                          "}";
+
+        setStyleSheet(StyleSheet.arg(mColor));
     }
 }
 

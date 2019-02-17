@@ -181,14 +181,16 @@ void UserMessageWidget::paletteChanged()
     // Our palette has changed, so update our background colour, but only if it
     // has really changed (otherwise we get into a recursive loop)
 
-    QString backgroundColor = Core::baseColor().name();
+    QString backgroundColor = baseColor().name();
 
     if (backgroundColor.compare(mBackgroundColor)) {
         mBackgroundColor = backgroundColor;
 
-        setStyleSheet(QString("QLabel {"
-                              "     background-color: %1;"
-                              "}").arg(mBackgroundColor));
+        static const QString StyleSheet = "QLabel {"
+                                          "     background-color: %1;"
+                                          "}";
+
+        setStyleSheet(StyleSheet.arg(mBackgroundColor));
     }
 }
 

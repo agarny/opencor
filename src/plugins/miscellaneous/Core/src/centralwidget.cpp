@@ -2000,15 +2000,17 @@ void CentralWidget::paletteChanged()
 {
     // Our palette has changed, so update our logo view
 
+    static const QString ContentsStyleSheet = "QStackedWidget {"
+                                              "    background-color: %1;"
+                                              "}";
+    static const QString LogoStyleSheet = "QSvgWidget {"
+                                          "    background-color: %1;"
+                                          "}";
+
     QString backgroundColor = Core::baseColor().name();
 
-    mContents->setStyleSheet(QString("QStackedWidget {"
-                                     "    background-color: %1;"
-                                     "}").arg(backgroundColor));
-
-    mLogo->setStyleSheet(QString("QSvgWidget {"
-                                 "    background-color: %1;"
-                                 "}").arg(backgroundColor));
+    mContents->setStyleSheet(ContentsStyleSheet.arg(backgroundColor));
+    mLogo->setStyleSheet(LogoStyleSheet.arg(backgroundColor));
 }
 
 //==============================================================================

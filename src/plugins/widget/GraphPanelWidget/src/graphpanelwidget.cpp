@@ -268,11 +268,13 @@ void GraphPanelWidget::updateMarkerColor()
 {
     // Update the marker's colour based on whether the graph panel is active
 
-    mMarker->setStyleSheet(QString("QFrame {"
-                                   "    color: %1;"
-                                   "}").arg(mActive?
-                                                Core::highlightColor().name():
-                                                Core::windowColor().name()));
+    static const QString StyleSheet = "QFrame {"
+                                      "    color: %1;"
+                                      "}";
+
+    mMarker->setStyleSheet(StyleSheet.arg(mActive?
+                                              Core::highlightColor().name():
+                                              Core::windowColor().name()));
 }
 
 //==============================================================================

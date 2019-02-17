@@ -245,9 +245,11 @@ void PmrWindowWindow::paletteChanged()
     // Note: this shouldn't be needed, but there is a bug in Qt (see
     //       https://bugreports.qt.io/browse/QTBUG-72486)...
 
-    mFilterLabel->setStyleSheet(QString("QLabel {"
-                                        "     color: %1;"
-                                        "}").arg(Core::windowTextColor().name()));
+    static const QString StyleSheet = "QLabel {"
+                                      "     color: %1;"
+                                      "}";
+
+    mFilterLabel->setStyleSheet(StyleSheet.arg(Core::windowTextColor().name()));
 }
 
 //==============================================================================

@@ -351,28 +351,30 @@ void EditorWidgetFindReplaceWidget::updateStyleSheet()
 {
     // Change the style of our tool buttons
 
+    static const QString StyleSheet = "QToolButton {"
+                                      "    border: none;"
+                                      "    border-radius: 3px;"
+                                      "    padding: 1px;"
+                                      "}"
+                                      ""
+                                      "QToolButton:focus {"
+                                      "    background-color: rgba(%1, %2, %3, 0.13);"
+                                      "    border: 1px solid rgba(%1, %2, %3, 0.39);"
+                                      "}"
+                                      ""
+                                      "QToolButton:hover {"
+                                      "    background-color: rgba(%1, %2, %3, 0.39);"
+                                      "}"
+                                      ""
+                                      "QToolButton:pressed {"
+                                      "    background-color: rgba(%1, %2, %3, 0.79);"
+                                      "}";
+
     QColor shadowColor = Core::shadowColor();
 
-    setStyleSheet(QString("QToolButton {"
-                          "    border: none;"
-                          "    border-radius: 3px;"
-                          "    padding: 1px;"
-                          "}"
-                          ""
-                          "QToolButton:focus {"
-                          "    background-color: rgba(%1, %2, %3, 0.13);"
-                          "    border: 1px solid rgba(%1, %2, %3, 0.39);"
-                          "}"
-                          ""
-                          "QToolButton:hover {"
-                          "    background-color: rgba(%1, %2, %3, 0.39);"
-                          "}"
-                          ""
-                          "QToolButton:pressed {"
-                          "    background-color: rgba(%1, %2, %3, 0.79);"
-                          "}").arg(shadowColor.red())
-                              .arg(shadowColor.green())
-                              .arg(shadowColor.blue()));
+    setStyleSheet(StyleSheet.arg(shadowColor.red())
+                            .arg(shadowColor.green())
+                            .arg(shadowColor.blue()));
 }
 
 //==============================================================================

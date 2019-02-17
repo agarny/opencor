@@ -192,27 +192,29 @@ void SplashScreenWindow::paletteChanged()
 {
     // Our palette has changed, so update our style sheet
 
-    setStyleSheet(QString("QSvgWidget {"
-                          "     background-color: %1;"
-                          "}"
+    static const QString StyleSheet = "QSvgWidget {"
+                                      "     background-color: %1;"
+                                      "}"
 #ifdef Q_OS_MAC
-                          "QWidget#infoWidget {"
-                          "    border-top: %2;"
-                          "}"
+                                      "QWidget#infoWidget {"
+                                      "    border-top: %2;"
+                                      "}"
 #else
-                          "QSvgWidget {"
-                          "    border-top: %2;"
-                          "    border-left: %2;"
-                          "    border-right: %2;"
-                          "}"
-                          ""
-                          "QWidget#infoWidget {"
-                          "    border: %2;"
-                          "}"
+                                      "QSvgWidget {"
+                                      "    border-top: %2;"
+                                      "    border-left: %2;"
+                                      "    border-right: %2;"
+                                      "}"
+                                      ""
+                                      "QWidget#infoWidget {"
+                                      "    border: %2;"
+                                      "}"
 #endif
-                          ).arg(baseColor().name())
-                           .arg(QString("1px solid %1").arg(borderColor().name()))
-                 );
+                                      ;
+    static const QString BorderStyle = "1px solid %1";
+
+    setStyleSheet(StyleSheet.arg(baseColor().name())
+                            .arg(BorderStyle.arg(borderColor().name())));
 }
 
 //==============================================================================
