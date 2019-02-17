@@ -154,6 +154,7 @@ void TabBarWidgetMacStyle::drawPrimitive(PrimitiveElement pElement,
 
         QRect rect(0, 0, CloseButtonSize, CloseButtonSize);
         bool isSelected = pOption->state & State_Selected;
+        bool isDarkMode = OpenCOR::isDarkMode();
 
         if (pOption->state & State_MouseOver) {
             static const QColor TabBarCloseButtonBackgroundSelectedHovered = QColor(255, 255, 255, 100);
@@ -161,7 +162,7 @@ void TabBarWidgetMacStyle::drawPrimitive(PrimitiveElement pElement,
             static const QColor TabBarCloseButtonBackgroundHovered = QColor(227, 227, 227);
             static const QColor TabBarCloseButtonBackgroundPressed = QColor(207, 207, 207);
 
-            pPainter->setBrush(isSelected?
+            pPainter->setBrush((isSelected || isDarkMode)?
                                    (pOption->state & State_Sunken)?
                                        TabBarCloseButtonBackgroundSelectedPressed:
                                        TabBarCloseButtonBackgroundSelectedHovered:
@@ -176,13 +177,16 @@ void TabBarWidgetMacStyle::drawPrimitive(PrimitiveElement pElement,
         }
 
         static const QColor TabBarCloseButtonCross = QColor(100, 100, 100);
+        static const QColor TabBarDarkCloseButtonCross = QColor(227, 227, 227);
 
         QPen crossPen;
 
         crossPen.setCapStyle(Qt::FlatCap);
         crossPen.setColor(isSelected?
                               Qt::white:
-                              TabBarCloseButtonCross);
+                              isDarkMode?
+                                  TabBarDarkCloseButtonCross:
+                                  TabBarCloseButtonCross);
         crossPen.setWidthF(1.1);
 
         pPainter->setPen(crossPen);
