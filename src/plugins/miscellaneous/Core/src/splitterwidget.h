@@ -44,6 +44,14 @@ public:
     explicit SplitterWidget(const Qt::Orientation &pOrientation,
                             QWidget *pParent);
     explicit SplitterWidget(QWidget *pParent);
+
+protected:
+    void changeEvent(QEvent *pEvent) override;
+
+private:
+    QString mBackgroundColor;
+
+    void paletteChanged();
 };
 
 //==============================================================================

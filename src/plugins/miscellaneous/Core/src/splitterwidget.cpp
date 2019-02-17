@@ -21,7 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Splitter widget
 //==============================================================================
 
+#include "coreguiutils.h"
 #include "splitterwidget.h"
+
+//==============================================================================
+
+#include <QEvent>
 
 //==============================================================================
 
@@ -33,16 +38,17 @@ namespace Core {
 SplitterWidget::SplitterWidget(const Qt::Orientation &pOrientation,
                                QWidget *pParent) :
     QSplitter(pParent),
-    CommonWidget(this)
+    CommonWidget(this),
+    mBackgroundColor(QString())
 {
-    // Customise ourselves so that we are as thin as possible and without an
-    // image for our handle
+    // Customise ourselves so that we are as thin as possible
 
     setHandleWidth(2);
     setOrientation(pOrientation);
-    setStyleSheet("QSplitter::handle {"
-                  "    image: none;"
-                  "}");
+
+    // Initialise our "palette"
+
+    paletteChanged();
 }
 
 //==============================================================================
@@ -50,6 +56,45 @@ SplitterWidget::SplitterWidget(const Qt::Orientation &pOrientation,
 SplitterWidget::SplitterWidget(QWidget *pParent) :
     SplitterWidget(Qt::Horizontal, pParent)
 {
+}
+
+//==============================================================================
+
+void SplitterWidget::changeEvent(QEvent *pEvent)
+{
+    // Default handling of the event
+
+    QSplitter::changeEvent(pEvent);
+
+    // Do a few more things for some changes
+
+    if (pEvent->type() == QEvent::PaletteChange)
+        paletteChanged();
+}
+
+//==============================================================================
+
+void SplitterWidget::paletteChanged()
+{
+    // Our palette has changed, so update our background color (and make sure
+    // that we have no image for our handle), but only if it has really changed
+    // (otherwise we get into a recursive loop)
+
+    QString backgroundColor = windowColor().name();
+
+    if (backgroundColor.compare(mBackgroundColor)) {
+        static const QString StyleSheet = "QSplitter {"
+                                          "    background-color: %1"
+                                          "}"
+                                          ""
+                                          "QSplitter::handle {"
+                                          "    image: none;"
+                                          "}";
+
+        mBackgroundColor = backgroundColor;
+
+        setStyleSheet(StyleSheet.arg(mBackgroundColor));
+    }
 }
 
 //==============================================================================
