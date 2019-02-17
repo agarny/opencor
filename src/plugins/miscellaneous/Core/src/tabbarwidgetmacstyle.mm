@@ -99,13 +99,26 @@ void TabBarWidgetMacStyle::drawControl(ControlElement pElement,
                                                           QIcon::Off));
             }
 
+            // Note: in Dark mode, the colour of the tab label really ought to
+            //       be QPalette::BrightText if the tab label is selected and
+            //       inactive, and QPalette::WindowText in all other cases.
+            //       However, this would require the tab shape (of the selected
+            //       and inactive tab labels) to be brighter than the other
+            //       ones, but Qt doesn't draw it that way, whcih is clearly a
+            //       bug (see https://bugreports.qt.io/browse/QTBUG-73852). To
+            //       handle the drawing of CE_TabBarTabShape ourselves has been
+            //       tried, but this requires an NSButton object with a bezel
+            //       type of NSBezelStyleRounded and a button type of
+            //       NSButtonTypePushOnPushOff to be drawn with a different
+            //       background colour, but is that even possible? So, in the
+            //       end, we use the same tab label colour and, thus, can't
+            //       distinguish between the selected and unselected tabs when
+            //       the tab bar is inactive...
+
             drawItemText(pPainter, tabRect, alignment, tab->palette,
                          tab->state & State_Enabled, tab->text,
                          isDarkMode()?
-                             (    (tab->state & State_Selected)
-                              && !(tab->state & State_Active))?
-                                 QPalette::BrightText:
-                                 QPalette::WindowText:
+                             QPalette::WindowText:
                              (   (tab->state & State_Selected)
                               && (tab->state & State_Active))?
                                  QPalette::BrightText:
