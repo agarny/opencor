@@ -181,6 +181,10 @@ MainWindow::MainWindow(const QString &pApplicationDate) :
     connect(mGui->actionAbout, &QAction::triggered,
             this, &MainWindow::actionAboutTriggered);
 
+    // Initialise our "palette"
+
+    paletteChanged();
+
     // Set the role of some of our menu items, so that macOS can move them into
     // the application menu
 
@@ -373,6 +377,11 @@ void MainWindow::changeEvent(QEvent *pEvent)
         // the user wants to use the system's locale
 
         setLocale();
+    } else if (pEvent->type() == QEvent::PaletteChange) {
+        // The palette has changed, so update some of our colour-dependent
+        // widgets
+
+        paletteChanged();
 #ifdef Q_OS_MAC
     } else if (pEvent->type() == QEvent::WindowStateChange) {
         // The window state has changed, so update the checked state of our full
@@ -498,6 +507,19 @@ void MainWindow::registerOpencorUrlScheme()
 #else
     #error Unsupported platform
 #endif
+}
+
+//==============================================================================
+
+void MainWindow::paletteChanged()
+{
+    // Our palette has changed, so update the colour of all our links
+
+    QPalette palette = qApp->palette();
+
+    palette.setBrush(QPalette::Link, windowTextColor());
+
+    qApp->setPalette(palette);
 }
 
 //==============================================================================

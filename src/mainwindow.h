@@ -118,6 +118,8 @@ private:
 
     void registerOpencorUrlScheme();
 
+    void paletteChanged();
+
     void initializeGuiPlugin(Plugin *pPlugin);
 
     void loadSettings();
