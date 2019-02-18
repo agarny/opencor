@@ -47,6 +47,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "toolbarwidget.h"
 #include "usermessagewidget.h"
 
+#ifdef Q_OS_MAC
+    #include "macos.h"
+#endif
+
 //==============================================================================
 
 #include <QApplication>
@@ -95,6 +99,27 @@ namespace SimulationExperimentView {
 
 //==============================================================================
 
+static const auto DefaultOutputMessage = QStringLiteral("<style>"
+                                                        "    span.good {"
+                                                        "        background-color: %1;"
+                                                        "        color: %2;"
+                                                        "    }"
+                                                        ""
+                                                        "    span.info {"
+                                                        "        background-color: %3;"
+                                                        "        color: %4;"
+                                                        "        border-radius: 2px;"
+                                                        "    }"
+                                                        ""
+                                                        "    span.bad {"
+                                                        "        background-color: %5;"
+                                                        "        color: %6;"
+                                                        "        border-radius: 2px;"
+                                                        "    }"
+                                                        "</style>");
+
+//==============================================================================
+
 SimulationExperimentViewSimulationWidget::SimulationExperimentViewSimulationWidget(SimulationExperimentViewPlugin *pPlugin,
                                                                                    SimulationExperimentViewWidget *pViewWidget,
                                                                                    const QString &pFileName,
@@ -107,6 +132,7 @@ SimulationExperimentViewSimulationWidget::SimulationExperimentViewSimulationWidg
     mProgress(-1),
     mLockedDevelopmentMode(false),
     mRunActionEnabled(true),
+    mOutputMessage(DefaultOutputMessage),
     mErrorType(General),
     mValidSimulationEnvironment(false),
     mPlots(GraphPanelWidget::GraphPanelPlotWidgets()),
@@ -504,6 +530,10 @@ SimulationExperimentViewSimulationWidget::SimulationExperimentViewSimulationWidg
     simulationOutputLayout->addWidget(Core::newLineWidget(this));
     simulationOutputLayout->addWidget(mOutputWidget);
 
+    // Initialise our "palette"
+
+    paletteChanged();
+
     // Populate our splitter and use as much space as possible for it by asking
     // for its height to be that of the desktop's, and then add our splitter to
     // our Simulation Experiment view widget
@@ -635,6 +665,20 @@ void SimulationExperimentViewSimulationWidget::retranslateUi()
 
 //==============================================================================
 
+void SimulationExperimentViewSimulationWidget::changeEvent(QEvent *pEvent)
+{
+    // Default handling of the event
+
+    Core::Widget::changeEvent(pEvent);
+
+    // Do a few more things for some changes
+
+    if (pEvent->type() == QEvent::PaletteChange)
+        paletteChanged();
+}
+
+//==============================================================================
+
 void SimulationExperimentViewSimulationWidget::dragEnterEvent(QDragEnterEvent *pEvent)
 {
     // Accept the proposed action for the event, but only if it refers to one or
@@ -700,18 +744,51 @@ void SimulationExperimentViewSimulationWidget::updateDataStoreActions()
 
 //==============================================================================
 
+void SimulationExperimentViewSimulationWidget::paletteChanged()
+{
+    // Our palette has changed, so update the colours of our output
+
+    mOutputWidget->setHtml(styledOutput());
+}
+
+//==============================================================================
+
+QString SimulationExperimentViewSimulationWidget::styledOutput()
+{
+    // Return a styled version of our output
+
+    static const QString RedColor   = QColor(Qt::darkRed).name();
+    static const QString GreenColor = QColor(Qt::darkGreen).name();
+    static const QString BlueColor  = QColor(Qt::darkBlue).name();
+
+#ifdef Q_OS_MAC
+    if (isDarkMode()) {
+        QString windowTextColor = Core::windowTextColor().name();
+
+        return mOutputMessage.arg(GreenColor, windowTextColor,
+                                  BlueColor, windowTextColor,
+                                  RedColor, windowTextColor);
+    }
+#endif
+
+    QString baseColor = Core::baseColor().name();
+
+    return mOutputMessage.arg(baseColor, GreenColor,
+                              baseColor, BlueColor,
+                              baseColor, RedColor);
+}
+
+//==============================================================================
+
 void SimulationExperimentViewSimulationWidget::output(const QString &pMessage)
 {
-    // Move to the end of the output
-    // Note: this is just in case the user clicked somewhere in the output and
-    //       we are therefore not at the end of it anymore...
+    // Update and set our output message after styling it
+
+    mOutputMessage += pMessage;
+
+    mOutputWidget->setHtml(styledOutput());
 
     mOutputWidget->moveCursor(QTextCursor::End);
-
-    // Output the message and make sure that it's visible
-
-    mOutputWidget->insertHtml(pMessage);
-    mOutputWidget->ensureCursorVisible();
 }
 
 //==============================================================================
@@ -791,9 +868,9 @@ void SimulationExperimentViewSimulationWidget::updateInvalidModelMessageWidget()
 //==============================================================================
 
 static const auto OutputTab  = QStringLiteral("&nbsp;&nbsp;&nbsp;&nbsp;");
-static const auto OutputGood = QStringLiteral(" style=\"color: green;\"");
-static const auto OutputInfo = QStringLiteral(" style=\"color: navy;\"");
-static const auto OutputBad  = QStringLiteral(" style=\"color: maroon;\"");
+static const auto OutputGood = QStringLiteral(" class=\"good\"");
+static const auto OutputInfo = QStringLiteral(" class=\"info\"");
+static const auto OutputBad  = QStringLiteral(" class=\"bad\"");
 static const auto OutputBrLn = QStringLiteral("<br/>\n");
 
 //==============================================================================
@@ -835,7 +912,7 @@ void SimulationExperimentViewSimulationWidget::initialize(bool pReloadingView)
         // Clean up our output, if needed
 
         if (pReloadingView)
-            mOutputWidget->document()->clear();
+            mOutputMessage = DefaultOutputMessage;
 
         // Output some information about our CellML file
 

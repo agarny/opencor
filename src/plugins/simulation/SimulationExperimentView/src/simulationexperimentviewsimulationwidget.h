@@ -166,6 +166,7 @@ public:
     void resetSimulationProgress();
 
 protected:
+    void changeEvent(QEvent *pEvent) override;
     void dragEnterEvent(QDragEnterEvent *pEvent) override;
     void dragMoveEvent(QDragMoveEvent *pEvent) override;
     void dropEvent(QDropEvent *pEvent) override;
@@ -229,6 +230,7 @@ private:
     Core::UserMessageWidget *mInvalidModelMessageWidget;
 
     QTextEdit *mOutputWidget;
+    QString mOutputMessage;
 
     ErrorType mErrorType;
 
@@ -261,6 +263,9 @@ private:
 
     QMap<QString, FileTypeInterface *> mDataStoreFiles;
 
+    void paletteChanged();
+
+    QString styledOutput();
     void output(const QString &pMessage);
 
     void updateSimulationMode();
