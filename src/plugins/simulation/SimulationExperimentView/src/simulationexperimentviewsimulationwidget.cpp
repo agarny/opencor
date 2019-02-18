@@ -108,13 +108,11 @@ static const auto DefaultOutputMessage = QStringLiteral("<style>"
                                                         "    span.info {"
                                                         "        background-color: %3;"
                                                         "        color: %4;"
-                                                        "        border-radius: 2px;"
                                                         "    }"
                                                         ""
                                                         "    span.bad {"
                                                         "        background-color: %5;"
                                                         "        color: %6;"
-                                                        "        border-radius: 2px;"
                                                         "    }"
                                                         "</style>");
 
