@@ -518,6 +518,7 @@ void MainWindow::paletteChanged()
     QPalette palette = qApp->palette();
 
     palette.setBrush(QPalette::Link, windowTextColor());
+    palette.setBrush(QPalette::LinkVisited, windowTextColor());
 
     qApp->setPalette(palette);
 }
