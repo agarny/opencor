@@ -434,7 +434,7 @@ void PmrWorkspacesWindowSynchronizeDialog::paletteChanged()
     //       https://bugreports.qt.io/browse/QTBUG-72486)...
 
     static const QString StyleSheet = "QLabel {"
-                                      "     color: %1;"
+                                      "    color: %1;"
                                       "}";
 
     QString fontColor = Core::windowTextColor().name();

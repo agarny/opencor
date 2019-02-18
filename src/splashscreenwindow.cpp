@@ -193,7 +193,7 @@ void SplashScreenWindow::paletteChanged()
     // Our palette has changed, so update our style sheet
 
     static const QString StyleSheet = "QSvgWidget {"
-                                      "     background-color: %1;"
+                                      "    background-color: %1;"
                                       "}"
 #ifdef Q_OS_MAC
                                       "QWidget#infoWidget {"

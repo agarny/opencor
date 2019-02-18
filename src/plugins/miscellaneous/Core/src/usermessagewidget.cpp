@@ -187,7 +187,7 @@ void UserMessageWidget::paletteChanged()
         mBackgroundColor = backgroundColor;
 
         static const QString StyleSheet = "QLabel {"
-                                          "     background-color: %1;"
+                                          "    background-color: %1;"
                                           "}";
 
         setStyleSheet(StyleSheet.arg(mBackgroundColor));

@@ -277,7 +277,7 @@ void CollapsibleHeaderWidget::paletteChanged()
 
     if (backgroundColor.compare(mBackgroundColor)) {
         static const QString IconStyleSheet = "QToolButton {"
-                                              "     background-color: %1;"
+                                              "    background-color: %1;"
                                               "    border: none;"
                                               "}"
                                               ""
@@ -285,7 +285,7 @@ void CollapsibleHeaderWidget::paletteChanged()
                                               "    margin: 0px;"
                                               "}";
         static const QString TitleStyleSheet = "QLabel {"
-                                               "     background-color: %1;"
+                                               "    background-color: %1;"
                                                "}";
 
         mBackgroundColor = backgroundColor;
