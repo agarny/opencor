@@ -521,6 +521,19 @@ void MainWindow::paletteChanged()
     palette.setBrush(QPalette::LinkVisited, windowTextColor());
 
     qApp->setPalette(palette);
+
+    // Also make sure that our context menus use the correct colour
+
+    static const QString StyleSheet = "QMenu::item {"
+                                      "    color: %1;"
+                                      "}"
+                                      ""
+                                      "QMenu::item:disabled {"
+                                      "    color: %2;"
+                                      "}";
+
+    setStyleSheet(StyleSheet.arg(windowTextColor().name(QColor::HexArgb))
+                            .arg(windowTextColor(QPalette::Disabled).name(QColor::HexArgb)));
 }
 
 //==============================================================================
