@@ -99,25 +99,6 @@ namespace SimulationExperimentView {
 
 //==============================================================================
 
-static const auto DefaultOutputMessage = QStringLiteral("<style>"
-                                                        "    span.good {"
-                                                        "        background-color: %1;"
-                                                        "        color: %2;"
-                                                        "    }"
-                                                        ""
-                                                        "    span.info {"
-                                                        "        background-color: %3;"
-                                                        "        color: %4;"
-                                                        "    }"
-                                                        ""
-                                                        "    span.bad {"
-                                                        "        background-color: %5;"
-                                                        "        color: %6;"
-                                                        "    }"
-                                                        "</style>");
-
-//==============================================================================
-
 SimulationExperimentViewSimulationWidget::SimulationExperimentViewSimulationWidget(SimulationExperimentViewPlugin *pPlugin,
                                                                                    SimulationExperimentViewWidget *pViewWidget,
                                                                                    const QString &pFileName,
@@ -130,7 +111,7 @@ SimulationExperimentViewSimulationWidget::SimulationExperimentViewSimulationWidg
     mProgress(-1),
     mLockedDevelopmentMode(false),
     mRunActionEnabled(true),
-    mOutputMessage(DefaultOutputMessage),
+    mOutputMessage(QString()),
     mErrorType(General),
     mValidSimulationEnvironment(false),
     mPlots(GraphPanelWidget::GraphPanelPlotWidgets()),
@@ -755,25 +736,52 @@ QString SimulationExperimentViewSimulationWidget::styledOutput()
 {
     // Return a styled version of our output
 
+    static const QString DefaultOutputMessage = "<style>"
+                                                "    body {"
+                                                "        color: %1;"
+                                                "    }"
+                                                ""
+                                                "    span.good {"
+                                                "        background-color: %2;"
+                                                "        color: %3;"
+                                                "    }"
+                                                ""
+                                                "    span.info {"
+                                                "        background-color: %4;"
+                                                "        color: %5;"
+                                                "    }"
+                                                ""
+                                                "    span.bad {"
+                                                "        background-color: %6;"
+                                                "        color: %7;"
+                                                "    }"
+                                                "</style>"
+                                                "<body>"
+                                                "    %8"
+                                                "</body>";
     static const QString RedColor   = QColor(Qt::darkRed).name(QColor::HexArgb);
     static const QString GreenColor = QColor(Qt::darkGreen).name(QColor::HexArgb);
     static const QString BlueColor  = QColor(Qt::darkBlue).name(QColor::HexArgb);
 
+    QString windowTextColor = Core::windowTextColor().name(QColor::HexArgb);
+
 #ifdef Q_OS_MAC
     if (isDarkMode()) {
-        QString windowTextColor = Core::windowTextColor().name(QColor::HexArgb);
-
-        return mOutputMessage.arg(GreenColor, windowTextColor,
-                                  BlueColor, windowTextColor,
-                                  RedColor, windowTextColor);
+        return DefaultOutputMessage.arg(windowTextColor,
+                                        GreenColor, windowTextColor,
+                                        BlueColor, windowTextColor,
+                                        RedColor, windowTextColor,
+                                        mOutputMessage);
     }
 #endif
 
     QString baseColor = Core::baseColor().name(QColor::HexArgb);
 
-    return mOutputMessage.arg(baseColor, GreenColor,
-                              baseColor, BlueColor,
-                              baseColor, RedColor);
+    return DefaultOutputMessage.arg(windowTextColor,
+                                    baseColor, GreenColor,
+                                    baseColor, BlueColor,
+                                    baseColor, RedColor,
+                                    mOutputMessage);
 }
 
 //==============================================================================
@@ -910,7 +918,7 @@ void SimulationExperimentViewSimulationWidget::initialize(bool pReloadingView)
         // Clean up our output, if needed
 
         if (pReloadingView)
-            mOutputMessage = DefaultOutputMessage;
+            mOutputMessage = QString();
 
         // Output some information about our CellML file
 
