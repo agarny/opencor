@@ -104,7 +104,7 @@ void TabBarWidgetMacStyle::drawControl(ControlElement pElement,
             //       inactive, and QPalette::WindowText in all other cases.
             //       However, this would require the tab shape (of the selected
             //       and inactive tab labels) to be brighter than the other
-            //       ones, but Qt doesn't draw it that way, whcih is clearly a
+            //       ones, but Qt doesn't draw it that way, which is clearly a
             //       bug (see https://bugreports.qt.io/browse/QTBUG-73852). To
             //       handle the drawing of CE_TabBarTabShape ourselves has been
             //       tried, but this requires an NSButton object with a bezel
