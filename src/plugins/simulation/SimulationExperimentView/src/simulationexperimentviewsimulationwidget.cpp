@@ -757,13 +757,13 @@ QString SimulationExperimentViewSimulationWidget::styledOutput()
 {
     // Return a styled version of our output
 
-    static const QString RedColor   = QColor(Qt::darkRed).name();
-    static const QString GreenColor = QColor(Qt::darkGreen).name();
-    static const QString BlueColor  = QColor(Qt::darkBlue).name();
+    static const QString RedColor   = QColor(Qt::darkRed).name(QColor::HexArgb);
+    static const QString GreenColor = QColor(Qt::darkGreen).name(QColor::HexArgb);
+    static const QString BlueColor  = QColor(Qt::darkBlue).name(QColor::HexArgb);
 
 #ifdef Q_OS_MAC
     if (isDarkMode()) {
-        QString windowTextColor = Core::windowTextColor().name();
+        QString windowTextColor = Core::windowTextColor().name(QColor::HexArgb);
 
         return mOutputMessage.arg(GreenColor, windowTextColor,
                                   BlueColor, windowTextColor,
@@ -771,7 +771,7 @@ QString SimulationExperimentViewSimulationWidget::styledOutput()
     }
 #endif
 
-    QString baseColor = Core::baseColor().name();
+    QString baseColor = Core::baseColor().name(QColor::HexArgb);
 
     return mOutputMessage.arg(baseColor, GreenColor,
                               baseColor, BlueColor,

@@ -80,7 +80,7 @@ void SplitterWidget::paletteChanged()
     // that we have no image for our handle), but only if it has really changed
     // (otherwise we get into a recursive loop)
 
-    QString backgroundColor = windowColor().name();
+    QString backgroundColor = windowColor().name(QColor::HexArgb);
 
     if (backgroundColor.compare(mBackgroundColor)) {
         static const QString StyleSheet = "QSplitter {"

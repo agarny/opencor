@@ -100,7 +100,7 @@ void LineWidget::paletteChanged()
     // Our palette has changed, so update our colour, but only if it has really
     // changed (otherwise we get into a recursive loop)
 
-    QString color = borderColor().name();
+    QString color = borderColor().name(QColor::HexArgb);
 
     if (color.compare(mColor)) {
         mColor = color;

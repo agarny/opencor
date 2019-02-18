@@ -249,7 +249,7 @@ void PmrWindowWindow::paletteChanged()
                                       "    color: %1;"
                                       "}";
 
-    mFilterLabel->setStyleSheet(StyleSheet.arg(Core::windowTextColor().name()));
+    mFilterLabel->setStyleSheet(StyleSheet.arg(Core::windowTextColor().name(QColor::HexArgb)));
 }
 
 //==============================================================================

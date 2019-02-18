@@ -213,8 +213,8 @@ void SplashScreenWindow::paletteChanged()
                                       ;
     static const QString BorderStyle = "1px solid %1";
 
-    setStyleSheet(StyleSheet.arg(baseColor().name())
-                            .arg(BorderStyle.arg(borderColor().name())));
+    setStyleSheet(StyleSheet.arg(baseColor().name(QColor::HexArgb))
+                            .arg(BorderStyle.arg(borderColor().name(QColor::HexArgb))));
 }
 
 //==============================================================================

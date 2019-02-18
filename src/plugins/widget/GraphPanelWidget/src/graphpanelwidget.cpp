@@ -273,8 +273,8 @@ void GraphPanelWidget::updateMarkerColor()
                                       "}";
 
     mMarker->setStyleSheet(StyleSheet.arg(mActive?
-                                              Core::highlightColor().name():
-                                              Core::windowColor().name()));
+                                              Core::highlightColor().name(QColor::HexArgb):
+                                              Core::windowColor().name(QColor::HexArgb)));
 }
 
 //==============================================================================

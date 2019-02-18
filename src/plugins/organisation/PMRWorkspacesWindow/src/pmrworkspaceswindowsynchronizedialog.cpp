@@ -437,7 +437,7 @@ void PmrWorkspacesWindowSynchronizeDialog::paletteChanged()
                                       "    color: %1;"
                                       "}";
 
-    QString fontColor = Core::windowTextColor().name();
+    QString fontColor = Core::windowTextColor().name(QColor::HexArgb);
 
     mWebViewerLabel->setStyleSheet(StyleSheet.arg(fontColor));
 
