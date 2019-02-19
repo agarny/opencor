@@ -759,11 +759,11 @@ QString SimulationExperimentViewSimulationWidget::styledOutput()
                                                 "<body>"
                                                 "    %8"
                                                 "</body>";
-    static const QString RedColor   = QColor(Qt::darkRed).name(QColor::HexArgb);
-    static const QString GreenColor = QColor(Qt::darkGreen).name(QColor::HexArgb);
-    static const QString BlueColor  = QColor(Qt::darkBlue).name(QColor::HexArgb);
+    static const QString RedColor   = QColor(Qt::darkRed).name();
+    static const QString GreenColor = QColor(Qt::darkGreen).name();
+    static const QString BlueColor  = QColor(Qt::darkBlue).name();
 
-    QString windowTextColor = Core::windowTextColor().name(QColor::HexArgb);
+    QString windowTextColor = Core::windowTextColor().name();
 
 #ifdef Q_OS_MAC
     if (isDarkMode()) {
@@ -775,7 +775,7 @@ QString SimulationExperimentViewSimulationWidget::styledOutput()
     }
 #endif
 
-    QString baseColor = Core::baseColor().name(QColor::HexArgb);
+    QString baseColor = Core::baseColor().name();
 
     return DefaultOutputMessage.arg(windowTextColor,
                                     baseColor, GreenColor,

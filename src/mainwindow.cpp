@@ -532,8 +532,8 @@ void MainWindow::paletteChanged()
                                       "    color: %2;"
                                       "}";
 
-    setStyleSheet(StyleSheet.arg(windowTextColor().name(QColor::HexArgb))
-                            .arg(windowTextColor(QPalette::Disabled).name(QColor::HexArgb)));
+    setStyleSheet(StyleSheet.arg(windowTextColor().name())
+                            .arg(windowTextColor(QPalette::Disabled).name()));
 }
 
 //==============================================================================

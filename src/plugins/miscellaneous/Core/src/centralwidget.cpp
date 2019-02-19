@@ -2007,7 +2007,7 @@ void CentralWidget::paletteChanged()
                                           "    background-color: %1;"
                                           "}";
 
-    QString backgroundColor = Core::baseColor().name(QColor::HexArgb);
+    QString backgroundColor = Core::baseColor().name();
 
     mContents->setStyleSheet(ContentsStyleSheet.arg(backgroundColor));
     mLogo->setStyleSheet(LogoStyleSheet.arg(backgroundColor));

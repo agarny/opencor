@@ -273,7 +273,7 @@ void CollapsibleHeaderWidget::paletteChanged()
     // Our palette has changed, so update our background colour, but only if it
     // has really changed (otherwise we get into a recursive loop)
 
-    QString backgroundColor = windowColor().name(QColor::HexArgb);
+    QString backgroundColor = windowColor().name();
 
     if (backgroundColor.compare(mBackgroundColor)) {
         static const QString IconStyleSheet = "QToolButton {"

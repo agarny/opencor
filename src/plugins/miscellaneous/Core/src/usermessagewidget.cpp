@@ -181,7 +181,7 @@ void UserMessageWidget::paletteChanged()
     // Our palette has changed, so update our background colour, but only if it
     // has really changed (otherwise we get into a recursive loop)
 
-    QString backgroundColor = baseColor().name(QColor::HexArgb);
+    QString backgroundColor = baseColor().name();
 
     if (backgroundColor.compare(mBackgroundColor)) {
         mBackgroundColor = backgroundColor;
