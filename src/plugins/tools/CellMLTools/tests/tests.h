@@ -33,11 +33,15 @@ class Tests : public QObject
 {
     Q_OBJECT
 
+private:
+    QStringList mOutput;
+
 private slots:
     void helpTests();
     void exportToUserDefinedFormatTests();
     void exportToCellml10Tests();
     void exportToCellml20Tests();
+    void validateCellmlFiles();
 };
 
 //==============================================================================

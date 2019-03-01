@@ -61,7 +61,7 @@ static const auto XlinkNamespace       = QStringLiteral("http://www.w3.org/1999/
 
 //==============================================================================
 
-struct CellmlFileException
+class CellmlFileException
 {
 public:
     CellmlFileException(const QString &pMessage);
