@@ -46,6 +46,7 @@ add_plugin(Core
         src/organisationwidget.cpp
         src/progressbarwidget.cpp
         src/propertyeditorwidget.cpp
+        src/remotefiledialog.cpp
         src/splitterwidget.cpp
         src/tabbarwidget.cpp
         src/toolbarwidget.cpp
@@ -76,6 +77,7 @@ add_plugin(Core
         src/organisationwidget.h
         src/progressbarwidget.h
         src/propertyeditorwidget.h
+        src/remotefiledialog.h
         src/tabbarwidget.h
         src/toolbarwidget.h
         src/treeviewwidget.h

@@ -93,8 +93,7 @@ class PmrWorkspacesWindowSynchronizeDialog : public Core::Dialog
     Q_OBJECT
 
 public:
-    explicit PmrWorkspacesWindowSynchronizeDialog(const QString &pSettingsGroup,
-                                                  PMRSupport::PmrWorkspace *pWorkspace,
+    explicit PmrWorkspacesWindowSynchronizeDialog(PMRSupport::PmrWorkspace *pWorkspace,
                                                   QTimer *pTimer,
                                                   QWidget *pParent);
     ~PmrWorkspacesWindowSynchronizeDialog() override;
@@ -117,8 +116,6 @@ private:
     } DifferenceData;
 
     typedef QList<DifferenceData> DifferencesData;
-
-    QString mSettingsGroup;
 
     PMRSupport::PmrWorkspace *mWorkspace;
 

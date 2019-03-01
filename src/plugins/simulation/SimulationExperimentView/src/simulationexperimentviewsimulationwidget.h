@@ -141,6 +141,7 @@ public:
 
     QIcon fileTabIcon() const;
 
+    bool import(const QString &pFileName, bool pShowWarning = true);
     bool save(const QString &pFileName);
 
     void filePermissionsChanged();
@@ -215,6 +216,8 @@ private:
     QAction *mSedmlExportSedmlFileAction;
     QAction *mSedmlExportCombineArchiveAction;
     QAction *mDataImportAction;
+    QAction *mLocalDataImportAction;
+    QAction *mRemoteDataImportAction;
     QAction *mSimulationResultsExportAction;
     QAction *mPreferencesAction;
 
@@ -239,10 +242,10 @@ private:
     GraphPanelWidget::GraphPanelPlotWidgets mPlots;
     QMap<GraphPanelWidget::GraphPanelPlotWidget *, bool> mUpdatablePlotViewports;
 
-    QStringList mSimulationProperties;
-    QStringList mSolversProperties;
-    QMap<Core::PropertyEditorWidget *, QStringList> mGraphPanelProperties;
-    QMap<Core::PropertyEditorWidget *, QStringList> mGraphsProperties;
+    QVariantList mSimulationProperties;
+    QVariantList mSolversProperties;
+    QMap<Core::PropertyEditorWidget *, QVariantList> mGraphPanelProperties;
+    QMap<Core::PropertyEditorWidget *, QVariantList> mGraphsProperties;
 
     bool mSimulationPropertiesModified;
     bool mSolversPropertiesModified;
@@ -258,10 +261,7 @@ private:
 
     QMap<GraphPanelWidget::GraphPanelPlotGraph *, quint64> mOldDataSizes;
 
-    QMap<DataStore::DataStoreImportData *, double> mDataImportProgresses;
-    QMap<DataStore::DataStoreImportData *, QString> mDataImportErrorMessages;
-
-    QMap<QString, FileTypeInterface *> mDataStoreFiles;
+    QMap<QString, FileTypeInterface *> mFileTypeInterfaces;
 
     void paletteChanged();
 
@@ -323,7 +323,7 @@ private:
     bool createSedmlFile(SEDMLSupport::SedmlFile *pSedmlFile,
                          const QString &pFileName, const QString &pModelSource);
 
-    QStringList allPropertyValues(Core::PropertyEditorWidget *pPropertyEditor) const;
+    QVariantList allPropertyValues(Core::PropertyEditorWidget *pPropertyEditor) const;
 
     void updateSedmlFileOrCombineArchiveModifiedStatus();
 
@@ -332,7 +332,7 @@ private:
     void sedmlExportSedmlFile(const QString &pFileName);
     void sedmlExportCombineArchive(const QString &pFileName);
 
-    void importDataFiles(const QStringList &pFileNames);
+    void dataImport(const QStringList &pFileNames);
 
 signals:
     void splitterMoved(const QIntList &pSizes);
@@ -340,7 +340,7 @@ signals:
     void graphPanelSettingsRequested();
     void graphsSettingsRequested();
 
-    void allImportsDone();
+    void importDone();
 
 private slots:
     void runPauseResumeSimulation();
@@ -359,7 +359,9 @@ private slots:
 
     void emitSplitterMoved();
 
-    void dataImport();
+    void localDataImport();
+    void remoteDataImport();
+
     void simulationResultsExport();
 
     void updateDelayValue(double pDelayValue);

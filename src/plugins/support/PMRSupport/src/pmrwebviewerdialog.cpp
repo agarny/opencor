@@ -18,55 +18,92 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 
 //==============================================================================
-// SED-ML interface
+// PMR web viewer dialog
 //==============================================================================
 
-#pragma once
+#include "plugin.h"
+#include "pmrsupportplugin.h"
+#include "pmrwebviewerdialog.h"
+#include "progressbarwidget.h"
+#include "webviewerwidget.h"
 
 //==============================================================================
 
-#include "sedmlsupportglobal.h"
-
-//==============================================================================
-
-#include <QString>
+#include <QMainWindow>
+#include <QVBoxLayout>
+#include <QWebView>
 
 //==============================================================================
 
 namespace OpenCOR {
+namespace PMRSupport {
 
 //==============================================================================
 
-class FileTypeInterface;
-
-//==============================================================================
-
-namespace SEDMLSupport {
-
-//==============================================================================
-
-static const auto SedmlInterfaceDataSignature = QStringLiteral("OpenCOR::SEDMLSupport::SedmlInterfaceData");
-
-//==============================================================================
-
-class SedmlInterfaceData
+PmrWebViewerDialog::PmrWebViewerDialog(QWidget *pParent) :
+    Core::Dialog(pParent)
 {
-public:
-    explicit SedmlInterfaceData(FileTypeInterface *pFileTypeInterface);
+    // Customise our settings
 
-    FileTypeInterface * fileTypeInterface() const;
+    mSettings.beginGroup(SettingsPlugins);
+    mSettings.beginGroup(PluginName);
+    mSettings.beginGroup("PmrWebViewerDialog");
+qDebug(">>> %s", qPrintable(mSettings.group()));
 
-private:
-    FileTypeInterface *mFileTypeInterface;
-};
+    // Customise ourselves
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
+
+    layout->setContentsMargins(QMargins());
+
+    setLayout(layout);
+
+    mWebViewer = new WebViewerWidget::WebViewerWidget(this);
+
+    mWebViewer->webView()->setContextMenuPolicy(Qt::NoContextMenu);
+
+    mWebViewer->showProgressBar();
+
+    layout->addWidget(mWebViewer);
+
+    QMainWindow *mainWindow = Core::mainWindow();
+
+    resize(int(0.7*mainWindow->width()),
+           int(0.7*mainWindow->height()));
+
+    retranslateUi();
+}
 
 //==============================================================================
 
-FileTypeInterface SEDMLSUPPORT_EXPORT * fileTypeInterface();
+void PmrWebViewerDialog::retranslateUi()
+{
+    // Retranslate ourselves
+
+    setWindowTitle(tr("PMR Authentication"));
+}
 
 //==============================================================================
 
-}   // namespace SEDMLSupport
+bool PmrWebViewerDialog::isLoadFinished() const
+{
+    // Return whether our loading is finished
+
+    return qFuzzyIsNull(mWebViewer->progressBarWidget()->value());
+}
+
+//==============================================================================
+
+void PmrWebViewerDialog::load(const QUrl &pUrl)
+{
+    // Get our web viewer to load the given URL
+
+    mWebViewer->webView()->load(pUrl);
+}
+
+//==============================================================================
+
+}   // namespace PMRSupport
 }   // namespace OpenCOR
 
 //==============================================================================
