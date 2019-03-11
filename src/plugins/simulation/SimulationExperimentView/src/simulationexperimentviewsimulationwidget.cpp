@@ -60,6 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QMenu>
 #include <QMimeData>
 #include <QScreen>
+#include <QScrollBar>
 #include <QTextEdit>
 #include <QTimer>
 #include <QToolButton>
@@ -108,6 +109,7 @@ SimulationExperimentViewSimulationWidget::SimulationExperimentViewSimulationWidg
     mProgress(-1),
     mLockedDevelopmentMode(false),
     mRunActionEnabled(true),
+    mOutputMessage(QString()),
     mErrorType(General),
     mValidSimulationEnvironment(false),
     mPlots(GraphPanelWidget::GraphPanelPlotWidgets()),
@@ -654,6 +656,29 @@ void SimulationExperimentViewSimulationWidget::retranslateUi()
 
 //==============================================================================
 
+void SimulationExperimentViewSimulationWidget::changeEvent(QEvent *pEvent)
+{
+    // Default handling of the event
+
+    Core::Widget::changeEvent(pEvent);
+
+    // Check whether we are becoming enabled/disabled, in which case we want to
+    // update our output widget while keeping its scrollbars, if any, still at
+    // the same position
+
+    if (isVisible() && (pEvent->type() == QEvent::EnabledChange)) {
+        int horizontalSliderPosition = mOutputWidget->horizontalScrollBar()->sliderPosition();
+        int verticalSliderPosition = mOutputWidget->verticalScrollBar()->sliderPosition();
+
+        mOutputWidget->setHtml(styledOutput());
+
+        mOutputWidget->horizontalScrollBar()->setSliderPosition(horizontalSliderPosition);
+        mOutputWidget->verticalScrollBar()->setSliderPosition(verticalSliderPosition);
+    }
+}
+
+//==============================================================================
+
 void SimulationExperimentViewSimulationWidget::dragEnterEvent(QDragEnterEvent *pEvent)
 {
     // Accept the proposed action for the event, but only if it refers to one or
@@ -721,18 +746,53 @@ void SimulationExperimentViewSimulationWidget::updateDataStoreActions()
 
 //==============================================================================
 
+QString SimulationExperimentViewSimulationWidget::styledOutput()
+{
+    // Return a styled version of our output
+
+    static const QString DefaultOutputMessage = "<style>"
+                                                "    span.good {"
+                                                "        color: %1;"
+                                                "    }"
+                                                ""
+                                                "    span.info {"
+                                                "        color: %2;"
+                                                "    }"
+                                                ""
+                                                "    span.bad {"
+                                                "        color: %3;"
+                                                "    }"
+                                                "</style>"
+                                                "<body>"
+                                                "    %4"
+                                                "</body>";
+
+    if (isEnabled()) {
+        static const QString RedColor   = QColor(Qt::darkRed).name();
+        static const QString GreenColor = QColor(Qt::darkGreen).name();
+        static const QString BlueColor  = QColor(Qt::darkBlue).name();
+
+        return DefaultOutputMessage.arg(GreenColor, BlueColor, RedColor,
+                                        mOutputMessage);
+    } else {
+        QString windowTextColor = Core::windowTextColor(QPalette::Disabled).name(QColor::HexArgb);
+
+        return DefaultOutputMessage.arg(windowTextColor, windowTextColor, windowTextColor,
+                                        mOutputMessage);
+    }
+}
+
+//==============================================================================
+
 void SimulationExperimentViewSimulationWidget::output(const QString &pMessage)
 {
-    // Move to the end of the output
-    // Note: this is just in case the user clicked somewhere in the output and
-    //       we are therefore not at the end of it anymore...
+    // Update and set our output message after styling it
+
+    mOutputMessage += pMessage;
+
+    mOutputWidget->setHtml(styledOutput());
 
     mOutputWidget->moveCursor(QTextCursor::End);
-
-    // Output the message and make sure that it's visible
-
-    mOutputWidget->insertHtml(pMessage);
-    mOutputWidget->ensureCursorVisible();
 }
 
 //==============================================================================
@@ -812,9 +872,9 @@ void SimulationExperimentViewSimulationWidget::updateInvalidModelMessageWidget()
 //==============================================================================
 
 static const auto OutputTab  = QStringLiteral("&nbsp;&nbsp;&nbsp;&nbsp;");
-static const auto OutputGood = QStringLiteral(" style=\"color: green;\"");
-static const auto OutputInfo = QStringLiteral(" style=\"color: navy;\"");
-static const auto OutputBad  = QStringLiteral(" style=\"color: maroon;\"");
+static const auto OutputGood = QStringLiteral(" class=\"good\"");
+static const auto OutputInfo = QStringLiteral(" class=\"info\"");
+static const auto OutputBad  = QStringLiteral(" class=\"bad\"");
 static const auto OutputBrLn = QStringLiteral("<br/>\n");
 
 //==============================================================================
@@ -856,7 +916,7 @@ void SimulationExperimentViewSimulationWidget::initialize(bool pReloadingView)
         // Clean up our output, if needed
 
         if (pReloadingView)
-            mOutputWidget->document()->clear();
+            mOutputMessage = QString();
 
         // Output some information about our CellML file
 
@@ -3376,26 +3436,29 @@ bool SimulationExperimentViewSimulationWidget::import(const QString &pFileName,
     // people know about the problem
 
     if (problem == None) {
-        // Note: we pass Qt::UniqueConnection in some of our calls to connect()
-        //       so that we don't end up with several identical connections
-        //       (something that would happen if we were to reuse the same data
-        //       store importer)...
+        // Everything is fine, so do the actual import
 
         Core::centralWidget()->showProgressBusyWidget();
 
         DataStore::DataStoreImporter *dataStoreImporter = dataStoreInterface->dataStoreImporterInstance();
 
         connect(dataStoreImporter, &DataStore::DataStoreImporter::progress,
-                this, &SimulationExperimentViewSimulationWidget::dataStoreImportProgress,
-                Qt::UniqueConnection);
+                this, &SimulationExperimentViewSimulationWidget::dataStoreImportProgress);
 
         connect(dataStoreImporter, &DataStore::DataStoreImporter::done,
-                this, &SimulationExperimentViewSimulationWidget::dataStoreImportDone,
-                Qt::UniqueConnection);
+                this, &SimulationExperimentViewSimulationWidget::dataStoreImportDone);
+
         connect(this, &SimulationExperimentViewSimulationWidget::importDone,
                 dataStoreImportData, &DataStore::DataStoreImportData::deleteLater);
+        connect(this, &SimulationExperimentViewSimulationWidget::importDone,
+                this, &SimulationExperimentViewSimulationWidget::resetDataStoreImporterConnections);
 
         dataStoreImporter->importData(dataStoreImportData);
+
+        // Wait for the import to be done before carrying on
+        // Note: this is needed since we may have to import several files and we
+        //       don't want the GUI to be all messed up (e.g. with the progress
+        //       with an import "overlapping" with that of another)...
 
         QEventLoop waitLoop;
 
@@ -3414,6 +3477,26 @@ bool SimulationExperimentViewSimulationWidget::import(const QString &pFileName,
 
         return false;
     }
+}
+
+//==============================================================================
+
+void SimulationExperimentViewSimulationWidget::resetDataStoreImporterConnections(DataStore::DataStoreImporter *pDataStoreImporter)
+{
+    // Reset our connections for the given data store importer
+    // Note: we reset our data store importer connections once the import is
+    //       done otherwise if we were to import data from another file then
+    //       our "local" dataStoreImportProgress() and dataStoreImportDone()
+    //       methods would be called again, which would mean that at least
+    //       two files would be pointing to the same imported data,
+    //       resulting in OpenCOR crashing upon closing (since the simulation
+    //       object of both files would try to delete the same memory block)...
+
+    disconnect(pDataStoreImporter, &DataStore::DataStoreImporter::progress,
+               this, &SimulationExperimentViewSimulationWidget::dataStoreImportProgress);
+
+    disconnect(pDataStoreImporter, &DataStore::DataStoreImporter::done,
+               this, &SimulationExperimentViewSimulationWidget::dataStoreImportDone);
 }
 
 //==============================================================================
@@ -3458,33 +3541,48 @@ void SimulationExperimentViewSimulationWidget::simulationResultsExport()
     // results
 
     DataStoreInterface *dataStoreInterface = mDataStoreInterfaces.value(qobject_cast<QAction *>(sender()));
-    DataStore::DataStoreExportData *dataStoreData = dataStoreInterface->getExportData(mSimulation->fileName(),
-                                                                                      mSimulation->results()->dataStore(),
-                                                                                      CellMLSupport::CellmlFileRuntimeParameter::icons());
+    DataStore::DataStoreExportData *dataStoreExportData = dataStoreInterface->getExportData(mSimulation->fileName(),
+                                                                                            mSimulation->results()->dataStore(),
+                                                                                            CellMLSupport::CellmlFileRuntimeParameter::icons());
 
-    if (dataStoreData) {
+    if (dataStoreExportData) {
         // We have got the data we need, so do the actual export
-        // Note: we pass Qt::UniqueConnection in some of our calls to connect()
-        //       so that we don't end up with several identical connections
-        //       (something that would happen if we were to reuse the same data
-        //       store exporter)...
 
         Core::centralWidget()->showProgressBusyWidget();
 
         DataStore::DataStoreExporter *dataStoreExporter = dataStoreInterface->dataStoreExporterInstance();
 
         connect(dataStoreExporter, &DataStore::DataStoreExporter::progress,
-                this, &SimulationExperimentViewSimulationWidget::dataStoreExportProgress,
-                Qt::UniqueConnection);
+                this, &SimulationExperimentViewSimulationWidget::dataStoreExportProgress);
 
         connect(dataStoreExporter, &DataStore::DataStoreExporter::done,
-                this, &SimulationExperimentViewSimulationWidget::dataStoreExportDone,
-                Qt::UniqueConnection);
-        connect(dataStoreExporter, &DataStore::DataStoreExporter::done,
-                dataStoreData, &DataStore::DataStoreExportData::deleteLater);
+                this, &SimulationExperimentViewSimulationWidget::dataStoreExportDone);
 
-        dataStoreExporter->exportData(dataStoreData);
+        connect(this, &SimulationExperimentViewSimulationWidget::exportDone,
+                dataStoreExportData, &DataStore::DataStoreExportData::deleteLater);
+        connect(this, &SimulationExperimentViewSimulationWidget::exportDone,
+                this, &SimulationExperimentViewSimulationWidget::resetDataStoreExporterConnections);
+
+        dataStoreExporter->exportData(dataStoreExportData);
     }
+}
+
+//==============================================================================
+
+void SimulationExperimentViewSimulationWidget::resetDataStoreExporterConnections(DataStore::DataStoreExporter *pDataStoreExporter)
+{
+    // Reset our connections for the given data store exporter
+    // Note: we reset our data store exporter connections once the export is
+    //       done otherwise if we were to export data from another file then
+    //       our "local" dataStoreExportProgress() and dataStoreExportDone()
+    //       methods would be called again. This shouldn't normally cause
+    //       problems, but better be safe than sorry...
+
+    disconnect(pDataStoreExporter, &DataStore::DataStoreExporter::progress,
+               this, &SimulationExperimentViewSimulationWidget::dataStoreExportProgress);
+
+    disconnect(pDataStoreExporter, &DataStore::DataStoreExporter::done,
+               this, &SimulationExperimentViewSimulationWidget::dataStoreExportDone);
 }
 
 //==============================================================================
@@ -4408,7 +4506,7 @@ void SimulationExperimentViewSimulationWidget::dataStoreImportDone(DataStore::Da
                                                                                      .arg(Core::formatMessage(pErrorMessage, true)));
     }
 
-    emit importDone();
+    emit importDone(static_cast<DataStore::DataStoreImporter *>(sender()));
 }
 
 //==============================================================================
@@ -4440,6 +4538,8 @@ void SimulationExperimentViewSimulationWidget::dataStoreExportDone(DataStore::Da
         Core::warningMessageBox(tr("Simulation Results Export"),
                                 pErrorMessage);
     }
+
+    emit exportDone(static_cast<DataStore::DataStoreExporter *>(sender()));
 }
 
 //==============================================================================

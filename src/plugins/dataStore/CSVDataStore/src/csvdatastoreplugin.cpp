@@ -182,28 +182,37 @@ bool CSVDataStorePlugin::isFile(const QString &pFileName) const
     // Return whether the given file is of the type that we support
 
     QFile file(pFileName);
+    bool isMaybeFile = true;
+    int nbOfFields = 0;
+    int nbOfLines = 0;
 
     if (file.open(QIODevice::ReadOnly|QIODevice::Text)) {
         QTextStream in(&file);
         bool emptyLine = false;
         bool needNbOfFields = true;
-        int nbOfFields = 0;
 
         while (!in.atEnd()) {
+            ++nbOfLines;
+
             QString line = in.readLine().trimmed();
 
             if (line.isEmpty()) {
                 // The line is empty, which is fine, but only if it is the last
                 // line of the file
 
-                if (emptyLine)
-                    return false;
-                else
+                if (emptyLine) {
+                    isMaybeFile = false;
+
+                    break;
+                } else {
                     emptyLine = true;
+                }
             } else if (line.endsWith(",")) {
                 // The line ends with a comma, which is not allowed
 
-                return false;
+                isMaybeFile = false;
+
+                break;
             } else {
                 // Make sure that the line has the same number of fields (and at
                 // least two of them) as the other lines (with the fields being
@@ -214,22 +223,28 @@ bool CSVDataStorePlugin::isFile(const QString &pFileName) const
                 if (needNbOfFields) {
                     nbOfFields = crtNbOfFields;
 
-                    if (nbOfFields == 1)
-                        return false;
+                    if (nbOfFields == 1) {
+                        isMaybeFile = false;
+
+                        break;
+                    }
 
                     needNbOfFields = false;
                 } else if (crtNbOfFields != nbOfFields) {
-                    return false;
+                    isMaybeFile = false;
+
+                    break;
                 }
             }
         }
 
         file.close();
-
-        return true;
-    } else {
-        return false;
     }
+
+    // We currently assume a CSV file to have a header, which means that it
+    // should have more than one line
+
+    return isMaybeFile && (nbOfLines > 1);
 }
 
 //==============================================================================

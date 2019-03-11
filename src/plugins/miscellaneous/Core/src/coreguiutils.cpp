@@ -22,8 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //==============================================================================
 
 #include "centralwidget.h"
-#include "corecliutils.h"
 #include "commonwidget.h"
+#include "corecliutils.h"
 #include "coreguiutils.h"
 #include "filemanager.h"
 
@@ -297,7 +297,16 @@ QString getDirectory(const QString &pCaption, const QString &pDirName,
 
             setActiveDirectory(res);
 
-            // Check whether the directory should be empty
+            // Check whether the directory is writable
+
+            if (!Core::isDirectory(res)) {
+                Core::warningMessageBox(pCaption,
+                                        QObject::tr("Please choose a writable directory."));
+
+                continue;
+            }
+
+            // Check whether the directory should be and is empty
 
             if (pEmptyDir && !isEmptyDirectory(res)) {
                 warningMessageBox(pCaption,

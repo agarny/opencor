@@ -80,7 +80,9 @@ namespace Core {
 
 namespace DataStore {
     class DataStoreExportData;
+    class DataStoreExporter;
     class DataStoreImportData;
+    class DataStoreImporter;
 }   // namespace DataStore
 
 //==============================================================================
@@ -167,6 +169,7 @@ public:
     void resetSimulationProgress();
 
 protected:
+    void changeEvent(QEvent *pEvent) override;
     void dragEnterEvent(QDragEnterEvent *pEvent) override;
     void dragMoveEvent(QDragMoveEvent *pEvent) override;
     void dropEvent(QDropEvent *pEvent) override;
@@ -232,6 +235,7 @@ private:
     Core::UserMessageWidget *mInvalidModelMessageWidget;
 
     QTextEdit *mOutputWidget;
+    QString mOutputMessage;
 
     ErrorType mErrorType;
 
@@ -261,6 +265,7 @@ private:
 
     QMap<QString, FileTypeInterface *> mFileTypeInterfaces;
 
+    QString styledOutput();
     void output(const QString &pMessage);
 
     void updateSimulationMode();
@@ -335,7 +340,8 @@ signals:
     void graphPanelSettingsRequested();
     void graphsSettingsRequested();
 
-    void importDone();
+    void importDone(DataStore::DataStoreImporter *pDataStoreImporter);
+    void exportDone(DataStore::DataStoreExporter *pDataStoreExporter);
 
 private slots:
     void runPauseResumeSimulation();
@@ -409,6 +415,9 @@ private slots:
     void checkGraphPanelsAndGraphs();
 
     void finalFurtherInitialize();
+
+    void resetDataStoreImporterConnections(DataStore::DataStoreImporter *pDataStoreImporter);
+    void resetDataStoreExporterConnections(DataStore::DataStoreExporter *pDataStoreExporter);
 };
 
 //==============================================================================
