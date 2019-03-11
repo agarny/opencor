@@ -404,7 +404,7 @@ int CellMLToolsPlugin::runCommand(Command pCommand,
                 switch (pCommand) {
                 case Export:
                     if (!cellmlFile->load()) {
-                        errorMessage = "The file could not be loaded.";
+                        output = "The file could not be loaded.";
                     } else {
                         // At this stage, everything is fine with the file, so
                         // now we need to check the type of export the user
@@ -421,14 +421,14 @@ int CellMLToolsPlugin::runCommand(Command pCommand,
 
                         if (    isFileName
                             && !QFile::exists(formatOrFileName)) {
-                            errorMessage = "The user-defined format file could not be found.";
+                            output = "The user-defined format file could not be found.";
                         } else if (   isCellml10Format
                                    && (cellmlVersion != CellMLSupport::CellmlFile::Cellml_1_1)) {
-                            errorMessage = "The file must be a CellML 1.1 file.";
+                            output = "The file must be a CellML 1.1 file.";
                         } else if (   isCellml20Format
                                    && (cellmlVersion != CellMLSupport::CellmlFile::Cellml_1_0)
                                    && (cellmlVersion != CellMLSupport::CellmlFile::Cellml_1_1)) {
-                            errorMessage = "The file must be a CellML 1.0/1.1 file.";
+                            output = "The file must be a CellML 1.0/1.1 file.";
                         } else {
                             // Everything seems to be fine, so attempt the
                             // export itself
@@ -436,10 +436,10 @@ int CellMLToolsPlugin::runCommand(Command pCommand,
                             if (   (isFileName && !cellmlFile->exportTo(QString(), formatOrFileName))
                                 || (isCellml10Format && !cellmlFile->exportTo(QString(), CellMLSupport::CellmlFile::Cellml_1_0))
                                 || (isCellml20Format && !cellmlFile->exportTo(QString(), CellMLSupport::CellmlFile::Cellml_2_0))) {
-                                errorMessage = "The file could not be exported";
+                                output = "The file could not be exported";
 
                                 if (cellmlFile->issues().count()) {
-                                    errorMessage += " ("+cellmlFile->issues().first().message()+")";
+                                    output += " ("+cellmlFile->issues().first().message()+")";
                                     // Note: if there are CellML file issues
                                     //       then there can be only one of them
                                     //       following a CellML export...
