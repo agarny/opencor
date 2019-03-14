@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // CellML file CellML 2.0 exporter
 //==============================================================================
 
+#include "cellmlfile.h"
 #include "cellmlfilecellml20exporter.h"
 #include "corecliutils.h"
 #include "xsltransformer.h"
@@ -87,6 +88,70 @@ CellmlFileCellml20Exporter::CellmlFileCellml20Exporter(const QString &pOldFileNa
 
 //==============================================================================
 
+void cleanUnitsAttributes(QDomElement &pDomElement, QDomElement &pDomElementNs)
+{
+    // Clean up the current CellML element by ensuring that its "units"
+    // attribute, if any, is in the CellML namespace
+
+    if (!pDomElementNs.namespaceURI().compare(MathmlNamespace)) {
+        static const QString CellmlAttributeName  = "cellml:%1";
+        static const QString CellmlUnitsAttribute = "units";
+
+        QDomNamedNodeMap attributes = pDomElement.attributes();
+
+        for (int i = 0, iMax = attributes.count(); i < iMax; ++i) {
+            QDomNode attribute = attributes.item(i);
+
+            if (!attribute.nodeName().compare(CellmlUnitsAttribute)) {
+                QString attributeValue = attribute.nodeValue();
+
+                pDomElement.removeAttribute(CellmlUnitsAttribute);
+                pDomElement.setAttributeNS(Cellml_2_0_Namespace, CellmlAttributeName.arg(CellmlUnitsAttribute), attributeValue);
+
+                break;
+            }
+        }
+    }
+
+    // Do the same for the element's child elements
+
+    for (QDomElement childElement = pDomElement.firstChildElement(),
+                     childElementNs = pDomElementNs.firstChildElement();
+         !childElement.isNull() && !childElementNs.isNull();
+         childElement = childElement.nextSiblingElement(),
+         childElementNs = childElementNs.nextSiblingElement()) {
+        cleanUnitsAttributes(childElement, childElementNs);
+    }
+}
+
+//==============================================================================
+
+void cleanCellmlNamespace(QDomElement &pDomElement, QDomElement &pDomElementNs)
+{
+    // Clean up the current CellML element by removing its CellML namespace
+    // information, if any
+
+    QDomNamedNodeMap attributes = pDomElement.attributes();
+
+    if (!pDomElementNs.namespaceURI().compare(MathmlNamespace)) {
+        static const QString CellmlNamespaceAttribute = "xmlns:cellml";
+
+        pDomElement.removeAttribute(CellmlNamespaceAttribute);
+    }
+
+    // Do the same for the element's child elements
+
+    for (QDomElement childElement = pDomElement.firstChildElement(),
+                     childElementNs = pDomElementNs.firstChildElement();
+         !childElement.isNull() && !childElementNs.isNull();
+         childElement = childElement.nextSiblingElement(),
+         childElementNs = childElementNs.nextSiblingElement()) {
+        cleanCellmlNamespace(childElement, childElementNs);
+    }
+}
+
+//==============================================================================
+
 void CellmlFileCellml20Exporter::xslTransformationDone(const QString &pInput,
                                                        const QString &pOutput)
 {
@@ -94,8 +159,54 @@ void CellmlFileCellml20Exporter::xslTransformationDone(const QString &pInput,
 
     // Our CellML 2.0 conversion is done, so keep track of it and clean it a bit
 
-    mOutput = pOutput;
+    mOutput = "<?xml version='1.0' encoding='UTF-8'?>\n"+pOutput;
     mOutput = mOutput.remove(" xmlns=\"\"");
+
+    // Clean up the resulting CellML document
+    // Note #1: indeed, our XSL transformation (because of Qt) is not perfect,
+    //          so we need to patch things up by 1) adding the "xmlns:cellml"
+    //          attribute to our model element, 2) ensuring that the "units"
+    //          attribute of a MathML element is in the CellML namespace, and 3)
+    //          remove the CellML namespace information from a MathML element
+    //          (we need to do this because step #2 automatically adds that
+    //          information to our DOM!)...
+    // Note #2: we are doing this using two QDomDocument objects, one that
+    //          processes namespaces and another that doesn't. Ideally, we would
+    //          only use the one that processes namespaces, but this results in
+    //          having namespace information all over the place. So, in the end,
+    //          we use the first one to determine what needs to be done to the
+    //          second one...
+
+    QDomDocument domDocument;
+    QDomDocument domDocumentNs;
+
+    if (   domDocument.setContent(mOutput)
+        && domDocumentNs.setContent(mOutput, true)) {
+        domDocument.documentElement().setAttribute("xmlns:cellml", Cellml_2_0_Namespace);
+
+        for (QDomElement childElement = domDocument.firstChildElement(),
+                         childElementNs = domDocumentNs.firstChildElement();
+             !childElement.isNull() && !childElementNs.isNull();
+             childElement = childElement.nextSiblingElement(),
+             childElementNs = childElementNs.nextSiblingElement()) {
+            cleanUnitsAttributes(childElement, childElementNs);
+        }
+
+        mOutput = Core::serialiseDomDocument(domDocument);
+
+        if (   domDocument.setContent(mOutput)
+            && domDocumentNs.setContent(mOutput, true)) {
+            for (QDomElement childElement = domDocument.firstChildElement(),
+                             childElementNs = domDocumentNs.firstChildElement();
+                 !childElement.isNull() && !childElementNs.isNull();
+                 childElement = childElement.nextSiblingElement(),
+                 childElementNs = childElementNs.nextSiblingElement()) {
+                cleanCellmlNamespace(childElement, childElementNs);
+            }
+
+            mOutput = Core::serialiseDomDocument(domDocument);
+        }
+    }
 }
 
 //==============================================================================
