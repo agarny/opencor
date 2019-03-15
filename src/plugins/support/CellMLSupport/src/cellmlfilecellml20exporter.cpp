@@ -167,12 +167,12 @@ void CellmlFileCellml20Exporter::xslTransformationDone(const QString &pInput,
 
     // Clean up the resulting CellML document
     // Note #1: indeed, our XSL transformation (because of Qt) is not perfect,
-    //          so we need to patch things up by 1) adding the "xmlns:cellml"
-    //          attribute to our model element, 2) ensuring that the "units"
-    //          attribute of a MathML element is in the CellML namespace, and 3)
-    //          remove the CellML namespace information from a MathML element
-    //          (we need to do this because step #2 automatically adds that
-    //          information to our DOM!)...
+    //          so we need to patch things up by 1) ensuring that the "units"
+    //          attribute, if any, of all MathML elements is in the CellML
+    //          namespace, 2) adding the "xmlns:cellml" attribute to our model
+    //          element, if needed, and 3) removing the CellML namespace
+    //          information, if any, from all MathML elements (we need to do
+    //          this because step #1 automatically adds this to our DOM!)...
     // Note #2: we are doing this using two QDomDocument objects, one that
     //          processes namespaces and another that doesn't. Ideally, we would
     //          only use the one that processes namespaces, but this results in
