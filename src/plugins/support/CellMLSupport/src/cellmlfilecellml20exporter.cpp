@@ -88,7 +88,8 @@ CellmlFileCellml20Exporter::CellmlFileCellml20Exporter(const QString &pOldFileNa
 
 //==============================================================================
 
-void cleanUnitsAttributes(QDomElement &pDomElement, QDomElement &pDomElementNs)
+void cleanUnitsAttributes(QDomElement &pDomElement, QDomElement &pDomElementNs,
+                          bool &pAtLeastOneUnitsAttribute)
 {
     // Clean up the current CellML element by ensuring that its "units"
     // attribute, if any, is in the CellML namespace
@@ -108,6 +109,8 @@ void cleanUnitsAttributes(QDomElement &pDomElement, QDomElement &pDomElementNs)
                 pDomElement.removeAttribute(CellmlUnitsAttribute);
                 pDomElement.setAttributeNS(Cellml_2_0_Namespace, CellmlAttributeName.arg(CellmlUnitsAttribute), attributeValue);
 
+                pAtLeastOneUnitsAttribute = true;
+
                 break;
             }
         }
@@ -120,7 +123,7 @@ void cleanUnitsAttributes(QDomElement &pDomElement, QDomElement &pDomElementNs)
          !childElement.isNull() && !childElementNs.isNull();
          childElement = childElement.nextSiblingElement(),
          childElementNs = childElementNs.nextSiblingElement()) {
-        cleanUnitsAttributes(childElement, childElementNs);
+        cleanUnitsAttributes(childElement, childElementNs, pAtLeastOneUnitsAttribute);
     }
 }
 
@@ -182,15 +185,18 @@ void CellmlFileCellml20Exporter::xslTransformationDone(const QString &pInput,
 
     if (   domDocument.setContent(mOutput)
         && domDocumentNs.setContent(mOutput, true)) {
-        domDocument.documentElement().setAttribute("xmlns:cellml", Cellml_2_0_Namespace);
+        bool atLeastOneUnitsAttribute = false;
 
         for (QDomElement childElement = domDocument.firstChildElement(),
                          childElementNs = domDocumentNs.firstChildElement();
              !childElement.isNull() && !childElementNs.isNull();
              childElement = childElement.nextSiblingElement(),
              childElementNs = childElementNs.nextSiblingElement()) {
-            cleanUnitsAttributes(childElement, childElementNs);
+            cleanUnitsAttributes(childElement, childElementNs, atLeastOneUnitsAttribute);
         }
+
+        if (atLeastOneUnitsAttribute)
+            domDocument.documentElement().setAttribute("xmlns:cellml", Cellml_2_0_Namespace);
 
         mOutput = Core::serialiseDomDocument(domDocument);
 
