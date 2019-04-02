@@ -3,12 +3,12 @@ project(libSEDMLPlugin)
 # Name and version of our package
 
 set(PACKAGE_NAME libSEDML)
-set(PACKAGE_VERSION 0.4.4)
+set(PACKAGE_VERSION 2.0.5)
 
 # Version of our package's libraries
 
-set(MAJOR_LIBRARY_VERSION 0)
-set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.4.4)
+set(MAJOR_LIBRARY_VERSION 2)
+set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.0.5)
 
 # Git tag for our library
 
