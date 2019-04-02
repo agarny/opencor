@@ -931,6 +931,8 @@ set(PLUGINS
     widget/WebViewerWidget
 )
 set(PLUGINS
+    thirdParty/libSBML
+    thirdParty/libNuML
     thirdParty/libSEDML
 )
 
