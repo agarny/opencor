@@ -463,7 +463,7 @@ bool SedmlFile::isSupported()
     // Make sure that we have an algorithm for the first simulation
 
     const libsedml::SedAlgorithm *firstSimulationAlgorithm = firstSimulation->getAlgorithm();
-    libsbml::XMLNode *annotation;
+    const libsbml::XMLNode *annotation;
 
     if (firstSimulationAlgorithm) {
         // Make sure that the algorithm relies on an algorithm that we support
@@ -503,7 +503,7 @@ bool SedmlFile::isSupported()
         // Make sure that the first simulation algorithm annotation, if any,
         // contains at least the kind of information we would expect
 
-        annotation = const_cast<libsbml::XMLNode *>(firstSimulationAlgorithm->getAnnotation());
+        annotation = firstSimulationAlgorithm->getAnnotation();
 
         if (annotation) {
             for (uint i = 0, iMax = annotation->getNumChildren(); i < iMax; ++i) {
