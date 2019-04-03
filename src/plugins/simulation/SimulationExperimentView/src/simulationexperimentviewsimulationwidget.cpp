@@ -80,11 +80,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //==============================================================================
 
 #include "libsedmlbegin.h"
-    #include "sedml/SedAlgorithm.h"
+    #include "sedml/SedCurve.h"
     #include "sedml/SedDocument.h"
     #include "sedml/SedOneStep.h"
     #include "sedml/SedPlot2D.h"
     #include "sedml/SedRepeatedTask.h"
+    #include "sedml/SedTask.h"
     #include "sedml/SedSimulation.h"
     #include "sedml/SedUniformTimeCourse.h"
     #include "sedml/SedVectorRange.h"
@@ -2861,7 +2862,7 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
         }
     }
 
-    libsbml::XMLNode *annotation = sedmlAlgorithm->getAnnotation();
+    const libsbml::XMLNode *annotation = sedmlAlgorithm->getAnnotation();
 
     if (annotation) {
         for (uint i = 0, iMax = annotation->getNumChildren(); i < iMax; ++i) {
@@ -3168,7 +3169,7 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
         graphPanel->removeAllGraphs();
 
         for (uint j = 0, jMax = sedmlPlot2d->getNumCurves(); j < jMax; ++j) {
-            libsedml::SedCurve *sedmlCurve = sedmlPlot2d->getCurve(j);
+            libsedml::SedCurve *sedmlCurve = reinterpret_cast<libsedml::SedCurve *>(sedmlPlot2d->getCurve(j));
 
             libsedml::SedVariable *xVariable = sedmlDocument->getDataGenerator(sedmlCurve->getXDataReference())->getVariable(0);
             libsedml::SedVariable *yVariable = sedmlDocument->getDataGenerator(sedmlCurve->getYDataReference())->getVariable(0);
