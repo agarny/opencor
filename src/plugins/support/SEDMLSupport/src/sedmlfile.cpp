@@ -40,12 +40,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //==============================================================================
 
 #include "libsedmlbegin.h"
-    #include "sedml/SedAlgorithm.h"
+    #include "sedml/SedCurve.h"
     #include "sedml/SedDocument.h"
     #include "sedml/SedOneStep.h"
     #include "sedml/SedPlot2D.h"
     #include "sedml/SedReader.h"
     #include "sedml/SedRepeatedTask.h"
+    #include "sedml/SedTask.h"
     #include "sedml/SedWriter.h"
     #include "sedml/SedUniformTimeCourse.h"
     #include "sedml/SedVectorRange.h"
@@ -502,7 +503,7 @@ bool SedmlFile::isSupported()
         // Make sure that the first simulation algorithm annotation, if any,
         // contains at least the kind of information we would expect
 
-        annotation = firstSimulationAlgorithm->getAnnotation();
+        annotation = const_cast<libsbml::XMLNode *>(firstSimulationAlgorithm->getAnnotation());
 
         if (annotation) {
             for (uint i = 0, iMax = annotation->getNumChildren(); i < iMax; ++i) {
@@ -621,8 +622,8 @@ bool SedmlFile::isSupported()
         if (secondSimulationAlgorithm)
             secondSimulationAlgorithm->write(secondXmlStream);
 
-        libsbml::XMLNode *firstAnnotation = firstSimulationAlgorithm->getAnnotation();
-        libsbml::XMLNode *secondAnnotation = secondSimulationAlgorithm->getAnnotation();
+        const libsbml::XMLNode *firstAnnotation = firstSimulationAlgorithm->getAnnotation();
+        const libsbml::XMLNode *secondAnnotation = secondSimulationAlgorithm->getAnnotation();
 
         if (firstAnnotation)
             firstAnnotation->write(firstXmlStream);
@@ -672,13 +673,13 @@ bool SedmlFile::isSupported()
     std::string secondSubTaskId = std::string();
 
     for (uint i = 0; i < totalNbOfTasks; ++i) {
-        libsedml::SedTask *task = mSedmlDocument->getTask(i);
+        libsedml::SedTask *task = reinterpret_cast<libsedml::SedTask *>(mSedmlDocument->getTask(i));
 
         if (task->getTypeCode() == libsedml::SEDML_TASK_REPEATEDTASK) {
             // Make sure that the repeated task asks for the model to be reset,
             // that it has one range, no task change and one/two sub-task/s
 
-            repeatedTask = static_cast<libsedml::SedRepeatedTask *>(task);
+            repeatedTask = reinterpret_cast<libsedml::SedRepeatedTask *>(mSedmlDocument->getTask(i));
 
             if (    repeatedTask->getResetModel()
                 &&  (repeatedTask->getNumRanges() == 1)
@@ -1091,7 +1092,7 @@ bool SedmlFile::isSupported()
         bool logY = false;
 
         for (uint j = 0, jMax = plot->getNumCurves(); j < jMax; ++j) {
-            libsedml::SedCurve *curve = plot->getCurve(j);
+            libsedml::SedCurve *curve = reinterpret_cast<libsedml::SedCurve *>(plot->getCurve(j));
 
             if (initialiseLogs) {
                 initialiseLogs = false;
