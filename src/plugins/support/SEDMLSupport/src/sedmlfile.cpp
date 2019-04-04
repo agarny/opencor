@@ -147,6 +147,20 @@ libsedml::SedDocument * SedmlFile::sedmlDocument()
 
 //==============================================================================
 
+bool SedmlFile::isSedmlFile() const
+{
+    // Return whether our current SED-ML document is indeed a SED-ML file
+    // Note: a non-SED-ML file will result in our SED-ML document having one
+    //       error of id libsedml::SedNotSchemaConformant. So, we use this fact
+    //       to determine whether our current SED-ML document is indeed a SED-ML
+    //       file...
+
+    return    (mSedmlDocument->getNumErrors() != 1)
+           || (mSedmlDocument->getError(0)->getErrorId() != libsedml::SedNotSchemaConformant);
+}
+
+//==============================================================================
+
 bool SedmlFile::hasErrors() const
 {
     // Return whether our current SED-ML document has errors, be they normal
@@ -163,7 +177,7 @@ bool SedmlFile::load()
     // Check whether the file is already loaded and without any (fatal) errors
 
     if (!mLoadingNeeded)
-        return !hasErrors();
+        return isSedmlFile();
 
     mLoadingNeeded = false;
 
@@ -173,7 +187,7 @@ bool SedmlFile::load()
                          new libsedml::SedDocument(1, 4):
                          libsedml::readSedML(mFileName.toUtf8().constData());
 
-    return !hasErrors();
+    return isSedmlFile();
 }
 
 //==============================================================================
