@@ -124,6 +124,8 @@ public:
 
     void forceNew();
 
+    bool isL1V4OrLater() const;
+
     bool isValid(const QString &pFileContents, SedmlFileIssues &pIssues);
     bool isValid();
     bool isSupported();

@@ -251,6 +251,15 @@ void SedmlFile::forceNew()
 
 //==============================================================================
 
+bool SedmlFile::isL1V4OrLater() const
+{
+    // Return whether we are L1V4 or later
+
+    return mL1V4OrLater;
+}
+
+//==============================================================================
+
 bool SedmlFile::isValid(const QString &pFileContents, SedmlFileIssues &pIssues)
 {
     // Make sure that we are loaded, if the given file contents is empty (i.e.
