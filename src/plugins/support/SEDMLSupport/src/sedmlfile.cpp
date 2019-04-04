@@ -125,6 +125,7 @@ void SedmlFile::reset()
     mSedmlDocument = nullptr;
 
     mLoadingNeeded = true;
+    mL1V4OrLater = true;
 
     delete mCellmlFile;
 
@@ -186,6 +187,10 @@ bool SedmlFile::load()
     mSedmlDocument = mNew?
                          new libsedml::SedDocument(1, 4):
                          libsedml::readSedML(mFileName.toUtf8().constData());
+
+    mL1V4OrLater =    (   (mSedmlDocument->getLevel() == 1)
+                       && (mSedmlDocument->getVersion() >= 4))
+                   || (mSedmlDocument->getLevel() > 1);
 
     return isSedmlFile();
 }

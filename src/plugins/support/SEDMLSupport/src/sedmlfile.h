@@ -138,6 +138,7 @@ private:
     libsedml::SedDocument *mSedmlDocument;
 
     bool mLoadingNeeded;
+    bool mL1V4OrLater;
 
     CellMLSupport::CellmlFile *mCellmlFile;
 
