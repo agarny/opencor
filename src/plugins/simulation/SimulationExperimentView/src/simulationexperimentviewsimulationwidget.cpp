@@ -1939,7 +1939,6 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
         int graphPlotCounter;
         bool logAxisX;
         bool logAxisY;
-        char padding[2];   // Just for alignment
     } GraphsData;
 
     SimulationExperimentViewInformationGraphPanelAndGraphsWidget *graphPanelAndGraphsWidget = mContentsWidget->informationWidget()->graphPanelAndGraphsWidget();
