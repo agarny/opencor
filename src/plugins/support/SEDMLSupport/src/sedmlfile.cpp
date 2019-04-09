@@ -301,23 +301,23 @@ bool SedmlFile::isValid(const QString &pFileContents, SedmlFileIssues &pIssues)
 
     for (uint i = 0, iMax = sedmlDocument->getNumErrors(); i < iMax; ++i) {
         const libsedml::SedError *error = sedmlDocument->getError(i);
-        SedmlFileIssue::Type issueType = SedmlFileIssue::Unknown;
+        SedmlFileIssue::Type issueType = SedmlFileIssue::Type::Unknown;
 
         switch (error->getSeverity()) {
         case LIBSBML_SEV_INFO:
-            issueType = SedmlFileIssue::Information;
+            issueType = SedmlFileIssue::Type::Information;
 
             break;
         case LIBSBML_SEV_ERROR:
-            issueType = SedmlFileIssue::Error;
+            issueType = SedmlFileIssue::Type::Error;
 
             break;
         case LIBSBML_SEV_WARNING:
-            issueType = SedmlFileIssue::Warning;
+            issueType = SedmlFileIssue::Type::Warning;
 
             break;
         case LIBSBML_SEV_FATAL:
-            issueType = SedmlFileIssue::Fatal;
+            issueType = SedmlFileIssue::Type::Fatal;
 
             break;
         }
@@ -378,7 +378,7 @@ bool SedmlFile::validListPropertyValue(const libsbml::XMLNode &pPropertyNode,
             values += "'"+lineStyle+"'";
         }
 
-        mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                   int(pPropertyNode.getLine()),
                                   int(pPropertyNode.getColumn()),
                                   tr("the '%1' property must have a value of %2").arg(pPropertyName)
@@ -401,7 +401,7 @@ bool SedmlFile::validColorPropertyValue(const libsbml::XMLNode &pPropertyNode,
     static const QRegularExpression ColorRegEx = QRegularExpression("^#([[:xdigit:]]{6}|[[:xdigit:]]{8})$");
 
     if (!ColorRegEx.match(pPropertyNodeValue).hasMatch()) {
-        mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                   int(pPropertyNode.getLine()),
                                   int(pPropertyNode.getColumn()),
                                   tr("the '%1' property must have a value of '#RRGGBB' or '#AARRGGBB'").arg(pPropertyName));
@@ -424,7 +424,7 @@ bool SedmlFile::isSupported()
     // Make sure that there is only one model
 
     if (mSedmlDocument->getNumModels() != 1) {
-        mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                   tr("only SED-ML files with one model are supported"));
 
         return false;
@@ -438,7 +438,7 @@ bool SedmlFile::isSupported()
     if (   language.compare(Language::Cellml)
         && language.compare(Language::Cellml_1_0)
         && language.compare(Language::Cellml_1_1)) {
-        mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                   tr("only SED-ML files with a CellML file are supported"));
 
         return false;
@@ -449,7 +449,7 @@ bool SedmlFile::isSupported()
     uint nbOfSimulations = mSedmlDocument->getNumSimulations();
 
     if ((nbOfSimulations != 1) && (nbOfSimulations != 2)) {
-        mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                   tr("only SED-ML files with one or two simulations are supported"));
 
         return false;
@@ -460,7 +460,7 @@ bool SedmlFile::isSupported()
     libsedml::SedSimulation *firstSimulation = mSedmlDocument->getSimulation(0);
 
     if (firstSimulation->getTypeCode() != libsedml::SEDML_SIMULATION_UNIFORMTIMECOURSE) {
-        mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                   tr("only SED-ML files with a uniform time course as a (first) simulation are supported"));
 
         return false;
@@ -477,21 +477,21 @@ bool SedmlFile::isSupported()
     int nbOfPoints = uniformTimeCourse->getNumberOfPoints();
 
     if (!qFuzzyCompare(initialTime, outputStartTime)) {
-        mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                   tr("only SED-ML files with the same values for 'initialTime' and 'outputStartTime' are supported"));
 
         return false;
     }
 
     if (qFuzzyCompare(outputStartTime, outputEndTime)) {
-        mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                   tr("the values for 'outputStartTime' and 'outputEndTime' must be different"));
 
         return false;
     }
 
     if (nbOfPoints <= 0) {
-        mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                   tr("the value for 'numberOfPoints' must be greater than zero"));
 
         return false;
@@ -517,7 +517,7 @@ bool SedmlFile::isSupported()
         }
 
         if (!usedSolverInterface) {
-            mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                       tr("unsupported algorithm (%1)").arg(kisaoId));
 
             return false;
@@ -530,7 +530,7 @@ bool SedmlFile::isSupported()
             QString id = usedSolverInterface->id(kisaoId);
 
             if (id.isEmpty() || !id.compare(usedSolverInterface->solverName())) {
-                mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+                mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                           tr("unsupported algorithm parameter (%1)").arg(kisaoId));
 
                 return false;
@@ -570,7 +570,7 @@ bool SedmlFile::isSupported()
                     }
 
                     if (!validSolverProperties) {
-                        mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+                        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                                   int(solverPropertiesNode.getLine()),
                                                   int(solverPropertiesNode.getColumn()),
                                                   tr("incomplete algorithm annotation (missing algorithm property information)"));
@@ -598,7 +598,7 @@ bool SedmlFile::isSupported()
 
                     if ((nameIndex != -1) && !nlaSolverNode.getAttrValue(nameIndex).empty()) {
                         if (hasNlaSolver) {
-                            mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                                       tr("only one NLA solver is allowed"));
 
                             return false;
@@ -606,7 +606,7 @@ bool SedmlFile::isSupported()
                             hasNlaSolver = true;
                         }
                     } else {
-                        mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                                   int(nlaSolverNode.getLine()),
                                                   int(nlaSolverNode.getColumn()),
                                                   tr("incomplete simulation annotation (missing NLA solver name)"));
@@ -617,7 +617,7 @@ bool SedmlFile::isSupported()
             }
         }
     } else {
-        mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                   tr("only SED-ML files with one or two simulations with an algorithm are supported"));
 
         return false;
@@ -631,7 +631,7 @@ bool SedmlFile::isSupported()
         // Make sure that the second simulation is a one-step simulation
 
         if (secondSimulation->getTypeCode() != libsedml::SEDML_SIMULATION_ONESTEP) {
-            mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                       tr("only SED-ML files with a one-step as a second simulation are supported"));
 
             return false;
@@ -640,7 +640,7 @@ bool SedmlFile::isSupported()
         // Make sure that its step is greater than zero
 
         if (static_cast<libsedml::SedOneStep *>(secondSimulation)->getStep() <= 0) {
-            mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                       tr("the value for step must be greater than zero"));
 
             return false;
@@ -679,7 +679,7 @@ bool SedmlFile::isSupported()
             secondAnnotation->write(secondXmlStream);
 
         if (firstStream.str().compare(secondStream.str())) {
-            mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                       tr("only SED-ML files with two simulations with the same algorithm are supported"));
 
             return false;
@@ -692,7 +692,7 @@ bool SedmlFile::isSupported()
     uint totalNbOfTasks = secondSimulation?3:2;
 
     if (mSedmlDocument->getNumTasks() != totalNbOfTasks) {
-        mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                   tr("only SED-ML files that execute one or two simulations once are supported"));
 
         return false;
@@ -774,7 +774,7 @@ bool SedmlFile::isSupported()
         || !firstSubTaskOk || repeatedTaskFirstSubTaskId.compare(firstSubTaskId)
         || (     secondSimulation
             && (!secondSubTaskOk || repeatedTaskSecondSubTaskId.compare(secondSubTaskId)))) {
-        mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                   tr("only SED-ML files that execute one or two simulations once are supported"));
 
         return false;
@@ -789,7 +789,7 @@ bool SedmlFile::isSupported()
         libsedml::SedDataGenerator *dataGenerator = mSedmlDocument->getDataGenerator(i);
 
         if ((dataGenerator->getNumVariables() != 1) || dataGenerator->getNumParameters()) {
-            mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                       tr("only SED-ML files with data generators for one variable are supported"));
 
             return false;
@@ -798,14 +798,14 @@ bool SedmlFile::isSupported()
         libsedml::SedVariable *variable = dataGenerator->getVariable(0);
 
         if (variable->getSymbol().size() || variable->getModelReference().size()) {
-            mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                       tr("only SED-ML files with data generators for one variable with a target and a task reference are supported"));
 
             return false;
         }
 
         if (variable->getTaskReference().compare(repeatedTask->getId())) {
-            mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                       tr("only SED-ML files with data generators for one variable with a reference to a repeated task are supported"));
 
             return false;
@@ -839,7 +839,7 @@ bool SedmlFile::isSupported()
         }
 
         if (!referencingCellmlVariable) {
-            mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                       tr("only SED-ML files with data generators for one variable with a reference to a CellML variable are supported"));
 
             return false;
@@ -863,7 +863,7 @@ bool SedmlFile::isSupported()
                     }
 
                     if (!validVariableDegree) {
-                        mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+                        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                                   int(variableDegreeNode.getLine()),
                                                   int(variableDegreeNode.getColumn()),
                                                   tr("only SED-ML files with data generators for one variable that is derived or not are supported"));
@@ -878,7 +878,7 @@ bool SedmlFile::isSupported()
 
         if (   (mathNode->getType() != libsbml::AST_NAME)
             || variable->getId().compare(mathNode->getName())) {
-            mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                       tr("only SED-ML files with data generators for one variable that is not modified are supported"));
 
             return false;
@@ -891,7 +891,7 @@ bool SedmlFile::isSupported()
         libsedml::SedOutput *output = mSedmlDocument->getOutput(i);
 
         if (output->getTypeCode() != libsedml::SEDML_OUTPUT_PLOT2D) {
-            mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                       tr("only SED-ML files with 2D outputs are supported"));
 
             return false;
@@ -922,7 +922,7 @@ bool SedmlFile::isSupported()
                             return false;
                         } else if (   !plot2dPropertyNodeName.compare(FontSize)
                                    && !IntegerGt0RegEx.match(plot2dPropertyNodeValue).hasMatch()) {
-                            mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                                       int(plot2dPropertyNode.getLine()),
                                                       int(plot2dPropertyNode.getColumn()),
                                                       tr("the '%1' property value must be an integer greater than zero").arg(plot2dPropertyNodeName));
@@ -933,7 +933,7 @@ bool SedmlFile::isSupported()
                             return false;
                         } else if (   !plot2dPropertyNodeName.compare(Height)
                                    && !IntegerGt0RegEx.match(plot2dPropertyNodeValue).hasMatch()) {
-                            mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                                       int(plot2dPropertyNode.getLine()),
                                                       int(plot2dPropertyNode.getColumn()),
                                                       tr("the '%1' property value must be an integer greater than zero").arg(plot2dPropertyNodeName));
@@ -954,7 +954,7 @@ bool SedmlFile::isSupported()
                                     return false;
                                 } else if (   !gridLinesPropertyNodeName.compare(Width)
                                            && !IntegerGt0RegEx.match(gridLinesPropertyNodeValue).hasMatch()) {
-                                    mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                                    mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                                               int(gridLinesPropertyNode.getLine()),
                                                               int(gridLinesPropertyNode.getColumn()),
                                                               tr("the '%1' property value must be a number greater than zero").arg(gridLinesPropertyNodeName));
@@ -971,7 +971,7 @@ bool SedmlFile::isSupported()
                         } else if (   !plot2dPropertyNodeName.compare(Legend)
                                    &&  plot2dPropertyNodeValue.compare(TrueValue)
                                    &&  plot2dPropertyNodeValue.compare(FalseValue)) {
-                            mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                                       int(plot2dPropertyNode.getLine()),
                                                       int(plot2dPropertyNode.getColumn()),
                                                       tr("the '%1' property must have a value of 'true' or 'false'").arg(Legend));
@@ -992,7 +992,7 @@ bool SedmlFile::isSupported()
                                     return false;
                                 } else if (   !pointCoordinatesPropertyNodeName.compare(Width)
                                            && !IntegerGt0RegEx.match(pointCoordinatesPropertyNodeValue).hasMatch()) {
-                                    mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                                    mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                                               int(pointCoordinatesPropertyNode.getLine()),
                                                               int(pointCoordinatesPropertyNode.getColumn()),
                                                               tr("the '%1' property value must be a number greater than zero").arg(pointCoordinatesPropertyNodeName));
@@ -1041,7 +1041,7 @@ bool SedmlFile::isSupported()
                                 if (   !xAxisPropertyNodeName.compare(LogarithmicScale)
                                     &&  xAxisPropertyNodeValue.compare(TrueValue)
                                     &&  xAxisPropertyNodeValue.compare(FalseValue)) {
-                                    mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                                    mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                                               int(xAxisPropertyNode.getLine()),
                                                               int(xAxisPropertyNode.getColumn()),
                                                               tr("the '%1' property must have a value of 'true' or 'false'").arg(LogarithmicScale));
@@ -1066,7 +1066,7 @@ bool SedmlFile::isSupported()
                                 if (   !yAxisPropertyNodeName.compare(LogarithmicScale)
                                     &&  yAxisPropertyNodeValue.compare(TrueValue)
                                     &&  yAxisPropertyNodeValue.compare(FalseValue)) {
-                                    mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                                    mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                                               int(yAxisPropertyNode.getLine()),
                                                               int(yAxisPropertyNode.getColumn()),
                                                               tr("the '%1' property must have a value of 'true' or 'false'").arg(LogarithmicScale));
@@ -1089,7 +1089,7 @@ bool SedmlFile::isSupported()
                                     return false;
                                 } else if (   !zoomRegionPropertyNodeName.compare(Width)
                                            && !IntegerGt0RegEx.match(zoomRegionPropertyNodeValue).hasMatch()) {
-                                    mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                                    mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                                               int(zoomRegionPropertyNode.getLine()),
                                                               int(zoomRegionPropertyNode.getColumn()),
                                                               tr("the '%1' property value must be a number greater than zero").arg(zoomRegionPropertyNodeName));
@@ -1104,7 +1104,7 @@ bool SedmlFile::isSupported()
                                 } else if (   !zoomRegionPropertyNodeName.compare(Filled)
                                            &&  zoomRegionPropertyNodeValue.compare(TrueValue)
                                            &&  zoomRegionPropertyNodeValue.compare(FalseValue)) {
-                                           mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                                           mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                                                      int(zoomRegionPropertyNode.getLine()),
                                                                      int(zoomRegionPropertyNode.getColumn()),
                                                                      tr("the '%1' property must have a value of 'true' or 'false'").arg(Filled));
@@ -1140,7 +1140,7 @@ bool SedmlFile::isSupported()
             }
 
             if ((curve->getLogX() != logX) || (curve->getLogY() != logY)) {
-                mIssues << SedmlFileIssue(SedmlFileIssue::Information,
+                mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                           tr("only SED-ML files with curves of the same type (with regards to linear/logarithmic scaling) are supported"));
 
                 return false;
@@ -1148,7 +1148,7 @@ bool SedmlFile::isSupported()
 
             if (   !mSedmlDocument->getDataGenerator(curve->getXDataReference())
                 || !mSedmlDocument->getDataGenerator(curve->getYDataReference())) {
-                mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                           tr("a curve must reference existing data generators"));
 
                 return false;
@@ -1180,7 +1180,7 @@ bool SedmlFile::isSupported()
                                         return false;
                                     } else if (   !linePropertyNodeName.compare(Width)
                                                && !IntegerGt0RegEx.match(linePropertyNodeValue).hasMatch()) {
-                                        mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                                        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                                                   int(linePropertyNode.getLine()),
                                                                   int(linePropertyNode.getColumn()),
                                                                   tr("the '%1' property value must be a number greater than zero").arg(linePropertyNodeName));
@@ -1202,7 +1202,7 @@ bool SedmlFile::isSupported()
                                         return false;
                                     } else if (   !symbolPropertyNodeName.compare(Size)
                                                && !IntegerGt0RegEx.match(symbolPropertyNodeValue).hasMatch()) {
-                                        mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                                        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                                                   int(symbolPropertyNode.getLine()),
                                                                   int(symbolPropertyNode.getColumn()),
                                                                   tr("the '%1' property value must be an integer greater than zero").arg(symbolPropertyNodeName));
@@ -1214,7 +1214,7 @@ bool SedmlFile::isSupported()
                                     } else if (   !symbolPropertyNodeName.compare(Filled)
                                                &&  symbolPropertyNodeValue.compare(TrueValue)
                                                &&  symbolPropertyNodeValue.compare(FalseValue)) {
-                                        mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                                        mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                                                   int(symbolPropertyNode.getLine()),
                                                                   int(symbolPropertyNode.getColumn()),
                                                                   tr("the '%1' property must have a value of 'true' or 'false'").arg(Filled));
@@ -1286,7 +1286,7 @@ CellMLSupport::CellmlFile * SedmlFile::cellmlFile()
                                                                        << mCellmlFile->dependencies(true));
                 }
             } else {
-                mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                           tr("%1 could not be found").arg(modelSource));
             }
         } else {
@@ -1313,15 +1313,15 @@ CellMLSupport::CellmlFile * SedmlFile::cellmlFile()
                 QString cellmlFileName = Core::temporaryFileName();
 
                 if (Core::writeFile(cellmlFileName, fileContents)) {
-                    fileManagerInstance->manage(cellmlFileName, Core::File::Remote, modelSource);
+                    fileManagerInstance->manage(cellmlFileName, Core::File::Type::Remote, modelSource);
 
                     mCellmlFile = new CellMLSupport::CellmlFile(cellmlFileName);
                 } else {
-                    mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                    mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                               tr("%1 could not be saved").arg(modelSource));
                 }
             } else {
-                mIssues << SedmlFileIssue(SedmlFileIssue::Error,
+                mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
                                           tr("%1 could not be retrieved (%2)").arg(modelSource)
                                                                               .arg(Core::formatMessage(errorMessage)));
             }

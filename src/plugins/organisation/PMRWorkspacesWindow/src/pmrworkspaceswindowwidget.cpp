@@ -138,7 +138,7 @@ int PmrWorkspacesWindowItem::type() const
 {
     // Return our type
 
-    return mType;
+    return int(mType);
 }
 
 //==============================================================================
@@ -219,11 +219,11 @@ bool PmrWorkspacesWindowProxyModel::lessThan(const QModelIndex &pSourceLeft,
     int leftType = static_cast<PmrWorkspacesWindowItem *>(mModel->itemFromIndex(pSourceLeft))->type();
     int rightType = static_cast<PmrWorkspacesWindowItem *>(mModel->itemFromIndex(pSourceRight))->type();
 
-    if (   (leftType != PmrWorkspacesWindowItem::File)
-        && (rightType == PmrWorkspacesWindowItem::File)) {
+    if (   (leftType != int(PmrWorkspacesWindowItem::Type::File))
+        && (rightType == int(PmrWorkspacesWindowItem::Type::File))) {
         return true;
-    } else if (   (leftType == PmrWorkspacesWindowItem::File)
-               && (rightType != PmrWorkspacesWindowItem::File)) {
+    } else if (   (leftType == int(PmrWorkspacesWindowItem::Type::File))
+               && (rightType != int(PmrWorkspacesWindowItem::Type::File))) {
         return false;
     } else {
         return QSortFilterProxyModel::lessThan(pSourceLeft, pSourceRight);
@@ -626,7 +626,7 @@ void PmrWorkspacesWindowWidget::keyPressEvent(QKeyEvent *pEvent)
     for (int i = 0, iMax = items.count(); i < iMax; ++i) {
         PmrWorkspacesWindowItem *item = static_cast<PmrWorkspacesWindowItem *>(mModel->itemFromIndex(mProxyModel->mapToSource(items[i])));
 
-        if (item->type() == PmrWorkspacesWindowItem::File) {
+        if (item->type() == int(PmrWorkspacesWindowItem::Type::File)) {
             fileNames << item->fileNode()->path();
         } else {
             fileNames = QStringList();
@@ -678,8 +678,8 @@ void PmrWorkspacesWindowWidget::reset(const QString &pPmrUrl)
 
     mInitialized = false;
 
-    mMessageType = None;
-    mMessage = QString();
+    mMessage = Message::None;
+    mString = QString();
     mAuthenticated = false;
 }
 
@@ -693,7 +693,7 @@ void PmrWorkspacesWindowWidget::updateGui(bool pForceUserMessageVisibility)
         mUserMessageWidget->setIconMessage(":/oxygen/actions/help-hint.png",
                                            tr("Authenticate yourself..."),
                                            tr("Click on the top-right button."));
-    } else if (mMessage.isEmpty()) {
+    } else if (mString.isEmpty()) {
         if (!PMRSupport::PmrWorkspaceManager::instance()->count()) {
             mUserMessageWidget->setIconMessage(":/oxygen/actions/help-about.png",
                                                tr("No workspaces were found..."));
@@ -701,20 +701,20 @@ void PmrWorkspacesWindowWidget::updateGui(bool pForceUserMessageVisibility)
             mUserMessageWidget->resetMessage();
         }
     } else {
-        switch (mMessageType) {
-        case Information:
+        switch (mMessage) {
+        case Message::Information:
             mUserMessageWidget->setIconMessage(":/oxygen/actions/help-about.png",
-                                               Core::formatMessage(mMessage, false, true));
+                                               Core::formatMessage(mString, false, true));
 
             break;
-        case Error:
+        case Message::Error:
             mUserMessageWidget->setIconMessage(":/oxygen/emblems/emblem-important.png",
-                                               Core::formatMessage(mMessage, false, true));
+                                               Core::formatMessage(mString, false, true));
 
             break;
-        case Warning:
+        case Message::Warning:
             mUserMessageWidget->setIconMessage(":/oxygen/status/task-attention.png",
-                                               Core::formatMessage(mMessage, false, true));
+                                               Core::formatMessage(mString, false, true));
 
             break;
         default:
@@ -733,8 +733,8 @@ void PmrWorkspacesWindowWidget::updateGui(bool pForceUserMessageVisibility)
 //==============================================================================
 
 void PmrWorkspacesWindowWidget::initialize(const PMRSupport::PmrWorkspaces &pWorkspaces,
-                                           MessageType pMessageType,
-                                           const QString &pMessage,
+                                           Message pMessage,
+                                           const QString &pString,
                                            bool pAuthenticated)
 {
     // Initialise / keep track of some properties
@@ -743,11 +743,11 @@ void PmrWorkspacesWindowWidget::initialize(const PMRSupport::PmrWorkspaces &pWor
 
     workspaceManager->clearWorkspaces();
 
-    mMessageType = pMessageType;
     mMessage = pMessage;
+    mString = pString;
     mAuthenticated = pAuthenticated;
 
-    if (pMessage.isEmpty() && pAuthenticated) {
+    if (pString.isEmpty() && pAuthenticated) {
         // Reconcile the URLs of my-workspaces (on PMR) with those from our
         // workspace folders (in doing so, folders/URLs that don't correspond to
         // an actual PMR workspace are pruned from the relevant maps)
@@ -817,7 +817,7 @@ void PmrWorkspacesWindowWidget::initialize(const PMRSupport::PmrWorkspaces &pWor
         addWorkspace(workspace);
 
     updateGui(   (pWorkspaces == PMRSupport::PmrWorkspaces())
-              && pMessage.isEmpty() && !pAuthenticated);
+              && pString.isEmpty() && !pAuthenticated);
 
     mInitialized = true;
 }
@@ -828,7 +828,7 @@ void PmrWorkspacesWindowWidget::initialize(const PMRSupport::PmrWorkspaces &pWor
 {
     // Initialise ourselves using the given workspaces
 
-    initialize(pWorkspaces, None, QString(), true);
+    initialize(pWorkspaces, Message::None, QString(), true);
 }
 
 //==============================================================================
@@ -837,17 +837,17 @@ void PmrWorkspacesWindowWidget::initialize()
 {
     // Initialise ourselves
 
-    initialize(PMRSupport::PmrWorkspaces(), None, QString(), false);
+    initialize(PMRSupport::PmrWorkspaces(), Message::None, QString(), false);
 }
 
 //==============================================================================
 
-void PmrWorkspacesWindowWidget::initialize(MessageType pMessageType,
-                                           const QString &pMessage)
+void PmrWorkspacesWindowWidget::initialize(Message pMessage,
+                                           const QString &pString)
 {
     // Initialise ourselves using the given message
 
-    initialize(PMRSupport::PmrWorkspaces(), pMessageType, pMessage, true);
+    initialize(PMRSupport::PmrWorkspaces(), pMessage, pString, true);
 }
 
 //==============================================================================
@@ -987,8 +987,8 @@ void PmrWorkspacesWindowWidget::addWorkspace(PMRSupport::PmrWorkspace *pWorkspac
     retrieveWorkspaceIcons(pWorkspace, collapsedIcon, expandedIcon);
 
     PmrWorkspacesWindowItem *item = new PmrWorkspacesWindowItem(pWorkspace->isOwned()?
-                                                                    PmrWorkspacesWindowItem::OwnedWorkspace:
-                                                                    PmrWorkspacesWindowItem::Workspace,
+                                                                    PmrWorkspacesWindowItem::Type::OwnedWorkspace:
+                                                                    PmrWorkspacesWindowItem::Type::Workspace,
                                                                 this,
                                                                 mProxyModel,
                                                                 pWorkspace,
@@ -1044,7 +1044,7 @@ PmrWorkspacesWindowItems PmrWorkspacesWindowWidget::populateWorkspace(PMRSupport
         if (fileNode->hasChildren()) {
             PmrWorkspacesWindowItem *folderItem = newItem?
                                                       newItem:
-                                                      new PmrWorkspacesWindowItem(PmrWorkspacesWindowItem::Folder,
+                                                      new PmrWorkspacesWindowItem(PmrWorkspacesWindowItem::Type::Folder,
                                                                                   this,
                                                                                   mProxyModel,
                                                                                   pWorkspace,
@@ -1146,7 +1146,7 @@ PmrWorkspacesWindowItems PmrWorkspacesWindowWidget::populateWorkspace(PMRSupport
             } else {
                 // We don't already have an item, so create one and add it
 
-                newItem = new PmrWorkspacesWindowItem(PmrWorkspacesWindowItem::File,
+                newItem = new PmrWorkspacesWindowItem(PmrWorkspacesWindowItem::Type::File,
                                                       this, mProxyModel,
                                                       pWorkspace, fileNode, icon);
 
@@ -1348,7 +1348,7 @@ void PmrWorkspacesWindowWidget::itemDoubleClicked()
 
     PmrWorkspacesWindowItem *item = currentItem();
 
-    if (item->type() == PmrWorkspacesWindowItem::File)
+    if (item->type() == int(PmrWorkspacesWindowItem::Type::File))
         emit openFileRequested(item->fileNode()->path());
 }
 

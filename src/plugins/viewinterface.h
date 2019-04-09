@@ -41,16 +41,16 @@ extern "C" Q_DECL_EXPORT int viewInterfaceVersion();
 class ViewInterface
 {
 public:
-    enum Mode {
-        UnknownMode,
+    enum class Mode {
+        Unknown,
 #ifdef ENABLE_SAMPLE_PLUGINS
-        SampleMode,
+        Sample,
 #endif
 #ifdef ENABLE_TEST_PLUGINS
-        TestMode,
+        Test,
 #endif
-        EditingMode,
-        SimulationMode
+        Editing,
+        Simulation
     };
 
     virtual ~ViewInterface();
