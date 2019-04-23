@@ -51,7 +51,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //==============================================================================
 
-#include "libcellml/parser.h"
+#include "libcellmlbegin.h"
+    #include "libcellml/parser.h"
+#include "libcellmlend.h"
 
 //==============================================================================
 
@@ -1086,8 +1088,10 @@ bool CellmlFile::exportTo(const QString &pFileName, Version pVersion,
             // To export to CellML 2.0, the model must be in a CellML 1.0 or 1.1
             // format
 
-            if ((modelVersion != Cellml_1_0) && (modelVersion != Cellml_1_1))
+            if (   (modelVersion != Version::Cellml_1_0)
+                && (modelVersion != Version::Cellml_1_1)) {
                 return false;
+            }
 
             break;
         }
@@ -1095,7 +1099,7 @@ bool CellmlFile::exportTo(const QString &pFileName, Version pVersion,
         // Do the actual export to CellML 1.0 or CellML 2.0, after having fully
         // instantiated all the imports, if we are to export to CellML 1.0
 
-        if (pVersion == Cellml_1_0) {
+        if (pVersion == Version::Cellml_1_0) {
             if (!fullyInstantiateImports(mModel, mIssues, pWithBusyWidget)) {
                 return false;
             }
@@ -1103,7 +1107,7 @@ bool CellmlFile::exportTo(const QString &pFileName, Version pVersion,
             CellmlFileCellml10Exporter exporter(mModel, pFileName);
 
             if (!exporter.errorMessage().isEmpty()) {
-                mIssues << CellmlFileIssue(CellmlFileIssue::Error,
+                mIssues << CellmlFileIssue(CellmlFileIssue::Type::Error,
                                            exporter.errorMessage());
             }
 
@@ -1113,7 +1117,7 @@ bool CellmlFile::exportTo(const QString &pFileName, Version pVersion,
         CellmlFileCellml20Exporter exporter(mFileName, pFileName);
 
         if (!exporter.errorMessage().isEmpty()) {
-            mIssues << CellmlFileIssue(CellmlFileIssue::Error,
+            mIssues << CellmlFileIssue(CellmlFileIssue::Type::Error,
                                        exporter.errorMessage());
         }
 
@@ -1208,7 +1212,7 @@ CellmlFile::Version CellmlFile::version()
     if (load()) {
         return (mModel != nullptr)?
                     modelVersion(mModel):
-                    Versopm::Cellml_2_0;
+                    Version::Cellml_2_0;
     }
 
     return Version::Unknown;
@@ -1294,7 +1298,7 @@ QString CellmlFile::versionAsString(Version pVersion)
         return "CellML 1.0";
     case Version::Cellml_1_1:
         return "CellML 1.1";
-    case Cellml_2_0:
+    case Version::Cellml_2_0:
         return "CellML 2.0";
     }
 

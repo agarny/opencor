@@ -285,14 +285,14 @@ void CellMLToolsPlugin::exportTo(CellMLSupport::CellmlFile::Version pVersion)
 {
     // Make sure that we want to export either to CellML 1.0 or CellML 2.0
 
-    if (   (pVersion != CellMLSupport::CellmlFile::Cellml_1_0)
-        && (pVersion != CellMLSupport::CellmlFile::Cellml_2_0)) {
+    if (   (pVersion != CellMLSupport::CellmlFile::Version::Cellml_1_0)
+        && (pVersion != CellMLSupport::CellmlFile::Version::Cellml_2_0)) {
         return;
     }
 
     // Ask for the name of the file that will contain the export
 
-    QString format = (pVersion == CellMLSupport::CellmlFile::Cellml_1_0)?
+    QString format = (pVersion == CellMLSupport::CellmlFile::Version::Cellml_1_0)?
                          "CellML 1.0":
                          "CellML 2.0";
     QStringList cellmlFilters = Core::filters(FileTypeInterfaces() << CellMLSupport::fileTypeInterface());
@@ -440,8 +440,8 @@ int CellMLToolsPlugin::runCommand(Command pCommand,
                                    && (cellmlVersion != CellMLSupport::CellmlFile::Version::Cellml_1_1)) {
                             output = "The file must be a CellML 1.1 file.";
                         } else if (   isCellml20Format
-                                   && (cellmlVersion != CellMLSupport::CellmlFile::Cellml_1_0)
-                                   && (cellmlVersion != CellMLSupport::CellmlFile::Cellml_1_1)) {
+                                   && (cellmlVersion != CellMLSupport::CellmlFile::Version::Cellml_1_0)
+                                   && (cellmlVersion != CellMLSupport::CellmlFile::Version::Cellml_1_1)) {
                             output = "The file must be a CellML 1.0/1.1 file.";
                         } else {
                             // Everything seems to be fine, so attempt the
@@ -545,7 +545,7 @@ void CellMLToolsPlugin::exportToCellml20()
 {
     // Export the current file to CellML 2.0
 
-    exportTo(CellMLSupport::CellmlFile::Cellml_2_0);
+    exportTo(CellMLSupport::CellmlFile::Version::Cellml_2_0);
 }
 
 //==============================================================================

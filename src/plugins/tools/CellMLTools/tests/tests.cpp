@@ -157,27 +157,27 @@ void Tests::exportToCellml20Tests()
 
     QString fileName = OpenCOR::fileName("src/plugins/tools/CellMLTools/tests/data/noble_model_1962_cellml_2_0_export.out");
 
-    QCOMPARE(OpenCOR::runCli(QStringList() << "-c" << "CellMLTools::export" << fileName << "cellml_2_0"),
-             QStringList() << "The file must be a CellML 1.0/1.1 file." << QString());
+    QVERIFY(OpenCOR::runCli(QStringList() << "-c" << "CellMLTools::export" << fileName << "cellml_2_0", mOutput));
+    QCOMPARE(mOutput, QStringList() << "The file must be a CellML 1.0/1.1 file." << QString());
 
     // Export a CellML 1.0 file to CellML 2.0
 
     fileName = OpenCOR::fileName("models/noble_model_1962.cellml");
 
-    QCOMPARE(OpenCOR::runCli(QStringList() << "-c" << "CellMLTools::export" << fileName << "cellml_2_0"),
-             OpenCOR::fileContents(OpenCOR::fileName("src/plugins/tools/CellMLTools/tests/data/noble_model_1962_cellml_2_0_export.out")) << QString());
+    QVERIFY(!OpenCOR::runCli(QStringList() << "-c" << "CellMLTools::export" << fileName << "cellml_2_0", mOutput));
+    QCOMPARE(mOutput, OpenCOR::fileContents(OpenCOR::fileName("src/plugins/tools/CellMLTools/tests/data/noble_model_1962_cellml_2_0_export.out")) << QString());
 
     // Export a CellML 1.1 file to CellML 2.0
 
-    fileName = OpenCOR::fileName("doc/developer/functionalTests/res/cellml/cellml_1_1/experiments/periodic-stimulus.xml");
+    fileName = OpenCOR::fileName("models/tests/cellml/cellml_1_1/experiments/periodic-stimulus.xml");
 
-    QCOMPARE(OpenCOR::runCli(QStringList() << "-c" << "CellMLTools::export" << fileName << "cellml_2_0"),
-             OpenCOR::fileContents(OpenCOR::fileName("src/plugins/tools/CellMLTools/tests/data/periodic-stimulus_2_0_export.out")) << QString());
+    QVERIFY(!OpenCOR::runCli(QStringList() << "-c" << "CellMLTools::export" << fileName << "cellml_2_0", mOutput));
+    QCOMPARE(mOutput, OpenCOR::fileContents(OpenCOR::fileName("src/plugins/tools/CellMLTools/tests/data/periodic-stimulus_2_0_export.out")) << QString());
 
     // Try to export a non-existing CellML file to CellML 2.0
 
-    QCOMPARE(OpenCOR::runCli(QStringList() << "-c" << "CellMLTools::export" << "non_existing_file" << "cellml_2_0"),
-             QStringList() << "The file could not be found." << QString());
+    QVERIFY(OpenCOR::runCli(QStringList() << "-c" << "CellMLTools::export" << "non_existing_file" << "cellml_2_0", mOutput));
+    QCOMPARE(mOutput, QStringList() << "The file could not be found." << QString());
 }
 
 //==============================================================================

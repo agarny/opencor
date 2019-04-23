@@ -1,19 +1,20 @@
-<model xmlns="http://www.cellml.org/cellml/2.0#" name="periodic_stimulus">
-    <import xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../components/units.xml">
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="periodic_stimulus" xmlns="http://www.cellml.org/cellml/2.0#">
+    <import xlink:href="../components/units.xml" xmlns:xlink="http://www.w3.org/1999/xlink">
         <units name="ms" units_ref="ms"/>
         <units name="mV" units_ref="mV"/>
         <units name="uA_per_cmsq" units_ref="uA_per_cmsq"/>
     </import>
-    <import xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../components/stimulated.xml">
+    <import xlink:href="../components/stimulated.xml" xmlns:xlink="http://www.w3.org/1999/xlink">
         <component component_ref="action_potential" name="_model"/>
     </import>
-    <import xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="periodic-IStim-protocol.xml">
+    <import xlink:href="periodic-IStim-protocol.xml" xmlns:xlink="http://www.w3.org/1999/xlink">
         <component component_ref="stimulus_protocol" name="stimulus_protocol"/>
     </import>
-    <import xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="time.xml">
+    <import xlink:href="time.xml" xmlns:xlink="http://www.w3.org/1999/xlink">
         <component component_ref="time" name="time"/>
     </import>
-    <import xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../components/default-variable-values.xml">
+    <import xlink:href="../components/default-variable-values.xml" xmlns:xlink="http://www.w3.org/1999/xlink">
         <component component_ref="parameters" name="default_parameters"/>
         <component component_ref="initial_conditions" name="default_initial_conditions"/>
     </import>
@@ -26,9 +27,9 @@
     </connection>
     <!-- Define the stimulus protocol parameter values -->
     <component name="stimulus_protocol_params">
-        <variable initial_value="50" name="stimPeriod" units="ms" interface="public"/>
-        <variable initial_value="0.5" name="stimDuration" units="ms" interface="public"/>
-        <variable initial_value="-10" name="stimCurrent" units="uA_per_cmsq" interface="public"/>
+        <variable initial_value="50" interface="public" name="stimPeriod" units="ms"/>
+        <variable initial_value="0.5" interface="public" name="stimDuration" units="ms"/>
+        <variable initial_value="-10" interface="public" name="stimCurrent" units="uA_per_cmsq"/>
     </component>
     <!-- and connect the parameters to the protocol definition -->
     <connection component_1="stimulus_protocol_params" component_2="stimulus_protocol">
@@ -62,15 +63,15 @@
     </connection>
     <!-- SED-ML (and CSim simulation description above) is only able to address variables at the top level of the model hierarchy, so we need to define the variables we want SED-ML to be able to address here. -->
     <component name="outputs">
-        <variable name="time" units="ms" interface="public"/>
-        <variable name="INa" units="uA_per_cmsq" interface="public"/>
-        <variable name="IK" units="uA_per_cmsq" interface="public"/>
-        <variable name="Ileak" units="uA_per_cmsq" interface="public"/>
-        <variable name="V" units="mV" interface="public"/>
-        <variable name="minus_V" units="mV" interface="public"/>
-        <variable name="h" units="dimensionless" interface="public"/>
-        <variable name="m" units="dimensionless" interface="public"/>
-        <variable name="n" units="dimensionless" interface="public"/>
+        <variable interface="public" name="time" units="ms"/>
+        <variable interface="public" name="INa" units="uA_per_cmsq"/>
+        <variable interface="public" name="IK" units="uA_per_cmsq"/>
+        <variable interface="public" name="Ileak" units="uA_per_cmsq"/>
+        <variable interface="public" name="V" units="mV"/>
+        <variable interface="public" name="minus_V" units="mV"/>
+        <variable interface="public" name="h" units="dimensionless"/>
+        <variable interface="public" name="m" units="dimensionless"/>
+        <variable interface="public" name="n" units="dimensionless"/>
     </component>
     <!-- and connect the output variable definitions to their actual source in the model -->
     <connection component_1="outputs" component_2="_model">

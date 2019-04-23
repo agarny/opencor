@@ -18,34 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 
 //==============================================================================
-// libCellML plugin
+// libCellML end
 //==============================================================================
 
-#include "libcellmlplugin.h"
-
-//==============================================================================
-
-namespace OpenCOR {
-namespace libCellML {
-
-//==============================================================================
-
-PLUGININFO_FUNC libCellMLPluginInfo()
-{
-    Descriptions descriptions;
-
-    descriptions.insert("en", QString::fromUtf8("a plugin to access <a href=\"http://libcellml.readthedocs.io/\">libCellML</a>."));
-    descriptions.insert("fr", QString::fromUtf8("une extension pour accéder <a href=\"http://libcellml.readthedocs.io/\">libCellML</a>."));
-
-    return new PluginInfo(PluginInfo::Category::ThirdParty, false, false,
-                          QStringList(),
-                          descriptions);
-}
-
-//==============================================================================
-
-}   // namespace libCellML
-}   // namespace OpenCOR
+#ifdef Q_OS_MAC
+    #pragma clang diagnostic pop
+#endif
 
 //==============================================================================
 // End of file

@@ -1873,7 +1873,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
 
     namespaces->add((cellmlVersion == CellMLSupport::CellmlFile::Version::Cellml_1_0)?
                         CellMLSupport::Cellml_1_0_Namespace.toStdString():
-                        (cellmlVersion == CellMLSupport::CellmlFile::Cellml_1_1)?
+                        (cellmlVersion == CellMLSupport::CellmlFile::Version::Cellml_1_1)?
                             CellMLSupport::Cellml_1_1_Namespace.toStdString():
                             CellMLSupport::Cellml_2_0_Namespace.toStdString(),
                     "cellml");
@@ -1885,7 +1885,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
     sedmlModel->setId("model");
     sedmlModel->setLanguage((cellmlVersion == CellMLSupport::CellmlFile::Version::Cellml_1_0)?
                                 SEDMLSupport::Language::Cellml_1_0.toStdString():
-                                (cellmlVersion == CellMLSupport::CellmlFile::Cellml_1_1)?
+                                (cellmlVersion == CellMLSupport::CellmlFile::Version::Cellml_1_1)?
                                     SEDMLSupport::Language::Cellml_1_1.toStdString():
                                     SEDMLSupport::Language::Cellml_2_0.toStdString());
     sedmlModel->setSource(pModelSource.toStdString());
@@ -2408,11 +2408,11 @@ void SimulationExperimentViewSimulationWidget::sedmlExportCombineArchive(const Q
             CellMLSupport::CellmlFile::Version cellmlVersion = cellmlFile->version();
 
             if (combineArchive->addFile(localCellmlFileName, modelSource,
-                                        (cellmlVersion == CellMLSupport::CellmlFile::Cellml_1_0)?
-                                            COMBINESupport::CombineArchiveFile::Cellml_1_0:
-                                            (cellmlVersion == CellMLSupport::CellmlFile::Cellml_1_1)?
-                                                COMBINESupport::CombineArchiveFile::Cellml_1_1:
-                                                COMBINESupport::CombineArchiveFile::Cellml_2_0)) {
+                                        (cellmlVersion == CellMLSupport::CellmlFile::Version::Cellml_1_0)?
+                                            COMBINESupport::CombineArchiveFile::Format::Cellml_1_0:
+                                            (cellmlVersion == CellMLSupport::CellmlFile::Version::Cellml_1_1)?
+                                                COMBINESupport::CombineArchiveFile::Format::Cellml_1_1:
+                                                COMBINESupport::CombineArchiveFile::Format::Cellml_2_0)) {
                 for (const auto &importedFileName : cellmlFile->importedFileNames()) {
                     QString realImportedFileName = remoteCellmlFile?
                                                        remoteImportedFileNames.value(importedFileName):
