@@ -210,6 +210,7 @@ class PropertyItem : public QStandardItem
 {
 public:
     explicit PropertyItem(Property *pOwner);
+    ~PropertyItem() override;
 
     Property *owner() const;
 
@@ -482,8 +483,8 @@ private slots:
 
 //==============================================================================
 
-}   // namespace Core
-}   // namespace OpenCOR
+} // namespace Core
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file

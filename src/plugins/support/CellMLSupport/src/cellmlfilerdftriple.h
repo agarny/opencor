@@ -96,11 +96,11 @@ public:
     explicit CellmlFileRdfTriple(CellmlFile *pCellmlFile,
                                  iface::rdf_api::Triple *pRdfTriple);
     explicit CellmlFileRdfTriple(CellmlFile *pCellmlFile,
-                                 const QString pSubject,
+                                 const QString &pSubject,
                                  ModelQualifier pModelQualifier,
                                  const QString &pResource, const QString &pId);
     explicit CellmlFileRdfTriple(CellmlFile *pCellmlFile,
-                                 const QString pSubject,
+                                 const QString &pSubject,
                                  BioQualifier pBioQualifier,
                                  const QString &pResource, const QString &pId);
     ~CellmlFileRdfTriple();
@@ -193,8 +193,8 @@ private:
 
 //==============================================================================
 
-}   // namespace CellMLSupport
-}   // namespace OpenCOR
+} // namespace CellMLSupport
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file

@@ -105,6 +105,8 @@ protected:
 class NlaSolver : public Solver
 {
 public:
+    ~NlaSolver() override;
+
     typedef void (*ComputeSystemFunction)(double *, double *, void *);
 
     virtual void solve(ComputeSystemFunction pComputeSystem,
@@ -169,7 +171,7 @@ typedef QList<Property> Properties;
 
 //==============================================================================
 
-}   // namespace Solver
+} // namespace Solver
 
 //==============================================================================
 
@@ -193,7 +195,7 @@ typedef QList<SolverInterface *> SolverInterfaces;
 
 //==============================================================================
 
-}   // namespace OpenCOR
+} // namespace OpenCOR
 
 //==============================================================================
 

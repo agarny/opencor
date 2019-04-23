@@ -42,7 +42,7 @@ class EditorWidgetScrollBar;
 
 //==============================================================================
 
-class EDITORWIDGET_EXPORT EditorWidgetEditorWidget : public QScintillaSupport::QScintillaWidget
+class EDITORWIDGET_EXPORT EditorWidgetEditorWidget : public QScintillaWidget::QScintillaWidget
 {
     Q_OBJECT
 
@@ -120,8 +120,8 @@ private slots:
 
 //==============================================================================
 
-}   // namespace EditorWidget
-}   // namespace OpenCOR
+} // namespace EditorWidget
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file

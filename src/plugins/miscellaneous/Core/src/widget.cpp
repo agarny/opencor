@@ -84,8 +84,9 @@ QLayout * Widget::createLayout(Layout pLayoutType)
 
     layout->setContentsMargins(QMargins());
 
-    if ((pLayoutType == Layout::Vertical) || (pLayoutType == Layout::Horizontal))
+    if ((pLayoutType == Layout::Vertical) || (pLayoutType == Layout::Horizontal)) {
         layout->setSpacing(0);
+    }
 
     setLayout(layout);
 
@@ -111,16 +112,17 @@ QSize Widget::sizeHint() const
 {
     // Suggest our default size for the widget
 
-    if (mSizeHint.isValid())
+    if (mSizeHint.isValid()) {
         return mSizeHint;
-    else
-        return QWidget::sizeHint();
+    }
+
+    return QWidget::sizeHint();
 }
 
 //==============================================================================
 
-}   // namespace Core
-}   // namespace OpenCOR
+} // namespace Core
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file

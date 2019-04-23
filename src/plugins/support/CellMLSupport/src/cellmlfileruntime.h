@@ -55,7 +55,7 @@ namespace OpenCOR {
 
 namespace Compiler {
     class CompilerEngine;
-}   // namespace Compiler
+} // namespace Compiler
 
 //==============================================================================
 
@@ -163,7 +163,7 @@ public:
     CellmlFileIssues issues() const;
 
     CellmlFileRuntimeParameters parameters() const;
-    CellmlFileRuntimeParameters dataParameters(double *pData = nullptr) const;
+    CellmlFileRuntimeParameters dataParameters(const double *pData = nullptr) const;
 
     CellmlFileRuntimeParameter * voi() const;
 
@@ -211,8 +211,8 @@ private:
 
 //==============================================================================
 
-}   // namespace CellMLSupport
-}   // namespace OpenCOR
+} // namespace CellMLSupport
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file

@@ -62,7 +62,7 @@ FileBrowserWindowWindow::FileBrowserWindowWindow(QWidget *pParent) :
 
     // Create a tool bar widget with different buttons
 
-    Core::ToolBarWidget *toolBarWidget = new Core::ToolBarWidget();
+    auto toolBarWidget = new Core::ToolBarWidget();
 
     toolBarWidget->addAction(mGui->actionHome);
     toolBarWidget->addSeparator();
@@ -223,8 +223,8 @@ void FileBrowserWindowWindow::itemDoubleClicked()
 
 //==============================================================================
 
-}   // namespace FileBrowserWindow
-}   // namespace OpenCOR
+} // namespace FileBrowserWindow
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file

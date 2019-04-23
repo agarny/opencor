@@ -171,7 +171,7 @@ private:
 
     void updateFileTab(int pIndex, bool pIconOnly = false);
 
-    void updateStatusBarWidgets(QList<QWidget *> pWidgets);
+    void updateStatusBarWidgets(const QList<QWidget *> &pWidgets);
 
     void fileReloadedOrSaved(const QString &pFileName, bool pFileReloaded);
 
@@ -245,8 +245,8 @@ private slots:
 
 //==============================================================================
 
-}   // namespace Core
-}   // namespace OpenCOR
+} // namespace Core
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file

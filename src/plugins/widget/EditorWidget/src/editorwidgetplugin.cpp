@@ -38,7 +38,7 @@ PLUGININFO_FUNC EditorWidgetPluginInfo()
     descriptions.insert("fr", QString::fromUtf8("une extension pour éditer et afficher du texte."));
 
     return new PluginInfo(PluginInfo::Category::Widget, false, false,
-                          QStringList() << "QScintillaSupport",
+                          QStringList() << "QScintillaWidget",
                           descriptions);
 }
 
@@ -56,8 +56,8 @@ void EditorWidgetPlugin::retranslateUi()
 
 //==============================================================================
 
-}   // namespace EditorWidget
-}   // namespace OpenCOR
+} // namespace EditorWidget
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file

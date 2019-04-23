@@ -29,9 +29,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //==============================================================================
 
 #include <QApplication>
+#include <QClipboard>
 #include <QKeyEvent>
 #include <QMenu>
-#include <QClipboard>
 
 //==============================================================================
 
@@ -42,7 +42,6 @@ namespace EditorWidget {
 
 EditorListItem::EditorListItem(Type pType, int pLine, int pColumn,
                                const QString &pMessage) :
-    QStandardItem(),
     mType(pType),
     mLine(pLine),
     mColumn(pColumn),
@@ -99,7 +98,6 @@ EditorListItem::EditorListItem(Type pType, int pLine, int pColumn,
 
         break;
     }
-
 }
 
 //==============================================================================
@@ -258,7 +256,7 @@ void EditorListWidget::selectFirstItem()
 
     QStandardItem *firstItem = mModel->invisibleRootItem()->child(0);
 
-    if (firstItem) {
+    if (firstItem != nullptr) {
         QModelIndex firstItemIndex = firstItem->index();
 
         setCurrentIndex(firstItemIndex);
@@ -286,8 +284,9 @@ void EditorListWidget::keyPressEvent(QKeyEvent *pEvent)
 
     // Check whether the user wants the current item to be requested
 
-    if ((pEvent->key() == Qt::Key_Enter) || (pEvent->key() == Qt::Key_Return))
+    if ((pEvent->key() == Qt::Key_Enter) || (pEvent->key() == Qt::Key_Return)) {
         requestItem(currentIndex());
+    }
 }
 
 //==============================================================================
@@ -299,7 +298,7 @@ void EditorListWidget::copyToClipboard()
     QStringList list = QStringList();
 
     for (int i = 0, iMax = mModel->rowCount(); i < iMax; ++i) {
-        EditorListItem *item = static_cast<EditorListItem *>(mModel->item(i));
+        auto item = static_cast<EditorListItem *>(mModel->item(i));
         QString itemType;
 
         switch (EditorListItem::Type(item->type())) {
@@ -340,16 +339,17 @@ void EditorListWidget::requestItem(const QModelIndex &pItemIndex)
     // Check what kind of item has been double clicked and if it is a file, then
     // open it
 
-    EditorListItem *item = static_cast<EditorListItem *>(mModel->itemFromIndex(pItemIndex));
+    auto item = static_cast<EditorListItem *>(mModel->itemFromIndex(pItemIndex));
 
-    if (item && (item->line() != -1))
+    if ((item != nullptr) && (item->line() != -1)) {
         emit itemRequested(item);
+    }
 }
 
 //==============================================================================
 
-}   // namespace EditorWidget
-}   // namespace OpenCOR
+} // namespace EditorWidget
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file
