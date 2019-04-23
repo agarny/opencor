@@ -44,6 +44,7 @@ public:
     explicit SplitterWidget(const Qt::Orientation &pOrientation,
                             QWidget *pParent);
     explicit SplitterWidget(QWidget *pParent);
+    ~SplitterWidget() override;
 
 protected:
     void changeEvent(QEvent *pEvent) override;
@@ -56,8 +57,8 @@ private:
 
 //==============================================================================
 
-}   // namespace Core
-}   // namespace OpenCOR
+} // namespace Core
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file

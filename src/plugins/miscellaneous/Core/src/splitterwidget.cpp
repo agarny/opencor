@@ -60,6 +60,10 @@ SplitterWidget::SplitterWidget(QWidget *pParent) :
 
 //==============================================================================
 
+SplitterWidget::~SplitterWidget() = default;
+
+//==============================================================================
+
 void SplitterWidget::changeEvent(QEvent *pEvent)
 {
     // Default handling of the event
@@ -68,8 +72,9 @@ void SplitterWidget::changeEvent(QEvent *pEvent)
 
     // Do a few more things for some changes
 
-    if (pEvent->type() == QEvent::PaletteChange)
+    if (pEvent->type() == QEvent::PaletteChange) {
         paletteChanged();
+    }
 }
 
 //==============================================================================
@@ -99,8 +104,8 @@ void SplitterWidget::paletteChanged()
 
 //==============================================================================
 
-}   // namespace Core
-}   // namespace OpenCOR
+} // namespace Core
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file

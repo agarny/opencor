@@ -79,14 +79,16 @@ TabBarWidget::TabBarWidget(QWidget *pParent) :
 
 //==============================================================================
 
+#ifdef Q_OS_MAC
 TabBarWidget::~TabBarWidget()
 {
     // Delete some internal objects
 
-#ifdef Q_OS_MAC
     delete style();
-#endif
 }
+#else
+TabBarWidget::~TabBarWidget() = default;
+#endif
 
 //==============================================================================
 
@@ -138,7 +140,7 @@ void TabBarWidget::wheelEvent(QWheelEvent *pEvent)
         }
     }
 
-    QWidget::wheelEvent(pEvent);
+    QTabBar::wheelEvent(pEvent);
 }
 
 //==============================================================================
@@ -161,9 +163,9 @@ QSize TabBarWidget::tabSizeHint(int pIndex) const
     if (   (shape() == RoundedNorth) || (shape() == RoundedSouth)
         || (shape() == TriangularNorth) || (shape() == TriangularSouth)) {
         return QTabBar::tabSizeHint(pIndex)-QSize(shift, 0);
-    } else {
-        return QTabBar::tabSizeHint(pIndex)-QSize(0, shift);
     }
+
+    return QTabBar::tabSizeHint(pIndex)-QSize(0, shift);
 #else
     return QTabBar::tabSizeHint(pIndex);
 #endif
@@ -171,8 +173,8 @@ QSize TabBarWidget::tabSizeHint(int pIndex) const
 
 //==============================================================================
 
-}   // namespace Core
-}   // namespace OpenCOR
+} // namespace Core
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file

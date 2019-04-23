@@ -26,8 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //==============================================================================
 
 #include "file.h"
-#include "widget.h"
 #include "viewinterface.h"
+#include "widget.h"
 
 //==============================================================================
 
@@ -108,7 +108,8 @@ public:
 
     void importRemoteFile(const QString &pFileNameOrUrl);
 
-    void openFile(const QString &pFileName, File::Type pType = File::Local,
+    void openFile(const QString &pFileName,
+                  File::Type pType = File::Type::Local,
                   const QString &pUrl = QString());
     void openRemoteFile(const QString &pUrl, bool pShowWarning = true);
 
@@ -124,7 +125,7 @@ protected:
     void dropEvent(QDropEvent *pEvent) override;
 
 private:
-    enum State {
+    enum class State {
         Starting,
         Idling,
         UpdatingGui,
@@ -175,7 +176,7 @@ private:
 
     void updateFileTab(int pIndex, bool pIconOnly = false);
 
-    void updateStatusBarWidgets(QList<QWidget *> pWidgets);
+    void updateStatusBarWidgets(const QList<QWidget *> &pWidgets);
 
     void fileReloadedOrSaved(const QString &pFileName, bool pFileReloaded);
 
@@ -249,8 +250,8 @@ private slots:
 
 //==============================================================================
 
-}   // namespace Core
-}   // namespace OpenCOR
+} // namespace Core
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file
