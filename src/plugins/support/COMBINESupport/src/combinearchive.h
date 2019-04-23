@@ -41,7 +41,7 @@ namespace OpenCOR {
 
 namespace SEDMLSupport {
     class SedmlFile;
-}   // namespace SEDMLSupport
+} // namespace SEDMLSupport
 
 //==============================================================================
 
@@ -52,7 +52,7 @@ namespace COMBINESupport {
 class COMBINESUPPORT_EXPORT CombineArchiveFile
 {
 public:
-    enum Format {
+    enum class Format {
         Unknown,
         Cellml,
         Cellml_1_0,
@@ -134,8 +134,8 @@ private:
 
 //==============================================================================
 
-}   // namespace COMBINESupport
-}   // namespace OpenCOR
+} // namespace COMBINESupport
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file

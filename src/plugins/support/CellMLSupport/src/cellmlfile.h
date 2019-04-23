@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //==============================================================================
 
 #include <QDomElement>
+#include <QException>
 #include <QMap>
 
 //==============================================================================
@@ -61,25 +62,12 @@ static const auto XlinkNamespace       = QStringLiteral("http://www.w3.org/1999/
 
 //==============================================================================
 
-class CellmlFileException
-{
-public:
-    CellmlFileException(const QString &pMessage);
-
-    QString message() const;
-
-private:
-    QString mMessage;
-};
-
-//==============================================================================
-
 class CELLMLSUPPORT_EXPORT CellmlFile : public StandardSupport::StandardFile
 {
     Q_OBJECT
 
 public:
-    enum Version {
+    enum class Version {
         Unknown,
         Cellml_1_0,
         Cellml_1_1,
@@ -212,8 +200,8 @@ private:
 
 //==============================================================================
 
-}   // namespace CellMLSupport
-}   // namespace OpenCOR
+} // namespace CellMLSupport
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file

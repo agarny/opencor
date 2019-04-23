@@ -49,7 +49,7 @@ PLUGININFO_FUNC CSVDataStorePluginInfo()
     descriptions.insert("en", QString::fromUtf8("a CSV specific data store plugin."));
     descriptions.insert("fr", QString::fromUtf8("une extension de magasin de données spécifique à CSV."));
 
-    return new PluginInfo(PluginInfo::DataStore, true, false,
+    return new PluginInfo(PluginInfo::Category::DataStore, true, false,
                           QStringList() << "DataStore",
                           descriptions);
 }
@@ -97,13 +97,14 @@ DataStore::DataStoreImportData * CSVDataStorePlugin::getImportData(const QString
 
         QTextStream in(&file);
         QString line;
-        quint64 nbOfDataPoints = quint64(-1);
+        auto nbOfDataPoints = quint64(-1);
 
         while (!in.atEnd()) {
             line = in.readLine().trimmed();
 
-            if (!line.isEmpty())
+            if (!line.isEmpty()) {
                 ++nbOfDataPoints;
+            }
         }
 
         in.seek(0);
@@ -132,7 +133,7 @@ DataStore::DataStoreExportData * CSVDataStorePlugin::getExportData(const QString
     DataStore::DataStoreDialog dataStoreDialog("CSVDataStore", pDataStore, true,
                                                pIcons, Core::mainWindow());
 
-    if (dataStoreDialog.exec()) {
+    if (dataStoreDialog.exec() != 0) {
         // Now that we know which data to export, we can ask for the name of the
         // CSV file where it is to be exported
 
@@ -142,8 +143,9 @@ DataStore::DataStoreExportData * CSVDataStorePlugin::getExportData(const QString
                                                  Core::newFileName(pFileName, tr("Data"), false, CsvFileExtension),
                                                  csvFilters, &firstCsvFilter);
 
-        if (!fileName.isEmpty())
+        if (!fileName.isEmpty()) {
             return new DataStore::DataStoreExportData(fileName, pDataStore, dataStoreDialog.selectedData());
+        }
     }
 
     return nullptr;
@@ -204,9 +206,9 @@ bool CSVDataStorePlugin::isFile(const QString &pFileName) const
                     isMaybeFile = false;
 
                     break;
-                } else {
-                    emptyLine = true;
                 }
+
+                emptyLine = true;
             } else if (line.endsWith(",")) {
                 // The line ends with a comma, which is not allowed
 
@@ -280,7 +282,7 @@ QStringList CSVDataStorePlugin::fileTypeDefaultViews() const
 {
     // Return the default views to use for the type of file we support
 
-    return QStringList();
+    return {};
 }
 
 //==============================================================================
@@ -297,8 +299,8 @@ void CSVDataStorePlugin::retranslateUi()
 
 //==============================================================================
 
-}   // namespace CSVDataStore
-}   // namespace OpenCOR
+} // namespace CSVDataStore
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file

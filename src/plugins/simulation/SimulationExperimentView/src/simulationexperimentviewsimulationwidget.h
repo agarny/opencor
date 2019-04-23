@@ -49,7 +49,7 @@ namespace libsedml {
     class SedRepeatedTask;
     class SedSimulation;
     class SedVariable;
-}   // namespace libsedml
+} // namespace libsedml
 
 //==============================================================================
 
@@ -63,7 +63,7 @@ class DataStoreInterface;
 
 namespace CellMLSupport {
     class CellmlFileRuntimeParameter;
-}   // namespace CellMLSupport
+} // namespace CellMLSupport
 
 //==============================================================================
 
@@ -74,7 +74,7 @@ namespace Core {
     class SplitterWidget;
     class ToolBarWidget;
     class UserMessageWidget;
-}   // namespace Core
+} // namespace Core
 
 //==============================================================================
 
@@ -83,25 +83,25 @@ namespace DataStore {
     class DataStoreExporter;
     class DataStoreImportData;
     class DataStoreImporter;
-}   // namespace DataStore
+} // namespace DataStore
 
 //==============================================================================
 
 namespace GraphPanelWidget {
     class GraphPanelWidget;
-}   // namespace GraphPanelWidget
+} // namespace GraphPanelWidget
 
 //==============================================================================
 
 namespace SEDMLSupport {
     class SedmlFile;
-}   // namespace SEDMLSupport
+} // namespace SEDMLSupport
 
 //==============================================================================
 
 namespace SimulationSupport {
     class Simulation;
-}   // namespace SimulationSupport
+} // namespace SimulationSupport
 
 //==============================================================================
 
@@ -120,7 +120,7 @@ class SimulationExperimentViewSimulationWidget : public Core::Widget
     Q_OBJECT
 
 public:
-    enum Task {
+    enum class Task {
         None,
         ResetRuns,
         AddRun
@@ -175,7 +175,7 @@ protected:
     void dropEvent(QDropEvent *pEvent) override;
 
 private:
-    enum ErrorType {
+    enum class Error {
         General,
         InvalidCellmlFile,
         InvalidSimulationEnvironment
@@ -237,7 +237,7 @@ private:
     QTextEdit *mOutputWidget;
     QString mOutputMessage;
 
-    ErrorType mErrorType;
+    Error mError;
 
     bool mValidSimulationEnvironment;
 
@@ -327,7 +327,7 @@ private:
 
     void updateSedmlFileOrCombineArchiveModifiedStatus();
 
-    void simulationError(const QString &pMessage, ErrorType pErrorType);
+    void simulationError(const QString &pMessage, Error pError);
 
     void sedmlExportSedmlFile(const QString &pFileName);
     void sedmlExportCombineArchive(const QString &pFileName);
@@ -422,8 +422,8 @@ private slots:
 
 //==============================================================================
 
-}   // namespace SimulationExperimentView
-}   // namespace OpenCOR
+} // namespace SimulationExperimentView
+} // namespace OpenCOR
 
 //==============================================================================
 // End of file
