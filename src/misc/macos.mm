@@ -66,7 +66,7 @@ bool isDarkMode()
     if (__builtin_available(macOS 10.14, *)) {
         auto appearance = [NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
 
-        return [appearance isEqualToString:NSAppearanceNameDarkAqua];
+        return [appearance isEqualToString:NSAppearanceNameDarkAqua] != 0;
     }
 #endif
 

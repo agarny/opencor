@@ -398,8 +398,9 @@ void PmrWorkspacesWindowSynchronizeDialog::changeEvent(QEvent *pEvent)
 
     // Do a few more things for some changes
 
-    if (pEvent->type() == QEvent::PaletteChange)
+    if (pEvent->type() == QEvent::PaletteChange) {
         paletteChanged();
+    }
 }
 
 //==============================================================================
@@ -442,8 +443,9 @@ void PmrWorkspacesWindowSynchronizeDialog::paletteChanged()
 
     // Update some colours in our diff
 
-    for (auto element : mWebViewer->webView()->page()->mainFrame()->documentElement().findAll("table tr.default"))
+    for (auto element : mWebViewer->webView()->page()->mainFrame()->documentElement().findAll("table tr.default")) {
         element.setStyleProperty("color", fontColor);
+    }
 
 #ifdef Q_OS_MAC
     int rgb = isDarkMode()?255:0;

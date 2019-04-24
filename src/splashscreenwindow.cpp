@@ -114,8 +114,9 @@ void SplashScreenWindow::changeEvent(QEvent *pEvent)
 
     // Do a few more things for some changes
 
-    if (pEvent->type() == QEvent::PaletteChange)
+    if (pEvent->type() == QEvent::PaletteChange) {
         paletteChanged();
+    }
 }
 
 //==============================================================================

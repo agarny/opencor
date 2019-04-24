@@ -87,7 +87,7 @@ void SplitterWidget::paletteChanged()
 
     QString backgroundColor = windowColor().name();
 
-    if (backgroundColor.compare(mBackgroundColor)) {
+    if (backgroundColor != mBackgroundColor) {
         static const QString StyleSheet = "QSplitter {"
                                           "    background-color: %1"
                                           "}"

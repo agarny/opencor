@@ -99,8 +99,9 @@ void UserMessageWidget::changeEvent(QEvent *pEvent)
 
     // Do a few more things for some changes
 
-    if (pEvent->type() == QEvent::PaletteChange)
+    if (pEvent->type() == QEvent::PaletteChange) {
         paletteChanged();
+    }
 }
 
 //==============================================================================
@@ -183,7 +184,7 @@ void UserMessageWidget::paletteChanged()
 
     QString backgroundColor = baseColor().name();
 
-    if (backgroundColor.compare(mBackgroundColor)) {
+    if (backgroundColor != mBackgroundColor) {
         mBackgroundColor = backgroundColor;
 
         static const QString StyleSheet = "QLabel {"

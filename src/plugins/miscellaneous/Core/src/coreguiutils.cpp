@@ -89,8 +89,9 @@ void LineWidget::changeEvent(QEvent *pEvent)
 
     // Do a few more things for some changes
 
-    if (pEvent->type() == QEvent::PaletteChange)
+    if (pEvent->type() == QEvent::PaletteChange) {
         paletteChanged();
+    }
 }
 
 //==============================================================================
@@ -102,7 +103,7 @@ void LineWidget::paletteChanged()
 
     QString color = borderColor().name();
 
-    if (color.compare(mColor)) {
+    if (color != mColor) {
         mColor = color;
 
         static const QString StyleSheet = "QFrame {"

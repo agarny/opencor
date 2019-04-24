@@ -152,8 +152,9 @@ void CollapsibleHeaderWidget::changeEvent(QEvent *pEvent)
 
     // Do a few more things for some changes
 
-    if (pEvent->type() == QEvent::PaletteChange)
+    if (pEvent->type() == QEvent::PaletteChange) {
         paletteChanged();
+    }
 }
 
 //==============================================================================
@@ -281,7 +282,7 @@ void CollapsibleHeaderWidget::paletteChanged()
 
     QString backgroundColor = windowColor().name();
 
-    if (backgroundColor.compare(mBackgroundColor)) {
+    if (backgroundColor != mBackgroundColor) {
         static const QString IconStyleSheet = "QToolButton {"
                                               "    background-color: %1;"
                                               "    border: none;"
@@ -312,7 +313,7 @@ void CollapsibleHeaderWidget::paletteChanged()
 #endif
 
 #ifdef Q_OS_MAC
-    mMenu->setIcon(mMenuMenu?
+    mMenu->setIcon((mMenuMenu != nullptr)?
                        isDarkMode()?
                            InvertedMenuIcon:
                            MenuIcon:
