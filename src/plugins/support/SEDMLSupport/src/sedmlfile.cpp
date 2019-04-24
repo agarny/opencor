@@ -66,6 +66,7 @@ SedmlFile::SedmlFile(const QString &pFileName, const QString &pOwnerFileName,
     mOwnerFileName(pOwnerFileName),
     mSedmlDocument(nullptr),
     mLoadingNeeded(true),
+    mL1V4OrLater(true),
     mCellmlFile(nullptr),
     mUpdated(false)
 {
