@@ -35,12 +35,11 @@ namespace CellMLSupport {
 
 CellmlFileCellml20Exporter::CellmlFileCellml20Exporter(const QString &pOldFileName,
                                                        const QString &pNewFileName) :
-    CellmlFileExporter(),
     mOutput(QString())
 {
     // Create our XSL transformer
 
-    Core::XslTransformer *xslTransformer = new Core::XslTransformer();
+    auto xslTransformer = new Core::XslTransformer();
 
     // Determine whether we are dealing with a local/remote file, and retrieve
     // its contents
@@ -88,28 +87,28 @@ CellmlFileCellml20Exporter::CellmlFileCellml20Exporter(const QString &pOldFileNa
 
 //==============================================================================
 
-void cleanUnitsAttributes(QDomElement &pDomElement, QDomElement &pDomElementNs,
-                          bool &pAtLeastOneUnitsAttribute)
+void cleanUnitsAttributes(QDomElement *pDomElement, QDomElement *pDomElementNs,
+                          bool *pAtLeastOneUnitsAttribute)
 {
     // Clean up the current CellML element by ensuring that its "units"
     // attribute, if any, is in the CellML namespace
 
-    if (!pDomElementNs.namespaceURI().compare(MathmlNamespace)) {
+    if (pDomElementNs->namespaceURI().compare(MathmlNamespace) == 0) {
         static const QString CellmlAttributeName  = "cellml:%1";
         static const QString CellmlUnitsAttribute = "units";
 
-        QDomNamedNodeMap attributes = pDomElement.attributes();
+        QDomNamedNodeMap attributes = pDomElement->attributes();
 
         for (int i = 0, iMax = attributes.count(); i < iMax; ++i) {
             QDomNode attribute = attributes.item(i);
 
-            if (!attribute.nodeName().compare(CellmlUnitsAttribute)) {
+            if (attribute.nodeName().compare(CellmlUnitsAttribute) == 0) {
                 QString attributeValue = attribute.nodeValue();
 
-                pDomElement.removeAttribute(CellmlUnitsAttribute);
-                pDomElement.setAttributeNS(Cellml_2_0_Namespace, CellmlAttributeName.arg(CellmlUnitsAttribute), attributeValue);
+                pDomElement->removeAttribute(CellmlUnitsAttribute);
+                pDomElement->setAttributeNS(Cellml_2_0_Namespace, CellmlAttributeName.arg(CellmlUnitsAttribute), attributeValue);
 
-                pAtLeastOneUnitsAttribute = true;
+                *pAtLeastOneUnitsAttribute = true;
 
                 break;
             }
@@ -118,38 +117,38 @@ void cleanUnitsAttributes(QDomElement &pDomElement, QDomElement &pDomElementNs,
 
     // Do the same for the element's child elements
 
-    for (QDomElement childElement = pDomElement.firstChildElement(),
-                     childElementNs = pDomElementNs.firstChildElement();
+    for (QDomElement childElement = pDomElement->firstChildElement(),
+                     childElementNs = pDomElementNs->firstChildElement();
          !childElement.isNull() && !childElementNs.isNull();
          childElement = childElement.nextSiblingElement(),
          childElementNs = childElementNs.nextSiblingElement()) {
-        cleanUnitsAttributes(childElement, childElementNs, pAtLeastOneUnitsAttribute);
+        cleanUnitsAttributes(&childElement, &childElementNs, pAtLeastOneUnitsAttribute);
     }
 }
 
 //==============================================================================
 
-void cleanCellmlNamespace(QDomElement &pDomElement, QDomElement &pDomElementNs)
+void cleanCellmlNamespace(QDomElement *pDomElement, QDomElement *pDomElementNs)
 {
     // Clean up the current CellML element by removing its CellML namespace
     // information, if any
 
-    QDomNamedNodeMap attributes = pDomElement.attributes();
+    QDomNamedNodeMap attributes = pDomElement->attributes();
 
-    if (!pDomElementNs.namespaceURI().compare(MathmlNamespace)) {
+    if (pDomElementNs->namespaceURI().compare(MathmlNamespace) == 0) {
         static const QString CellmlNamespaceAttribute = "xmlns:cellml";
 
-        pDomElement.removeAttribute(CellmlNamespaceAttribute);
+        pDomElement->removeAttribute(CellmlNamespaceAttribute);
     }
 
     // Do the same for the element's child elements
 
-    for (QDomElement childElement = pDomElement.firstChildElement(),
-                     childElementNs = pDomElementNs.firstChildElement();
+    for (QDomElement childElement = pDomElement->firstChildElement(),
+                     childElementNs = pDomElementNs->firstChildElement();
          !childElement.isNull() && !childElementNs.isNull();
          childElement = childElement.nextSiblingElement(),
          childElementNs = childElementNs.nextSiblingElement()) {
-        cleanCellmlNamespace(childElement, childElementNs);
+        cleanCellmlNamespace(&childElement, &childElementNs);
     }
 }
 
@@ -192,11 +191,12 @@ void CellmlFileCellml20Exporter::xslTransformationDone(const QString &pInput,
              !childElement.isNull() && !childElementNs.isNull();
              childElement = childElement.nextSiblingElement(),
              childElementNs = childElementNs.nextSiblingElement()) {
-            cleanUnitsAttributes(childElement, childElementNs, atLeastOneUnitsAttribute);
+            cleanUnitsAttributes(&childElement, &childElementNs, &atLeastOneUnitsAttribute);
         }
 
-        if (atLeastOneUnitsAttribute)
+        if (atLeastOneUnitsAttribute) {
             domDocument.documentElement().setAttribute("xmlns:cellml", Cellml_2_0_Namespace);
+        }
 
         mOutput = Core::serialiseDomDocument(domDocument);
 
@@ -207,7 +207,7 @@ void CellmlFileCellml20Exporter::xslTransformationDone(const QString &pInput,
                  !childElement.isNull() && !childElementNs.isNull();
                  childElement = childElement.nextSiblingElement(),
                  childElementNs = childElementNs.nextSiblingElement()) {
-                cleanCellmlNamespace(childElement, childElementNs);
+                cleanCellmlNamespace(&childElement, &childElementNs);
             }
 
             mOutput = Core::serialiseDomDocument(domDocument);

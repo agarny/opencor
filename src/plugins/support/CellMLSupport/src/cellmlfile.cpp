@@ -361,8 +361,9 @@ bool CellmlFile::load(const QString &pFileContents,
         parser.parseModel(pFileContents.toStdString());
     }
 
-    if (validFile && !parser.errorCount())
+    if (validFile && (parser.errorCount() == 0)) {
         return true;
+    }
 
     // We couldn't load the model using libCellML, so try with the CellML API,
     // which first means getting a bootstrap object and its model loader
@@ -491,8 +492,9 @@ bool CellmlFile::load()
     // 2.0 file, so just confirm that we were able to load the file (but haven't
     // done anything with it)
 
-    if (!mModel)
+    if (mModel == nullptr) {
         return true;
+    }
 
     // Retrieve all the RDF triples associated with the model and initialise our
     // list of original RDF triples

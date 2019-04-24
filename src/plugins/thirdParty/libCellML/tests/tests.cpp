@@ -42,13 +42,13 @@ void Tests::basicTests()
 
     // Check the version of libSBML
 
-    QCOMPARE(libcellml::version(), 0x000100u);
+    QCOMPARE(libcellml::version(), 0x000100);
     QCOMPARE(libcellml::versionString(), std::string("0.1.0"));
 
     // Create a CellML document with a model inside it, then set the name of the
     // model and check that it has been properly set
 
-    libcellml::Model *cellmlModel = new libcellml::Model();
+    auto cellmlModel = new libcellml::Model();
 
     static const std::string ModelName = "myModel";
 

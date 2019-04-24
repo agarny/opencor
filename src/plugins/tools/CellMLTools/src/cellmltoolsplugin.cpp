@@ -65,6 +65,7 @@ CellMLToolsPlugin::CellMLToolsPlugin() :
     mFileName(QString()),
     mCellmlFileExportToMenu(nullptr),
     mExportToCellml10Action(nullptr),
+    mExportToCellml20Action(nullptr),
     mExportToUserDefinedFormatAction(nullptr)
 {
 }
