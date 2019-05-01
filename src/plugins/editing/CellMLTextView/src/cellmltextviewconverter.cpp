@@ -1059,7 +1059,7 @@ QString CellMLTextViewConverter::processMathmlNode(const QDomNode &pDomNode,
                     return processOperatorNode(mMappings.value(domNode.localName()), pDomNode, pHasError);
                 }
 
-            // Arythmetic operators
+            // Arithmetic operators
 
             } else if (   mathmlNode(domNode, "plus")
                        || mathmlNode(domNode, "minus")) {
@@ -1195,6 +1195,9 @@ QString CellMLTextViewConverter::processMathmlNode(const QDomNode &pDomNode,
                 return {};
             }
         }
+
+    // Piecewise statement
+
     } else if (mathmlNode(domNode, "piecewise")) {
         if (mPiecewiseStatementUsed) {
             mErrorMessage = tr("A 'piecewise' element cannot be used within another 'piecewise' element.");
@@ -1483,7 +1486,6 @@ QString CellMLTextViewConverter::processOperatorNode(const QString &pOperator,
     MathmlNode operatorNodeType = MathmlNode::Unknown;
 
     if (childNodesCount(pDomNode) == 2) {
-
         for (int i = 0, iMax = childNodes.count(); i < iMax; ++i) {
             childNode = childNodes.item(i);
 
