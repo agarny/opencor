@@ -1099,7 +1099,7 @@ bool CellmlFile::exportTo(const QString &pFileName, Version pVersion)
         // instantiated all the imports, if we are to export to CellML 1.0
 
         if (pVersion == Version::Cellml_1_0) {
-            if (!fullyInstantiateImports(mModel, mIssues, pWithBusyWidget)) {
+            if (!fullyInstantiateImports(mModel, mIssues)) {
                 return false;
             }
 

@@ -20,7 +20,8 @@ set(RELEASE_TAG opencor)
 
 # Specify where our local package will be installed
 
-set(FULL_LOCAL_EXTERNAL_PACKAGE_DIR ${PROJECT_SOURCE_DIR}/${LOCAL_EXTERNAL_PACKAGE_DIR})
+string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
+       FULL_LOCAL_EXTERNAL_PACKAGE_DIR "${PROJECT_SOURCE_DIR}/${EXTERNAL_PACKAGE_DIR}")
 
 # Name of our package's shared library (and of its import library, if any)
 
@@ -69,7 +70,7 @@ if(USE_PREBUILT_LIBCELLML_PACKAGE)
     if(WIN32)
         if(RELEASE_MODE)
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${RELATIVE_PROJECT_SOURCE_DIR} c2db10ebdccbb2fd49ec1cc029c5f09f77aaa9dc
+                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} c2db10ebdccbb2fd49ec1cc029c5f09f77aaa9dc
                                   PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                                   RELEASE_TAG ${RELEASE_TAG}
                                   SHA1_FILES ${SHA1_FILES}
@@ -77,7 +78,7 @@ if(USE_PREBUILT_LIBCELLML_PACKAGE)
                                               59beae7d1af9a55cf0c97db15beff18fe644d01d)
         else()
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${RELATIVE_PROJECT_SOURCE_DIR} 12f1880aebe788be06b61aa88e0e68287218b29b
+                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 12f1880aebe788be06b61aa88e0e68287218b29b
                                   PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                                   RELEASE_TAG ${RELEASE_TAG}
                                   SHA1_FILES ${SHA1_FILES}
@@ -86,14 +87,14 @@ if(USE_PREBUILT_LIBCELLML_PACKAGE)
         endif()
     elseif(APPLE)
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${RELATIVE_PROJECT_SOURCE_DIR} 3a986b868cd23b8412a5b4452f4f22c73625dd80
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 3a986b868cd23b8412a5b4452f4f22c73625dd80
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
                               SHA1_VALUES ff18831c9ea4104e74988afb765b8417a38f02e5)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${RELATIVE_PROJECT_SOURCE_DIR} 16149622fed3ce3083026bf17ad6ac89fcd4e701
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 16149622fed3ce3083026bf17ad6ac89fcd4e701
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
@@ -145,7 +146,6 @@ else()
     # Package our external project
 
     create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                        ${LOCAL_EXTERNAL_PACKAGE_DIR}
                         PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                         RELEASE_TAG ${RELEASE_TAG}
                         PACKAGED_FILES include ${SHA1_FILES}
