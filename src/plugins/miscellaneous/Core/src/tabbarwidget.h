@@ -57,7 +57,7 @@ protected:
     QSize tabSizeHint(int pIndex) const override;
 
 private:
-    int mOldIndex;
+    int mOldIndex = -1;
 };
 
 //==============================================================================

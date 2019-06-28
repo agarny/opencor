@@ -69,7 +69,7 @@ protected:
     void changeEvent(QEvent *pEvent) override;
 
 private:
-    double mScale;
+    double mScale = 0.0;
     double mDefaultFontScale;
 
     QString mIcon;

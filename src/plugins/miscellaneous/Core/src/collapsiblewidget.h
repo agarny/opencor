@@ -87,9 +87,9 @@ protected:
     void changeEvent(QEvent *pEvent) override;
 
 private:
-    bool mCollapsed;
+    bool mCollapsed = false;
 
-    bool mLastHeader;
+    bool mLastHeader = false;
 
     QFrame *mTopSeparator;
     QFrame *mBottomSeparator;
@@ -98,7 +98,7 @@ private:
     CollapsibleHeaderTitleWidget *mTitle;
     QToolButton *mMenu;
 
-    QMenu *mMenuMenu;
+    QMenu *mMenuMenu = nullptr;
 
     QString mBackgroundColor;
 
