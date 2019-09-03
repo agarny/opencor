@@ -481,7 +481,9 @@ bool SedmlFile::isSupported()
     double initialTime = uniformTimeCourse->getInitialTime();
     double outputStartTime = uniformTimeCourse->getOutputStartTime();
     double outputEndTime = uniformTimeCourse->getOutputEndTime();
-    int nbOfPoints = uniformTimeCourse->getNumberOfPoints();
+    int nbOfPoints = mL1V4OrLater?
+                         uniformTimeCourse->getNumberOfSteps():
+                         uniformTimeCourse->getNumberOfPoints();
 
     if (!qFuzzyCompare(initialTime, outputStartTime)) {
         mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
@@ -499,7 +501,9 @@ bool SedmlFile::isSupported()
 
     if (nbOfPoints <= 0) {
         mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,
-                                  tr("the value for 'numberOfPoints' must be greater than zero"));
+                                  mL1V4OrLater?
+                                      tr("the value for 'numberOfSteps' must be greater than zero"):
+                                      tr("the value for 'numberOfPoints' must be greater than zero"));
 
         return false;
     }

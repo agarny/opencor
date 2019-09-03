@@ -1824,7 +1824,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
     sedmlUniformTimeCourse->setInitialTime(startingPoint);
     sedmlUniformTimeCourse->setOutputStartTime(startingPoint);
     sedmlUniformTimeCourse->setOutputEndTime(startingPoint+nbOfPoints*pointInterval);
-    sedmlUniformTimeCourse->setNumberOfPoints(int(nbOfPoints));
+    sedmlUniformTimeCourse->setNumberOfSteps(int(nbOfPoints));
 
     addSedmlSimulation(sedmlDocument, sedmlModel, sedmlRepeatedTask,
                        sedmlUniformTimeCourse, simulationNumber);
@@ -2682,7 +2682,9 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
 
     double startingPoint = sedmlUniformTimeCourse->getOutputStartTime();
     double endingPoint = sedmlUniformTimeCourse->getOutputEndTime();
-    double pointInterval = (endingPoint-startingPoint)/sedmlUniformTimeCourse->getNumberOfPoints();
+    double pointInterval = mSimulation->sedmlFile()->isL1V4OrLater()?
+                               (endingPoint-startingPoint)/sedmlUniformTimeCourse->getNumberOfSteps():
+                               (endingPoint-startingPoint)/sedmlUniformTimeCourse->getNumberOfPoints();
 
     if (sedmlOneStep != nullptr) {
         endingPoint += sedmlOneStep->getStep();

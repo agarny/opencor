@@ -51,6 +51,10 @@
         <translation>les valeurs pour &apos;outputStartTime&apos; et &apos;outputEndTime&apos; doivent être différentes</translation>
     </message>
     <message>
+        <source>the value for &apos;numberOfSteps&apos; must be greater than zero</source>
+        <translation>la valeur pour &apos;numberOfSteps&apos; doit être plus grande que zéro</translation>
+    </message>
+    <message>
         <source>the value for &apos;numberOfPoints&apos; must be greater than zero</source>
         <translation>la valeur pour &apos;numberOfPoints&apos; doit être plus grande que zéro</translation>
     </message>

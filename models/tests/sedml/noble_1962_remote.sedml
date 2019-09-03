@@ -4,7 +4,7 @@
         <model id="model" language="urn:sedml:language:cellml.1_0" source="http://models.cellml.org/workspace/noble_1962/rawfile/475d6caafc5dde9556b19fadde0c79b641f7c36d/noble_1962.cellml"/>
     </listOfModels>
     <listOfSimulations>
-        <uniformTimeCourse id="simulation1" initialTime="0" numberOfPoints="60" outputEndTime="3" outputStartTime="0">
+        <uniformTimeCourse id="simulation1" initialTime="0" numberOfSteps="60" outputEndTime="3" outputStartTime="0">
             <algorithm kisaoID="KISAO:0000019">
                 <listOfAlgorithmParameters>
                     <algorithmParameter kisaoID="KISAO:0000211" value="1e-07"/>
