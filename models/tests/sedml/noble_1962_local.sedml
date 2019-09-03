@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <sedML level="1" version="4" xmlns="http://sed-ml.org/sed-ml/level1/version4" xmlns:cellml="http://www.cellml.org/cellml/1.0#">
     <listOfModels>
-        <model id="model" language="urn:sedml:language:cellml.1_0" source="../../../noble_model_1962.cellml"/>
+        <model id="model" language="urn:sedml:language:cellml.1_0" source="../../noble_model_1962.cellml"/>
     </listOfModels>
     <listOfSimulations>
         <uniformTimeCourse id="simulation1" initialTime="0" numberOfPoints="60" outputEndTime="3000" outputStartTime="0">
@@ -24,11 +24,11 @@
     </listOfSimulations>
     <listOfTasks>
         <repeatedTask id="repeatedTask" range="once" resetModel="true">
-            <range>
+            <listOfRanges>
                 <vectorRange id="once">
                     <value> 1 </value>
                 </vectorRange>
-            </range>
+            </listOfRanges>
             <listOfSubTasks>
                 <subTask order="1" task="task1"/>
             </listOfSubTasks>
@@ -149,14 +149,14 @@
             </listOfVariables>
         </dataGenerator>
     </listOfDataGenerators>
-    <output>
+    <listOfOutputs>
         <plot2D id="plot1">
             <annotation>
                 <properties xmlns="http://www.opencor.ws/">
                     <backgroundColor>#13000080</backgroundColor>
                     <fontSize>15</fontSize>
                     <foregroundColor>#000080</foregroundColor>
-                    <height>5</height>
+                    <height>460</height>
                     <gridLines>
                         <style>dot</style>
                         <width>1</width>
@@ -221,7 +221,7 @@
                     <backgroundColor>#12108001</backgroundColor>
                     <fontSize>10</fontSize>
                     <foregroundColor>#108001</foregroundColor>
-                    <height>4</height>
+                    <height>369</height>
                     <gridLines>
                         <style>dot</style>
                         <width>1</width>
@@ -326,7 +326,7 @@
                     <backgroundColor>#13800002</backgroundColor>
                     <fontSize>10</fontSize>
                     <foregroundColor>#800002</foregroundColor>
-                    <height>3</height>
+                    <height>276</height>
                     <gridLines>
                         <style>dot</style>
                         <width>1</width>
@@ -425,5 +425,5 @@
                 </curve>
             </listOfCurves>
         </plot2D>
-    </output>
+    </listOfOutputs>
 </sedML>

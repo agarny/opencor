@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <sedML level="1" version="4" xmlns="http://sed-ml.org/sed-ml/level1/version4" xmlns:cellml="http://www.cellml.org/cellml/1.0#">
     <listOfModels>
-        <model id="model" language="urn:sedml:language:cellml.1_0" source="../../../noble_model_1962.cellml"/>
+        <model id="model" language="urn:sedml:language:cellml.1_0" source="../../noble_model_1962.cellml"/>
     </listOfModels>
     <listOfSimulations>
         <uniformTimeCourse id="simulation1" initialTime="0" numberOfPoints="1000" outputEndTime="1000" outputStartTime="0">
@@ -24,11 +24,11 @@
     </listOfSimulations>
     <listOfTasks>
         <repeatedTask id="repeatedTask" range="once" resetModel="true">
-            <range>
+            <listOfRanges>
                 <vectorRange id="once">
                     <value> 1 </value>
                 </vectorRange>
-            </range>
+            </listOfRanges>
             <listOfSubTasks>
                 <subTask order="1" task="task1"/>
             </listOfSubTasks>
@@ -101,7 +101,7 @@
             </listOfVariables>
         </dataGenerator>
     </listOfDataGenerators>
-    <output>
+    <listOfOutputs>
         <plot2D id="plot1">
             <annotation>
                 <properties xmlns="http://www.opencor.ws/">
@@ -362,5 +362,5 @@
                 </curve>
             </listOfCurves>
         </plot2D>
-    </output>
+    </listOfOutputs>
 </sedML>
