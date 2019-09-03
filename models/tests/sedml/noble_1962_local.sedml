@@ -156,7 +156,7 @@
                     <backgroundColor>#13000080</backgroundColor>
                     <fontSize>15</fontSize>
                     <foregroundColor>#000080</foregroundColor>
-                    <height>5</height>
+                    <height>460</height>
                     <gridLines>
                         <style>dot</style>
                         <width>1</width>
@@ -221,7 +221,7 @@
                     <backgroundColor>#12108001</backgroundColor>
                     <fontSize>10</fontSize>
                     <foregroundColor>#108001</foregroundColor>
-                    <height>4</height>
+                    <height>369</height>
                     <gridLines>
                         <style>dot</style>
                         <width>1</width>
@@ -245,7 +245,7 @@
                     </xAxis>
                     <yAxis>
                         <logarithmicScale>false</logarithmicScale>
-                        <title>nA</title>
+                        <title>μA/cm2</title>
                     </yAxis>
                     <zoomRegion>
                         <style>solid</style>
@@ -326,7 +326,7 @@
                     <backgroundColor>#13800002</backgroundColor>
                     <fontSize>10</fontSize>
                     <foregroundColor>#800002</foregroundColor>
-                    <height>3</height>
+                    <height>276</height>
                     <gridLines>
                         <style>dot</style>
                         <width>1</width>

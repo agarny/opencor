@@ -156,7 +156,7 @@
                     <backgroundColor>#13000080</backgroundColor>
                     <fontSize>15</fontSize>
                     <foregroundColor>#000080</foregroundColor>
-                    <height>460</height>
+                    <height>5</height>
                     <gridLines>
                         <style>dot</style>
                         <width>1</width>
@@ -221,7 +221,7 @@
                     <backgroundColor>#12108001</backgroundColor>
                     <fontSize>10</fontSize>
                     <foregroundColor>#108001</foregroundColor>
-                    <height>369</height>
+                    <height>4</height>
                     <gridLines>
                         <style>dot</style>
                         <width>1</width>
@@ -326,7 +326,7 @@
                     <backgroundColor>#13800002</backgroundColor>
                     <fontSize>10</fontSize>
                     <foregroundColor>#800002</foregroundColor>
-                    <height>276</height>
+                    <height>3</height>
                     <gridLines>
                         <style>dot</style>
                         <width>1</width>

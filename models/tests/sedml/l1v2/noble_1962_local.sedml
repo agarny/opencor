@@ -244,7 +244,7 @@
                     </xAxis>
                     <yAxis>
                         <logarithmicScale>false</logarithmicScale>
-                        <title>nA</title>
+                        <title>μA/cm2</title>
                     </yAxis>
                     <zoomRegion>
                         <style>solid</style>
