@@ -61,35 +61,31 @@ if(USE_PREBUILT_LIBSEDML_PACKAGE)
     if(WIN32)
         if(RELEASE_MODE)
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 23b3da56fe11a3eaa7f057a371d83d558efa21b1
+                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} e9c219ea7044cdc74d59c9758a77b470ee251cd8
                                   PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                                  RELEASE_TAG ${RELEASE_TAG}
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 5ca44219100788643cee3253d444efb1fe0f8475
+                                  SHA1_VALUES 2424be8cc717663b4a5d45fc17bf948a3a78792b
                                               35c9e81d3a4b382a82c069cac4fb62fe10a09681)
         else()
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 37e3fff24300cd84cd698ba8e12aa7f317ea252b
+                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} d3c913f9b66187486e28e5fa86d9d67cee1faa0f
                                   PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                                  RELEASE_TAG ${RELEASE_TAG}
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 2d8ba92b844e952e2caebe9a03d750c12935e1e2
+                                  SHA1_VALUES 98897b759e235e83bf06d1270217dbd28dab91bb
                                               35c9e81d3a4b382a82c069cac4fb62fe10a09681)
         endif()
     elseif(APPLE)
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 810ca52b255f4f52d736b0d786f15eefa851115d
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 7836dbf662333b56135a464fe5610050b0c9011d
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                              RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES f9462b29c5b65fd0d93f2a753173ab030359229e)
+                              SHA1_VALUES 68d7e6c1636ae4d1db70f1b7fd1bfa249d89ff73)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 339035a5341b2cc5e589551431b90b2057ab80a2
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 3d7121ee7bbf613b41e299d8bb4d2c1944e1fd16
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                              RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES e8afe877b8f41ef695ba38a7a0015ba8739a1d5d)
+                              SHA1_VALUES d501d758455e446296382e2cb5b8a39ff36bb43c)
     endif()
 else()
     # Build libSEDML as an external project
