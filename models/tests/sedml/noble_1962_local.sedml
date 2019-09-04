@@ -150,7 +150,7 @@
         </dataGenerator>
     </listOfDataGenerators>
     <listOfOutputs>
-        <plot2D id="plot1">
+        <plot2D id="plot1" name="Membrane potential">
             <annotation>
                 <properties xmlns="http://www.opencor.ws/">
                     <backgroundColor>#13000080</backgroundColor>
@@ -173,7 +173,6 @@
                         <backgroundColor>#dbdbe4</backgroundColor>
                         <foregroundColor>#000080</foregroundColor>
                     </surroundingArea>
-                    <title>Membrane potential</title>
                     <xAxis>
                         <logarithmicScale>false</logarithmicScale>
                         <title/>
@@ -215,7 +214,7 @@
                 </curve>
             </listOfCurves>
         </plot2D>
-        <plot2D id="plot2">
+        <plot2D id="plot2" name="Currents">
             <annotation>
                 <properties xmlns="http://www.opencor.ws/">
                     <backgroundColor>#12108001</backgroundColor>
@@ -238,7 +237,6 @@
                         <backgroundColor>#dde4dc</backgroundColor>
                         <foregroundColor>#108001</foregroundColor>
                     </surroundingArea>
-                    <title>Currents</title>
                     <xAxis>
                         <logarithmicScale>false</logarithmicScale>
                         <title/>
@@ -320,7 +318,7 @@
                 </curve>
             </listOfCurves>
         </plot2D>
-        <plot2D id="plot3">
+        <plot2D id="plot3" name="Gating variables">
             <annotation>
                 <properties xmlns="http://www.opencor.ws/">
                     <backgroundColor>#13800002</backgroundColor>
@@ -343,7 +341,6 @@
                         <backgroundColor>#e4dbdb</backgroundColor>
                         <foregroundColor>#800002</foregroundColor>
                     </surroundingArea>
-                    <title>Gating variables</title>
                     <xAxis>
                         <logarithmicScale>false</logarithmicScale>
                         <title>ms</title>

@@ -1923,8 +1923,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
 
         // Title
 
-        annotation += SedmlProperty.arg(SEDMLSupport::Title)
-                                   .arg(graphPanelProperties[7]->stringValue());
+        sedmlPlot2d->setName(graphPanelProperties[7]->stringValue().toStdString());
 
         // X axis
 
@@ -2677,12 +2676,13 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
     SimulationExperimentViewInformationGraphPanelAndGraphsWidget *graphPanelAndGraphsWidget = informationWidget->graphPanelAndGraphsWidget();
 
     libsedml::SedDocument *sedmlDocument = mSimulation->sedmlFile()->sedmlDocument();
+    bool isL1V4OrLaterSedmlDocument = mSimulation->sedmlFile()->isL1V4OrLater();
     auto sedmlUniformTimeCourse = static_cast<libsedml::SedUniformTimeCourse *>(sedmlDocument->getSimulation(0));
     auto sedmlOneStep = static_cast<libsedml::SedOneStep *>(sedmlDocument->getSimulation(1));
 
     double startingPoint = sedmlUniformTimeCourse->getOutputStartTime();
     double endingPoint = sedmlUniformTimeCourse->getOutputEndTime();
-    double pointInterval = mSimulation->sedmlFile()->isL1V4OrLater()?
+    double pointInterval = isL1V4OrLaterSedmlDocument?
                                (endingPoint-startingPoint)/sedmlUniformTimeCourse->getNumberOfSteps():
                                (endingPoint-startingPoint)/sedmlUniformTimeCourse->getNumberOfPoints();
 
@@ -2936,11 +2936,15 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
 
         graphPanelAndGraphsWidget->reinitialize(graphPanel);
 
+        Core::Properties graphPanelProperties = graphPanelAndGraphsWidget->graphPanelPropertyEditor(graphPanel)->properties();
+
+        if (isL1V4OrLaterSedmlDocument) {
+            graphPanelProperties[7]->setValue(QString::fromStdString(sedmlPlot2d->getName()));
+        }
+
         annotation = sedmlPlot2d->getAnnotation();
 
         if (annotation != nullptr) {
-            Core::Properties graphPanelProperties = graphPanelAndGraphsWidget->graphPanelPropertyEditor(graphPanel)->properties();
-
             for (uint j = 0, jMax = annotation->getNumChildren(); j < jMax; ++j) {
                 const libsbml::XMLNode &sedmlPlot2dPropertiesNode = annotation->getChild(j);
 
@@ -3027,7 +3031,8 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
 
                         // Title
 
-                        } else if (sedmlPlot2dPropertyNodeName == SEDMLSupport::Title) {
+                        } else if (   !isL1V4OrLaterSedmlDocument
+                                   &&  (sedmlPlot2dPropertyNodeName == SEDMLSupport::Title)) {
                             graphPanelProperties[7]->setValue(sedmlPlot2dPropertyNodeValue);
 
                         // X axis
