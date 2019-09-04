@@ -3,21 +3,20 @@ project(libSEDMLPlugin)
 # Name and version of our package
 
 set(PACKAGE_NAME libSEDML)
-set(PACKAGE_VERSION 2.0.5)
+set(PACKAGE_VERSION 2.0.6)
 
 # Version of our package's libraries
 
 set(MAJOR_LIBRARY_VERSION 2)
-set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.0.5)
+set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.0.6)
 
 # Git tag for our library
 
-set(GIT_TAG l1v4-harmony)
+set(GIT_TAG v2.0.6)
 
-# Package repository and release tag
+# Package repository
 
 set(PACKAGE_REPOSITORY libSEDML)
-set(RELEASE_TAG l1v4-harmony)
 
 # Specify where our local package will be installed
 
