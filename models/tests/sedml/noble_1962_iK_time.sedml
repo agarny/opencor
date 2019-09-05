@@ -205,7 +205,7 @@
                     </zoomRegion>
                 </properties>
             </annotation>
-            <xAxis type="linear"/>
+            <xAxis type="log10"/>
             <yAxis type="linear"/>
             <listOfCurves>
                 <curve id="curve2_1" xDataReference="xDataGenerator2_1" yDataReference="yDataGenerator2_1">
@@ -270,7 +270,7 @@
                 </properties>
             </annotation>
             <xAxis type="linear"/>
-            <yAxis type="linear"/>
+            <yAxis type="log10"/>
             <listOfCurves>
                 <curve id="curve3_1" xDataReference="xDataGenerator3_1" yDataReference="yDataGenerator3_1">
                     <annotation>
@@ -333,8 +333,8 @@
                     </zoomRegion>
                 </properties>
             </annotation>
-            <xAxis type="linear"/>
-            <yAxis type="linear"/>
+            <xAxis type="log10"/>
+            <yAxis type="log10"/>
             <listOfCurves>
                 <curve id="curve4_1" xDataReference="xDataGenerator4_1" yDataReference="yDataGenerator4_1">
                     <annotation>
