@@ -1928,7 +1928,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
         libsedml::SedAxis *xAxis = sedmlPlot2d->createXAxis();
         Core::Properties xAxisProperties = graphPanelProperties[8]->properties();
 
-        xAxis->setType((xAxisProperties[0]->stringValue() == TrueValue)?
+        xAxis->setType(xAxisProperties[0]->booleanValue()?
                            libsedml::SEDML_AXISTYPE_LOG10:
                            libsedml::SEDML_AXISTYPE_LINEAR);
 
@@ -1940,10 +1940,10 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
 
         // Y axis
 
-        libsedml::SedAxis *yAxis = sedmlPlot2d->createXAxis();
+        libsedml::SedAxis *yAxis = sedmlPlot2d->createYAxis();
         Core::Properties yAxisProperties = graphPanelProperties[9]->properties();
 
-        yAxis->setType((yAxisProperties[0]->stringValue() == TrueValue)?
+        yAxis->setType(yAxisProperties[0]->booleanValue()?
                            libsedml::SEDML_AXISTYPE_LOG10:
                            libsedml::SEDML_AXISTYPE_LINEAR);
 
