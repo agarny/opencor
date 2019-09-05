@@ -1167,7 +1167,8 @@ bool SedmlFile::isSupported()
             }
         }
 
-        // Make sure that the curves reference listed data generators and don't
+        // Make sure that the curves reference listed data generators and don't,
+        // if we are dealing with a SED-ML file of an earlier version than L1V4,
         // use logarithmic axes
 
         auto plot = static_cast<libsedml::SedPlot2D *>(output);
@@ -1178,18 +1179,20 @@ bool SedmlFile::isSupported()
         for (uint j = 0, jMax = plot->getNumCurves(); j < jMax; ++j) {
             auto curve = reinterpret_cast<libsedml::SedCurve *>(plot->getCurve(j));
 
-            if (initialiseLogs) {
-                initialiseLogs = false;
+            if (!mL1V4OrLater) {
+                if (initialiseLogs) {
+                    initialiseLogs = false;
 
-                logX = curve->getLogX();
-                logY = curve->getLogY();
-            }
+                    logX = curve->getLogX();
+                    logY = curve->getLogY();
+                }
 
-            if ((curve->getLogX() != logX) || (curve->getLogY() != logY)) {
-                mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
-                                          tr("only SED-ML files with curves of the same type (with regards to linear/logarithmic scaling) are supported"));
+                if ((curve->getLogX() != logX) || (curve->getLogY() != logY)) {
+                    mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
+                                              tr("only SED-ML files with curves of the same type (with regards to linear/logarithmic scaling) are supported"));
 
-                return false;
+                    return false;
+                }
             }
 
             if (   (mSedmlDocument->getDataGenerator(curve->getXDataReference()) == nullptr)

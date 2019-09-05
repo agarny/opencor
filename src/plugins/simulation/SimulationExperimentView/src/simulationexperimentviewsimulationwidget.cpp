@@ -1852,8 +1852,6 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
     using GraphsData = struct {
                                   libsedml::SedPlot2D *sedmlPlot2d;
                                   int graphPlotCounter;
-                                  bool logAxisX;
-                                  bool logAxisY;
                               };
 
     SimulationExperimentViewInformationGraphPanelAndGraphsWidget *graphPanelAndGraphsWidget = mContentsWidget->informationWidget()->graphPanelAndGraphsWidget();
@@ -1927,23 +1925,33 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
 
         // X axis
 
+        libsedml::SedAxis *xAxis = sedmlPlot2d->createXAxis();
         Core::Properties xAxisProperties = graphPanelProperties[8]->properties();
 
+        xAxis->setType((xAxisProperties[0]->stringValue() == TrueValue)?
+                           libsedml::SEDML_AXISTYPE_LOG10:
+                           libsedml::SEDML_AXISTYPE_LINEAR);
+
+        sedmlPlot2d->setXAxis(xAxis);
+
         annotation += SedmlProperty.arg(SEDMLSupport::XAxis)
-                                   .arg( SedmlProperty.arg(SEDMLSupport::LogarithmicScale)
-                                                      .arg(xAxisProperties[0]->stringValue())
-                                        +SedmlProperty.arg(SEDMLSupport::Title)
-                                                      .arg(xAxisProperties[1]->stringValue()));
+                                   .arg(SedmlProperty.arg(SEDMLSupport::Title)
+                                                     .arg(xAxisProperties[1]->stringValue()));
 
         // Y axis
 
+        libsedml::SedAxis *yAxis = sedmlPlot2d->createXAxis();
         Core::Properties yAxisProperties = graphPanelProperties[9]->properties();
 
+        yAxis->setType((yAxisProperties[0]->stringValue() == TrueValue)?
+                           libsedml::SEDML_AXISTYPE_LOG10:
+                           libsedml::SEDML_AXISTYPE_LINEAR);
+
+        sedmlPlot2d->setYAxis(yAxis);
+
         annotation += SedmlProperty.arg(SEDMLSupport::YAxis)
-                                   .arg( SedmlProperty.arg(SEDMLSupport::LogarithmicScale)
-                                                      .arg(yAxisProperties[0]->stringValue())
-                                        +SedmlProperty.arg(SEDMLSupport::Title)
-                                                      .arg(yAxisProperties[1]->stringValue()));
+                                   .arg(SedmlProperty.arg(SEDMLSupport::Title)
+                                                     .arg(yAxisProperties[1]->stringValue()));
 
         // Zoom region
 
@@ -1980,8 +1988,6 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
 
             data.sedmlPlot2d = sedmlPlot2d;
             data.graphPlotCounter = graphPlotCounter;
-            data.logAxisX = graphPanel->plot()->logAxisX();
-            data.logAxisY = graphPanel->plot()->logAxisY();
 
             graphsPropertiesList << graphsProperties;
 
@@ -2054,10 +2060,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
                                                    .arg(graphCounter).toStdString());
 
             sedmlCurve->setXDataReference(sedmlDataGeneratorIdX);
-            sedmlCurve->setLogX(data.logAxisX);
-
             sedmlCurve->setYDataReference(sedmlDataGeneratorIdY);
-            sedmlCurve->setLogY(data.logAxisY);
 
             // Customise our curve using an annotation
 
@@ -2942,6 +2945,24 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
             // Title
 
             graphPanelProperties[7]->setValue(QString::fromStdString(sedmlPlot2d->getName()));
+
+            // X and Y axes
+
+            libsedml::SedAxis *xAxis = sedmlPlot2d->getXAxis();
+
+            if (xAxis) {
+                Core::Properties xAxisProperties = graphPanelProperties[8]->properties();
+
+                xAxisProperties[0]->setBooleanValue(xAxis->getType() == libsedml::SEDML_AXISTYPE_LOG10);
+            }
+
+            libsedml::SedAxis *yAxis = sedmlPlot2d->getYAxis();
+
+            if (yAxis) {
+                Core::Properties yAxisProperties = graphPanelProperties[9]->properties();
+
+                yAxisProperties[0]->setBooleanValue(yAxis->getType() == libsedml::SEDML_AXISTYPE_LOG10);
+            }
         }
 
         annotation = sedmlPlot2d->getAnnotation();
@@ -3048,7 +3069,8 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
                                 QString xAxisPropertyNodeName = QString::fromStdString(xAxisPropertyNode.getName());
                                 QString xAxisPropertyNodeValue = QString::fromStdString(xAxisPropertyNode.getChild(0).getCharacters());
 
-                                if (xAxisPropertyNodeName == SEDMLSupport::LogarithmicScale) {
+                                if (   !isL1V4OrLaterSedmlDocument
+                                    &&  (xAxisPropertyNodeName == SEDMLSupport::LogarithmicScale)) {
                                     xAxisProperties[0]->setBooleanValue(xAxisPropertyNodeValue == TrueValue);
                                 } else if (xAxisPropertyNodeName == SEDMLSupport::Title) {
                                     xAxisProperties[1]->setValue(xAxisPropertyNodeValue);
@@ -3066,7 +3088,8 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
                                 QString yAxisPropertyNodeName = QString::fromStdString(yAxisPropertyNode.getName());
                                 QString yAxisPropertyNodeValue = QString::fromStdString(yAxisPropertyNode.getChild(0).getCharacters());
 
-                                if (yAxisPropertyNodeName == SEDMLSupport::LogarithmicScale) {
+                                if (   !isL1V4OrLaterSedmlDocument
+                                    &&  (yAxisPropertyNodeName == SEDMLSupport::LogarithmicScale)) {
                                     yAxisProperties[0]->setBooleanValue(yAxisPropertyNodeValue == TrueValue);
                                 } else if (yAxisPropertyNodeName == SEDMLSupport::Title) {
                                     yAxisProperties[1]->setValue(yAxisPropertyNodeValue);

@@ -125,13 +125,10 @@
                         <backgroundColor>#ececec</backgroundColor>
                         <foregroundColor>#000000</foregroundColor>
                     </surroundingArea>
-                    <title/>
                     <xAxis>
-                        <logarithmicScale>false</logarithmicScale>
                         <title/>
                     </xAxis>
                     <yAxis>
-                        <logarithmicScale>false</logarithmicScale>
                         <title/>
                     </yAxis>
                     <zoomRegion>
@@ -144,8 +141,10 @@
                     </zoomRegion>
                 </properties>
             </annotation>
+            <xAxis type="linear"/>
+            <yAxis type="linear"/>
             <listOfCurves>
-                <curve id="curve1_1" logX="false" logY="false" xDataReference="xDataGenerator1_1" yDataReference="yDataGenerator1_1">
+                <curve id="curve1_1" xDataReference="xDataGenerator1_1" yDataReference="yDataGenerator1_1">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
@@ -190,13 +189,10 @@
                         <backgroundColor>#ececec</backgroundColor>
                         <foregroundColor>#000000</foregroundColor>
                     </surroundingArea>
-                    <title/>
                     <xAxis>
-                        <logarithmicScale>true</logarithmicScale>
                         <title/>
                     </xAxis>
                     <yAxis>
-                        <logarithmicScale>false</logarithmicScale>
                         <title/>
                     </yAxis>
                     <zoomRegion>
@@ -209,8 +205,10 @@
                     </zoomRegion>
                 </properties>
             </annotation>
+            <xAxis type="linear"/>
+            <yAxis type="linear"/>
             <listOfCurves>
-                <curve id="curve2_1" logX="true" logY="false" xDataReference="xDataGenerator2_1" yDataReference="yDataGenerator2_1">
+                <curve id="curve2_1" xDataReference="xDataGenerator2_1" yDataReference="yDataGenerator2_1">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
@@ -255,13 +253,10 @@
                         <backgroundColor>#ececec</backgroundColor>
                         <foregroundColor>#000000</foregroundColor>
                     </surroundingArea>
-                    <title/>
                     <xAxis>
-                        <logarithmicScale>false</logarithmicScale>
                         <title/>
                     </xAxis>
                     <yAxis>
-                        <logarithmicScale>true</logarithmicScale>
                         <title/>
                     </yAxis>
                     <zoomRegion>
@@ -274,8 +269,10 @@
                     </zoomRegion>
                 </properties>
             </annotation>
+            <xAxis type="linear"/>
+            <yAxis type="linear"/>
             <listOfCurves>
-                <curve id="curve3_1" logX="false" logY="true" xDataReference="xDataGenerator3_1" yDataReference="yDataGenerator3_1">
+                <curve id="curve3_1" xDataReference="xDataGenerator3_1" yDataReference="yDataGenerator3_1">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
@@ -320,13 +317,10 @@
                         <backgroundColor>#ececec</backgroundColor>
                         <foregroundColor>#000000</foregroundColor>
                     </surroundingArea>
-                    <title/>
                     <xAxis>
-                        <logarithmicScale>true</logarithmicScale>
                         <title/>
                     </xAxis>
                     <yAxis>
-                        <logarithmicScale>true</logarithmicScale>
                         <title/>
                     </yAxis>
                     <zoomRegion>
@@ -339,8 +333,10 @@
                     </zoomRegion>
                 </properties>
             </annotation>
+            <xAxis type="linear"/>
+            <yAxis type="linear"/>
             <listOfCurves>
-                <curve id="curve4_1" logX="true" logY="true" xDataReference="xDataGenerator4_1" yDataReference="yDataGenerator4_1">
+                <curve id="curve4_1" xDataReference="xDataGenerator4_1" yDataReference="yDataGenerator4_1">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
