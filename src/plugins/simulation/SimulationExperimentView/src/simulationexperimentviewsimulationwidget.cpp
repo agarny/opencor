@@ -2939,6 +2939,8 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
         Core::Properties graphPanelProperties = graphPanelAndGraphsWidget->graphPanelPropertyEditor(graphPanel)->properties();
 
         if (isL1V4OrLaterSedmlDocument) {
+            // Title
+
             graphPanelProperties[7]->setValue(QString::fromStdString(sedmlPlot2d->getName()));
         }
 
