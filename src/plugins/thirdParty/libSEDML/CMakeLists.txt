@@ -12,7 +12,7 @@ set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.0.6)
 
 # Git tag for our library
 
-set(GIT_TAG v2.0.6)
+set(GIT_TAG l1v4)
 
 # Package repository
 
