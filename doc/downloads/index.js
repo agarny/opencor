@@ -18,7 +18,7 @@ var jsonData = { "versions": [
                        }
                      ]
                    },
-                   { "major": 0, "minor": 0, "patch": 0, "day": 19, "month": 7, "year": 2019, "type": 2, "license": 2,
+                   { "major": 0, "minor": 0, "patch": 0, "day": 9, "month": 9, "year": 2019, "type": 2, "license": 2,
                      "platforms": [
                        { "name": "Windows", "supported": "Windows 7 and later",
                          "files": [
@@ -37,7 +37,7 @@ var jsonData = { "versions": [
                        }
                      ],
                      "changes": [
-                       { "change": "<strong>Third-party libraries:</strong> upgraded <a href=\"http://www.llvm.org/\">LLVM</a>+<a href=\"http://clang.llvm.org/\">Clang</a> to version 8.0.1 (see issue <a href=\"https://github.com/opencor/opencor/issues/2147\">#2147</a>). Upgraded <a href=\"https://libgit2.github.com/\">libgit2</a> to version 0.28.3 (see issue <a href=\"https://github.com/opencor/opencor/issues/2148\">#2148</a>). Upgraded <a href=\"https://www.mesa3d.org/\">Mesa</a> to version 19.1.5 (see issue <a href=\"https://github.com/opencor/opencor/issues/2149\">#2149</a>)." }
+                       { "change": "<strong>Third-party libraries:</strong> upgraded the <a href=\"https://www.openssl.org/\">OpenSSL</a> library to version 1.1.1d (see issue <a href=\"https://github.com/opencor/opencor/issues/2157\">#2157</a>). Upgraded <a href=\"http://www.llvm.org/\">LLVM</a>+<a href=\"http://clang.llvm.org/\">Clang</a> to version 9.0.0 (see issue <a href=\"https://github.com/opencor/opencor/issues/2161\">#2161</a>)." }
                      ]
                    },
                    { "major": 0, "minor": 5, "patch": 0, "day": 15, "month": 10, "year": 2016, "type": 0, "license": 1,
