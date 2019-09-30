@@ -102,7 +102,7 @@
         </dataGenerator>
     </listOfDataGenerators>
     <listOfOutputs>
-        <plot2D id="plot1">
+        <plot2D id="plot1" legend="false">
             <annotation>
                 <properties xmlns="http://www.opencor.ws/">
                     <backgroundColor>#ffffff</backgroundColor>
@@ -114,7 +114,6 @@
                         <width>1</width>
                         <color>#a0a0a4</color>
                     </gridLines>
-                    <legend>false</legend>
                     <pointCoordinates>
                         <style>dash</style>
                         <width>1</width>
@@ -166,7 +165,7 @@
                 </curve>
             </listOfCurves>
         </plot2D>
-        <plot2D id="plot2">
+        <plot2D id="plot2" legend="false">
             <annotation>
                 <properties xmlns="http://www.opencor.ws/">
                     <backgroundColor>#ffffff</backgroundColor>
@@ -178,7 +177,6 @@
                         <width>1</width>
                         <color>#a0a0a4</color>
                     </gridLines>
-                    <legend>false</legend>
                     <pointCoordinates>
                         <style>dash</style>
                         <width>1</width>
@@ -230,7 +228,7 @@
                 </curve>
             </listOfCurves>
         </plot2D>
-        <plot2D id="plot3">
+        <plot2D id="plot3" legend="false">
             <annotation>
                 <properties xmlns="http://www.opencor.ws/">
                     <backgroundColor>#ffffff</backgroundColor>
@@ -242,7 +240,6 @@
                         <width>1</width>
                         <color>#a0a0a4</color>
                     </gridLines>
-                    <legend>false</legend>
                     <pointCoordinates>
                         <style>dash</style>
                         <width>1</width>
@@ -294,7 +291,7 @@
                 </curve>
             </listOfCurves>
         </plot2D>
-        <plot2D id="plot4">
+        <plot2D id="plot4" legend="false">
             <annotation>
                 <properties xmlns="http://www.opencor.ws/">
                     <backgroundColor>#ffffff</backgroundColor>
@@ -306,7 +303,6 @@
                         <width>1</width>
                         <color>#a0a0a4</color>
                     </gridLines>
-                    <legend>false</legend>
                     <pointCoordinates>
                         <style>dash</style>
                         <width>1</width>

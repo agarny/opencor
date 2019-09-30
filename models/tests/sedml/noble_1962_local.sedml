@@ -150,7 +150,7 @@
         </dataGenerator>
     </listOfDataGenerators>
     <listOfOutputs>
-        <plot2D id="plot1" name="Membrane potential">
+        <plot2D id="plot1" legend="true" name="Membrane potential">
             <annotation>
                 <properties xmlns="http://www.opencor.ws/">
                     <backgroundColor>#13000080</backgroundColor>
@@ -162,7 +162,6 @@
                         <width>1</width>
                         <color>#80000080</color>
                     </gridLines>
-                    <legend>true</legend>
                     <pointCoordinates>
                         <style>dash</style>
                         <width>1</width>
@@ -214,7 +213,7 @@
                 </curve>
             </listOfCurves>
         </plot2D>
-        <plot2D id="plot2" name="Currents">
+        <plot2D id="plot2" legend="true" name="Currents">
             <annotation>
                 <properties xmlns="http://www.opencor.ws/">
                     <backgroundColor>#12108001</backgroundColor>
@@ -226,7 +225,6 @@
                         <width>1</width>
                         <color>#80108001</color>
                     </gridLines>
-                    <legend>true</legend>
                     <pointCoordinates>
                         <style>dash</style>
                         <width>1</width>
@@ -318,7 +316,7 @@
                 </curve>
             </listOfCurves>
         </plot2D>
-        <plot2D id="plot3" name="Gating variables">
+        <plot2D id="plot3" legend="true" name="Gating variables">
             <annotation>
                 <properties xmlns="http://www.opencor.ws/">
                     <backgroundColor>#13800002</backgroundColor>
@@ -330,7 +328,6 @@
                         <width>1</width>
                         <color>#80800002</color>
                     </gridLines>
-                    <legend>true</legend>
                     <pointCoordinates>
                         <style>dash</style>
                         <width>1</width>

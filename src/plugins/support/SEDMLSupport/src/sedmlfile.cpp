@@ -996,7 +996,8 @@ bool SedmlFile::isSupported()
 
                         // Legend
 
-                        } else if (   (plot2dPropertyNodeName == Legend)
+                        } else if (   !mL1V4OrLater
+                                   && (plot2dPropertyNodeName == Legend)
                                    && (plot2dPropertyNodeValue != TrueValue)
                                    && (plot2dPropertyNodeValue != FalseValue)) {
                             mIssues << SedmlFileIssue(SedmlFileIssue::Type::Error,

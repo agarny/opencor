@@ -1892,8 +1892,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
 
         // Legend
 
-        annotation += SedmlProperty.arg(SEDMLSupport::Legend)
-                                   .arg(graphPanelProperties[4]->stringValue());
+        sedmlPlot2d->setLegend(graphPanelProperties[4]->booleanValue());
 
         // Point coordinates
 
@@ -2942,6 +2941,10 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
         Core::Properties graphPanelProperties = graphPanelAndGraphsWidget->graphPanelPropertyEditor(graphPanel)->properties();
 
         if (isL1V4OrLaterSedmlDocument) {
+            // Legend
+
+            graphPanelProperties[4]->setBooleanValue(sedmlPlot2d->getLegend());
+
             // Title
 
             graphPanelProperties[7]->setValue(QString::fromStdString(sedmlPlot2d->getName()));
@@ -3009,7 +3012,8 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
 
                         // Legend
 
-                        } else if (sedmlPlot2dPropertyNodeName == SEDMLSupport::Legend) {
+                        } else if (   !isL1V4OrLaterSedmlDocument
+                                   &&  (sedmlPlot2dPropertyNodeName == SEDMLSupport::Legend)) {
                             graphPanelProperties[4]->setBooleanValue(sedmlPlot2dPropertyNodeValue == TrueValue);
 
                         // Point coordinates
