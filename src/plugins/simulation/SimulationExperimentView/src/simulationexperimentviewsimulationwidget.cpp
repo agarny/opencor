@@ -3151,9 +3151,7 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
             if (isL1V4OrLaterSedmlDocument) {
                 // Title
 
-                title = QString::fromStdString(sedmlCurve->getName().empty()?
-                                                   sedmlCurve->getId():
-                                                   sedmlCurve->getName());
+                title = QString::fromStdString(sedmlCurve->getName());
             }
 
             if (xParameter == nullptr) {
