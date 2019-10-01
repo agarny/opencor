@@ -191,11 +191,10 @@
             <xAxis type="linear"/>
             <yAxis type="linear"/>
             <listOfCurves>
-                <curve id="curve1_1" xDataReference="xDataGenerator1_1" yDataReference="yDataGenerator1_1">
+                <curve id="curve1_1" name="V" xDataReference="xDataGenerator1_1" yDataReference="yDataGenerator1_1">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <title>V</title>
                             <line>
                                 <style>solid</style>
                                 <width>3</width>
@@ -254,11 +253,10 @@
             <xAxis type="linear"/>
             <yAxis type="linear"/>
             <listOfCurves>
-                <curve id="curve2_1" xDataReference="xDataGenerator2_1" yDataReference="yDataGenerator2_1">
+                <curve id="curve2_1" name="Sodium" xDataReference="xDataGenerator2_1" yDataReference="yDataGenerator2_1">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <title>Sodium</title>
                             <line>
                                 <style>dot</style>
                                 <width>1</width>
@@ -274,11 +272,10 @@
                         </properties>
                     </annotation>
                 </curve>
-                <curve id="curve2_2" xDataReference="xDataGenerator2_2" yDataReference="yDataGenerator2_2">
+                <curve id="curve2_2" name="Potassium" xDataReference="xDataGenerator2_2" yDataReference="yDataGenerator2_2">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <title>Potassium</title>
                             <line>
                                 <style>dot</style>
                                 <width>1</width>
@@ -294,11 +291,10 @@
                         </properties>
                     </annotation>
                 </curve>
-                <curve id="curve2_3" xDataReference="xDataGenerator2_3" yDataReference="yDataGenerator2_3">
+                <curve id="curve2_3" name="Leak" xDataReference="xDataGenerator2_3" yDataReference="yDataGenerator2_3">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <title>Leak</title>
                             <line>
                                 <style>dot</style>
                                 <width>1</width>
@@ -357,11 +353,10 @@
             <xAxis type="linear"/>
             <yAxis type="linear"/>
             <listOfCurves>
-                <curve id="curve3_1" xDataReference="xDataGenerator3_1" yDataReference="yDataGenerator3_1">
+                <curve id="curve3_1" name="m" xDataReference="xDataGenerator3_1" yDataReference="yDataGenerator3_1">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <title>m</title>
                             <line>
                                 <style>dot</style>
                                 <width>1</width>
@@ -377,11 +372,10 @@
                         </properties>
                     </annotation>
                 </curve>
-                <curve id="curve3_2" xDataReference="xDataGenerator3_2" yDataReference="yDataGenerator3_2">
+                <curve id="curve3_2" name="h" xDataReference="xDataGenerator3_2" yDataReference="yDataGenerator3_2">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <title>h</title>
                             <line>
                                 <style>dot</style>
                                 <width>1</width>
@@ -397,11 +391,10 @@
                         </properties>
                     </annotation>
                 </curve>
-                <curve id="curve3_3" xDataReference="xDataGenerator3_3" yDataReference="yDataGenerator3_3">
+                <curve id="curve3_3" name="n" xDataReference="xDataGenerator3_3" yDataReference="yDataGenerator3_3">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <title>n</title>
                             <line>
                                 <style>dot</style>
                                 <width>1</width>

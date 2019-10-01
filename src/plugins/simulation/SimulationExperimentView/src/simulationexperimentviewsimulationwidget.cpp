@@ -2059,6 +2059,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
             sedmlCurve->setId(QString("curve%1_%2").arg(data.graphPlotCounter)
                                                    .arg(graphCounter).toStdString());
 
+            sedmlCurve->setName(properties[1]->stringValue().toStdString());
             sedmlCurve->setXDataReference(sedmlDataGeneratorIdX);
             sedmlCurve->setYDataReference(sedmlDataGeneratorIdY);
 
@@ -2075,8 +2076,6 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
                                                                              .arg(property->isChecked()?
                                                                                       TrueValue:
                                                                                       FalseValue)
-                                                               +SedmlProperty.arg(SEDMLSupport::Title)
-                                                                             .arg(properties[1]->stringValue())
                                                                +SedmlProperty.arg(SEDMLSupport::Line)
                                                                              .arg( SedmlProperty.arg(SEDMLSupport::Style)
                                                                                                 .arg(SEDMLSupport::stringLineStyle(lineProperties[0]->listValueIndex()))
@@ -3145,8 +3144,17 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
             QString yCellmlComponent;
             QString xCellmlVariable;
             QString yCellmlVariable;
+            QString title = GraphPanelWidget::DefaultGraphTitle;
             CellMLSupport::CellmlFileRuntimeParameter *xParameter = runtimeParameter(xVariable, xCellmlComponent, xCellmlVariable);
             CellMLSupport::CellmlFileRuntimeParameter *yParameter = runtimeParameter(yVariable, yCellmlComponent, yCellmlVariable);
+
+            if (isL1V4OrLaterSedmlDocument) {
+                // Title
+
+                title = QString::fromStdString(sedmlCurve->getName().empty()?
+                                                   sedmlCurve->getId():
+                                                   sedmlCurve->getName());
+            }
 
             if (xParameter == nullptr) {
                 if (yParameter == nullptr) {
@@ -3178,7 +3186,6 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
             }
 
             bool selected = GraphPanelWidget::DefaultGraphSelected;
-            QString title = GraphPanelWidget::DefaultGraphTitle;
             Qt::PenStyle lineStyle = GraphPanelWidget::DefaultGraphLineStyle;
             int lineWidth = GraphPanelWidget::DefaultGraphLineWidth;
             QColor lineColor = GraphPanelWidget::DefaultGraphLineColor;
@@ -3203,7 +3210,8 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
 
                             if (curvePropertyNodeName == SEDMLSupport::Selected) {
                                 selected = curvePropertyNodeValue == TrueValue;
-                            } else if (curvePropertyNodeName == SEDMLSupport::Title) {
+                            } else if (   !isL1V4OrLaterSedmlDocument
+                                       &&  (curvePropertyNodeName == SEDMLSupport::Title)) {
                                 title = curvePropertyNodeValue;
                             } else if (curvePropertyNodeName == SEDMLSupport::Line) {
                                 for (uint m = 0, mMax = curvePropertyNode.getNumChildren(); m < mMax; ++m) {
