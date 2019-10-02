@@ -2062,6 +2062,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
             sedmlCurve->setName(properties[1]->stringValue().toStdString());
             sedmlCurve->setXDataReference(sedmlDataGeneratorIdX);
             sedmlCurve->setYDataReference(sedmlDataGeneratorIdY);
+            sedmlCurve->setType(libsedml::SEDML_CURVETYPE_POINTS);
 
             // Customise our curve using an annotation
 

@@ -1180,7 +1180,14 @@ bool SedmlFile::isSupported()
         for (uint j = 0, jMax = plot->getNumCurves(); j < jMax; ++j) {
             auto curve = reinterpret_cast<libsedml::SedCurve *>(plot->getCurve(j));
 
-            if (!mL1V4OrLater) {
+            if (mL1V4OrLater) {
+                if (curve->getType() != libsedml::SEDML_CURVETYPE_POINTS) {
+                    mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
+                                              tr("only SED-ML files with curves that consist of points are supported"));
+
+                    return false;
+                }
+            } else {
                 if (initialiseLogs) {
                     initialiseLogs = false;
 

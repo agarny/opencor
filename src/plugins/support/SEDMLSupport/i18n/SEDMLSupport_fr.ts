@@ -127,6 +127,10 @@
         <translation>seulement les fichiers SED-ML avec des sorties 2D sont supportés</translation>
     </message>
     <message>
+        <source>only SED-ML files with curves that consist of points are supported</source>
+        <translation>seulement les fichiers SED-ML avec des courbes constituées de points sont supportés</translation>
+    </message>
+    <message>
         <source>only SED-ML files with curves of the same type (with regards to linear/logarithmic scaling) are supported</source>
         <translation>seulement les fichiers SED-ML avec des courbes de même type (en ce qui concerne l&apos;échelle linéaire/logarithmique) sont supportés</translation>
     </message>
