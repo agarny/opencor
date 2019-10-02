@@ -147,7 +147,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <title/>
                             <line>
                                 <style>solid</style>
                                 <width>2</width>
@@ -210,7 +209,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <title/>
                             <line>
                                 <style>solid</style>
                                 <width>2</width>
@@ -273,7 +271,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <title/>
                             <line>
                                 <style>solid</style>
                                 <width>2</width>
@@ -336,7 +333,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <title/>
                             <line>
                                 <style>solid</style>
                                 <width>2</width>
