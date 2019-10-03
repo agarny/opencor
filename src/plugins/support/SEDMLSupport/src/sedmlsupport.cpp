@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //==============================================================================
 
+#include <QColor>
 #include <QObject>
 #include <QStringList>
 
@@ -263,6 +264,64 @@ QwtSymbol::Style symbolStyle(const QString &pStringSymbolStyle)
     // Return the given string symbol style as a symbol style
 
     return symbolStyle(indexSymbolStyle(pStringSymbolStyle));
+}
+
+//==============================================================================
+
+libsedml::LineType_t sedmlLineStyle(int pIndexLineStyle)
+{
+    // Return the given index line style as a SED-ML line style
+    // Note: if the given index line style is invalid then we return the SED-ML
+    //       line style for a solid line...
+
+    if (pIndexLineStyle == 0) {
+        return libsedml::SEDML_LINETYPE_NONE;
+    }
+
+    if (pIndexLineStyle == 1) {
+        return libsedml::SEDML_LINETYPE_SOLID;
+    }
+
+    if (pIndexLineStyle == 2) {
+        return libsedml::SEDML_LINETYPE_DASH;
+    }
+
+    if (pIndexLineStyle == 3) {
+        return libsedml::SEDML_LINETYPE_DOT;
+    }
+
+    if (pIndexLineStyle == 4) {
+        return libsedml::SEDML_LINETYPE_DASHDOT;
+    }
+
+//---ISSUE2053--- WAITING FOR libsedml::SEDML_LINETYPE_DASHDOTDOT TO BE ADDED
+//                (SEE https://github.com/fbergmann/libSEDML/issues/64)
+//    if (pIndexLineStyle == 5) {
+//        return libsedml::SEDML_LINETYPE_DASHDOTDOT;
+//    }
+
+    return libsedml::SEDML_LINETYPE_SOLID;
+}
+
+//==============================================================================
+
+QString sedmlColor(const QColor &pColor)
+{
+    // Return the given colour as a SED-ML string colour
+
+    QString res = pColor.name(QColor::HexArgb);
+
+    res.remove(0, 1);
+
+    QString alpha = res.left(2);
+
+    res.remove(0, 2);
+
+    if (alpha != "ff") {
+        res += alpha;
+    }
+
+    return res.toUpper();
 }
 
 //==============================================================================

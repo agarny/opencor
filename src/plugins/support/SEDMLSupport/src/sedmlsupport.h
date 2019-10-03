@@ -39,6 +39,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //==============================================================================
 
+#include "libsedmlbegin.h"
+    #include "sedml/SedLine.h"
+#include "libsedmlend.h"
+
+//==============================================================================
+
 namespace OpenCOR {
 namespace SEDMLSupport {
 
@@ -67,6 +73,10 @@ QString SEDMLSUPPORT_EXPORT stringSymbolStyle(QwtSymbol::Style pSymbolStyle,
                                               bool pFormatted = false);
 QwtSymbol::Style SEDMLSUPPORT_EXPORT symbolStyle(int pIndexSymbolStyle);
 QwtSymbol::Style SEDMLSUPPORT_EXPORT symbolStyle(const QString &pStringSymbolStyle);
+
+libsedml::LineType_t SEDMLSUPPORT_EXPORT sedmlLineStyle(int pIndexLineStyle);
+
+QString SEDMLSUPPORT_EXPORT sedmlColor(const QColor &pColor);
 
 //==============================================================================
 

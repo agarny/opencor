@@ -143,7 +143,7 @@
             <xAxis type="linear"/>
             <yAxis type="linear"/>
             <listOfCurves>
-                <curve id="curve1_1" type="points" xDataReference="xDataGenerator1_1" yDataReference="yDataGenerator1_1">
+                <curve id="curve1_1" style="style1_1" type="points" xDataReference="xDataGenerator1_1" yDataReference="yDataGenerator1_1">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
@@ -205,7 +205,7 @@
             <xAxis type="log10"/>
             <yAxis type="linear"/>
             <listOfCurves>
-                <curve id="curve2_1" type="points" xDataReference="xDataGenerator2_1" yDataReference="yDataGenerator2_1">
+                <curve id="curve2_1" style="style2_1" type="points" xDataReference="xDataGenerator2_1" yDataReference="yDataGenerator2_1">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
@@ -267,7 +267,7 @@
             <xAxis type="linear"/>
             <yAxis type="log10"/>
             <listOfCurves>
-                <curve id="curve3_1" type="points" xDataReference="xDataGenerator3_1" yDataReference="yDataGenerator3_1">
+                <curve id="curve3_1" style="style3_1" type="points" xDataReference="xDataGenerator3_1" yDataReference="yDataGenerator3_1">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
@@ -329,7 +329,7 @@
             <xAxis type="log10"/>
             <yAxis type="log10"/>
             <listOfCurves>
-                <curve id="curve4_1" type="points" xDataReference="xDataGenerator4_1" yDataReference="yDataGenerator4_1">
+                <curve id="curve4_1" style="style4_1" type="points" xDataReference="xDataGenerator4_1" yDataReference="yDataGenerator4_1">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
@@ -351,4 +351,18 @@
             </listOfCurves>
         </plot2D>
     </listOfOutputs>
+    <listOfStyles>
+        <style id="style1_1">
+            <line color="0072BD" style="solid" thickness="2"/>
+        </style>
+        <style id="style2_1">
+            <line color="0072BD" style="solid" thickness="2"/>
+        </style>
+        <style id="style3_1">
+            <line color="0072BD" style="solid" thickness="2"/>
+        </style>
+        <style id="style4_1">
+            <line color="0072BD" style="solid" thickness="2"/>
+        </style>
+    </listOfStyles>
 </sedML>

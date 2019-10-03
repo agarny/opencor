@@ -36,6 +36,7 @@ class Tests : public QObject
 private slots:
     void lineStyleTests();
     void symbolStyleTests();
+    void sedmlTests();
 };
 
 //==============================================================================

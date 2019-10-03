@@ -191,7 +191,7 @@
             <xAxis type="linear"/>
             <yAxis type="linear"/>
             <listOfCurves>
-                <curve id="curve1_1" name="V" type="points" xDataReference="xDataGenerator1_1" yDataReference="yDataGenerator1_1">
+                <curve id="curve1_1" name="V" style="style1_1" type="points" xDataReference="xDataGenerator1_1" yDataReference="yDataGenerator1_1">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
@@ -253,7 +253,7 @@
             <xAxis type="linear"/>
             <yAxis type="linear"/>
             <listOfCurves>
-                <curve id="curve2_1" name="Sodium" type="points" xDataReference="xDataGenerator2_1" yDataReference="yDataGenerator2_1">
+                <curve id="curve2_1" name="Sodium" style="style2_1" type="points" xDataReference="xDataGenerator2_1" yDataReference="yDataGenerator2_1">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
@@ -272,7 +272,7 @@
                         </properties>
                     </annotation>
                 </curve>
-                <curve id="curve2_2" name="Potassium" type="points" xDataReference="xDataGenerator2_2" yDataReference="yDataGenerator2_2">
+                <curve id="curve2_2" name="Potassium" style="style2_2" type="points" xDataReference="xDataGenerator2_2" yDataReference="yDataGenerator2_2">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
@@ -291,7 +291,7 @@
                         </properties>
                     </annotation>
                 </curve>
-                <curve id="curve2_3" name="Leak" type="points" xDataReference="xDataGenerator2_3" yDataReference="yDataGenerator2_3">
+                <curve id="curve2_3" name="Leak" style="style2_3" type="points" xDataReference="xDataGenerator2_3" yDataReference="yDataGenerator2_3">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
@@ -353,7 +353,7 @@
             <xAxis type="linear"/>
             <yAxis type="linear"/>
             <listOfCurves>
-                <curve id="curve3_1" name="m" type="points" xDataReference="xDataGenerator3_1" yDataReference="yDataGenerator3_1">
+                <curve id="curve3_1" name="m" style="style3_1" type="points" xDataReference="xDataGenerator3_1" yDataReference="yDataGenerator3_1">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
@@ -372,7 +372,7 @@
                         </properties>
                     </annotation>
                 </curve>
-                <curve id="curve3_2" name="h" type="points" xDataReference="xDataGenerator3_2" yDataReference="yDataGenerator3_2">
+                <curve id="curve3_2" name="h" style="style3_2" type="points" xDataReference="xDataGenerator3_2" yDataReference="yDataGenerator3_2">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
@@ -391,7 +391,7 @@
                         </properties>
                     </annotation>
                 </curve>
-                <curve id="curve3_3" name="n" type="points" xDataReference="xDataGenerator3_3" yDataReference="yDataGenerator3_3">
+                <curve id="curve3_3" name="n" style="style3_3" type="points" xDataReference="xDataGenerator3_3" yDataReference="yDataGenerator3_3">
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
@@ -413,4 +413,27 @@
             </listOfCurves>
         </plot2D>
     </listOfOutputs>
+    <listOfStyles>
+        <style id="style1_1">
+            <line color="000080" style="solid" thickness="3"/>
+        </style>
+        <style id="style2_1">
+            <line color="108001" style="dot" thickness="1"/>
+        </style>
+        <style id="style2_2">
+            <line color="108001" style="dot" thickness="1"/>
+        </style>
+        <style id="style2_3">
+            <line color="108001" style="dot" thickness="1"/>
+        </style>
+        <style id="style3_1">
+            <line color="800002" style="dot" thickness="1"/>
+        </style>
+        <style id="style3_2">
+            <line color="800002" style="dot" thickness="1"/>
+        </style>
+        <style id="style3_3">
+            <line color="800002" style="dot" thickness="1"/>
+        </style>
+    </listOfStyles>
 </sedML>

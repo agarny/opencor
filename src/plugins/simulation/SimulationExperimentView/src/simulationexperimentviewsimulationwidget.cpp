@@ -2064,9 +2064,24 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
             sedmlCurve->setYDataReference(sedmlDataGeneratorIdY);
             sedmlCurve->setType(libsedml::SEDML_CURVETYPE_POINTS);
 
+            // Customise our curve using a style
+
+            libsedml::SedStyle *sedmlStyle = sedmlDocument->createStyle();
+
+            sedmlStyle->setId(QString("style%1_%2").arg(data.graphPlotCounter)
+                                                   .arg(graphCounter).toStdString());
+
+            libsedml::SedLine *sedmlLine = sedmlStyle->createLine();
+            Core::Properties lineProperties = properties[4]->properties();
+
+            sedmlLine->setStyle(SEDMLSupport::sedmlLineStyle(lineProperties[0]->listValueIndex()));
+            sedmlLine->setThickness(lineProperties[1]->doubleValue());
+            sedmlLine->setColor(SEDMLSupport::sedmlColor(lineProperties[2]->colorValue()).toStdString());
+
+            sedmlCurve->setStyle(sedmlStyle->getId());
+
             // Customise our curve using an annotation
 
-            Core::Properties lineProperties = properties[4]->properties();
             Core::Properties symbolProperties = properties[5]->properties();
 
             sedmlCurve->appendAnnotation(QString(R"(<%1 xmlns="%2">)"
