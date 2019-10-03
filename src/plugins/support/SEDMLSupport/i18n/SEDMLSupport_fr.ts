@@ -210,6 +210,14 @@
         <translation>Triangle Bas</translation>
     </message>
     <message>
+        <source>Left Triangle</source>
+        <translation>Triangle Gauche</translation>
+    </message>
+    <message>
+        <source>Right Triangle</source>
+        <translation>Triangle Droit</translation>
+    </message>
+    <message>
         <source>Cross</source>
         <translation>Croix</translation>
     </message>
