@@ -3222,11 +3222,19 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
                             QString curvePropertyNodeName = QString::fromStdString(curvePropertyNode.getName());
                             QString curvePropertyNodeValue = QString::fromStdString(curvePropertyNode.getChild(0).getCharacters());
 
+                            // Selected
+
                             if (curvePropertyNodeName == SEDMLSupport::Selected) {
                                 selected = curvePropertyNodeValue == TrueValue;
+
+                            // Title
+
                             } else if (   !isL1V4OrLaterSedmlDocument
                                        &&  (curvePropertyNodeName == SEDMLSupport::Title)) {
                                 title = curvePropertyNodeValue;
+
+                            // Line
+
                             } else if (curvePropertyNodeName == SEDMLSupport::Line) {
                                 for (uint m = 0, mMax = curvePropertyNode.getNumChildren(); m < mMax; ++m) {
                                     const libsbml::XMLNode &linePropertyNode = curvePropertyNode.getChild(m);
@@ -3241,6 +3249,9 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
                                         lineColor.setNamedColor(linePropertyNodeValue);
                                     }
                                 }
+
+                            // Symbol
+
                             } else if (curvePropertyNodeName == SEDMLSupport::Symbol) {
                                 for (uint m = 0, mMax = curvePropertyNode.getNumChildren(); m < mMax; ++m) {
                                     const libsbml::XMLNode &symbolPropertyNode = curvePropertyNode.getChild(m);
