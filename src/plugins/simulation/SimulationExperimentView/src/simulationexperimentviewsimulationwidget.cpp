@@ -3154,21 +3154,22 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
         for (uint j = 0, jMax = sedmlPlot2d->getNumCurves(); j < jMax; ++j) {
             auto sedmlCurve = reinterpret_cast<libsedml::SedCurve *>(sedmlPlot2d->getCurve(j));
 
-            libsedml::SedVariable *xVariable = sedmlDocument->getDataGenerator(sedmlCurve->getXDataReference())->getVariable(0);
-            libsedml::SedVariable *yVariable = sedmlDocument->getDataGenerator(sedmlCurve->getYDataReference())->getVariable(0);
-            QString xCellmlComponent;
-            QString yCellmlComponent;
-            QString xCellmlVariable;
-            QString yCellmlVariable;
             QString title = GraphPanelWidget::DefaultGraphTitle;
-            CellMLSupport::CellmlFileRuntimeParameter *xParameter = runtimeParameter(xVariable, xCellmlComponent, xCellmlVariable);
-            CellMLSupport::CellmlFileRuntimeParameter *yParameter = runtimeParameter(yVariable, yCellmlComponent, yCellmlVariable);
 
             if (isL1V4OrLaterSedmlDocument) {
                 // Title
 
                 title = QString::fromStdString(sedmlCurve->getName());
             }
+
+            libsedml::SedVariable *xVariable = sedmlDocument->getDataGenerator(sedmlCurve->getXDataReference())->getVariable(0);
+            libsedml::SedVariable *yVariable = sedmlDocument->getDataGenerator(sedmlCurve->getYDataReference())->getVariable(0);
+            QString xCellmlComponent;
+            QString yCellmlComponent;
+            QString xCellmlVariable;
+            QString yCellmlVariable;
+            CellMLSupport::CellmlFileRuntimeParameter *xParameter = runtimeParameter(xVariable, xCellmlComponent, xCellmlVariable);
+            CellMLSupport::CellmlFileRuntimeParameter *yParameter = runtimeParameter(yVariable, yCellmlComponent, yCellmlVariable);
 
             if (xParameter == nullptr) {
                 if (yParameter == nullptr) {
