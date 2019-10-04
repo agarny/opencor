@@ -307,7 +307,7 @@ libsedml::LineType_t sedmlLineStyle(int pIndexLineStyle)
 
 QString sedmlColor(const QColor &pColor)
 {
-    // Return the given colour as a SED-ML string colour
+    // Return the given colour as a SED-ML colour
 
     QString res = pColor.name(QColor::HexArgb);
 
