@@ -277,11 +277,28 @@ void Tests::sedmlTests()
 //    QCOMPARE(OpenCOR::SEDMLSupport::sedmlLineStyle(5), libsedml::SEDML_LINETYPE_DASHDOTDOT);
     QCOMPARE(OpenCOR::SEDMLSupport::sedmlLineStyle(6), libsedml::SEDML_LINETYPE_SOLID);
 
+    // Convert a SED-ML line style to a line style
+
+    QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_NONE), Qt::NoPen);
+    QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_SOLID), Qt::SolidLine);
+    QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_DASH), Qt::DashLine);
+    QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_DOT), Qt::DotLine);
+    QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_DASHDOT), Qt::DashDotLine);
+//---ISSUE2053--- WAITING FOR libsedml::SEDML_LINETYPE_DASHDOTDOT TO BE ADDED
+//                (SEE https://github.com/fbergmann/libSEDML/issues/64)
+//    QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_DASHDOTDOT), Qt::DashDotDotLine);
+    QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_INVALID), Qt::SolidLine);
+
     // Convert a Qt colour to a SED-ML colour
 
     QCOMPARE(OpenCOR::SEDMLSupport::sedmlColor(QColor("#1a2b3c")), "1A2B3C");
     QCOMPARE(OpenCOR::SEDMLSupport::sedmlColor(QColor("#ff1a2b3c")), "1A2B3C");
     QCOMPARE(OpenCOR::SEDMLSupport::sedmlColor(QColor("#7e1a2b3c")), "1A2B3C7E");
+
+    // Convert a SED-ML colour to a Qt colour
+
+    QCOMPARE(OpenCOR::SEDMLSupport::color("1A2B3C"), QColor("#1a2b3c"));
+    QCOMPARE(OpenCOR::SEDMLSupport::color("1A2B3C7E"), QColor("#7e1a2b3c"));
 }
 
 //==============================================================================

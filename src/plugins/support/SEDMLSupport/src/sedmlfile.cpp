@@ -1226,7 +1226,8 @@ bool SedmlFile::isSupported()
                             const libsbml::XMLNode &curvePropertyNode = curvePropertiesNode.getChild(l);
                             QString curvePropertyNodeName = QString::fromStdString(curvePropertyNode.getName());
 
-                            if (curvePropertyNodeName == Line) {
+                            if (   !mL1V4OrLater
+                                && (curvePropertyNodeName == Line)) {
                                 for (uint m = 0, mMax = curvePropertyNode.getNumChildren(); m < mMax; ++m) {
                                     const libsbml::XMLNode &linePropertyNode = curvePropertyNode.getChild(m);
                                     QString linePropertyNodeName = QString::fromStdString(linePropertyNode.getName());

@@ -3155,11 +3155,23 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
             auto sedmlCurve = reinterpret_cast<libsedml::SedCurve *>(sedmlPlot2d->getCurve(j));
 
             QString title = GraphPanelWidget::DefaultGraphTitle;
+            Qt::PenStyle lineStyle = GraphPanelWidget::DefaultGraphLineStyle;
+            int lineWidth = GraphPanelWidget::DefaultGraphLineWidth;
+            QColor lineColor = GraphPanelWidget::DefaultGraphLineColor;
 
             if (isL1V4OrLaterSedmlDocument) {
                 // Title
 
                 title = QString::fromStdString(sedmlCurve->getName());
+
+                // Line
+
+                libsedml::SedStyle *sedmlStyle = sedmlDocument->getStyle(sedmlCurve->getStyle());
+                libsedml::SedLine *sedmlLine = sedmlStyle->getLine();
+
+                lineStyle = SEDMLSupport::lineStyle(sedmlLine->getStyle());
+                lineWidth = int(sedmlLine->getThickness());
+                lineColor = SEDMLSupport::color(sedmlLine->getColor());
             }
 
             libsedml::SedVariable *xVariable = sedmlDocument->getDataGenerator(sedmlCurve->getXDataReference())->getVariable(0);
@@ -3201,9 +3213,6 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
             }
 
             bool selected = GraphPanelWidget::DefaultGraphSelected;
-            Qt::PenStyle lineStyle = GraphPanelWidget::DefaultGraphLineStyle;
-            int lineWidth = GraphPanelWidget::DefaultGraphLineWidth;
-            QColor lineColor = GraphPanelWidget::DefaultGraphLineColor;
             QwtSymbol::Style symbolStyle = GraphPanelWidget::DefaultGraphSymbolStyle;
             int symbolSize = GraphPanelWidget::DefaultGraphSymbolSize;
             QColor symbolColor = GraphPanelWidget::DefaultGraphSymbolColor;
@@ -3236,7 +3245,8 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
 
                             // Line
 
-                            } else if (curvePropertyNodeName == SEDMLSupport::Line) {
+                            } else if (   !isL1V4OrLaterSedmlDocument
+                                       && (curvePropertyNodeName == SEDMLSupport::Line)) {
                                 for (uint m = 0, mMax = curvePropertyNode.getNumChildren(); m < mMax; ++m) {
                                     const libsbml::XMLNode &linePropertyNode = curvePropertyNode.getChild(m);
                                     QString linePropertyNodeName = QString::fromStdString(linePropertyNode.getName());

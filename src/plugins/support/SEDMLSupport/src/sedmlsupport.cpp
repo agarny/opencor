@@ -305,6 +305,41 @@ libsedml::LineType_t sedmlLineStyle(int pIndexLineStyle)
 
 //==============================================================================
 
+Qt::PenStyle lineStyle(libsedml::LineType_t pSedmlLineStyle)
+{
+    // Return the SED-ML line style as a line style
+
+    if (pSedmlLineStyle == libsedml::SEDML_LINETYPE_NONE) {
+        return Qt::NoPen;
+    }
+
+    if (pSedmlLineStyle == libsedml::SEDML_LINETYPE_SOLID) {
+        return Qt::SolidLine;
+    }
+
+    if (pSedmlLineStyle == libsedml::SEDML_LINETYPE_DASH) {
+        return Qt::DashLine;
+    }
+
+    if (pSedmlLineStyle == libsedml::SEDML_LINETYPE_DOT) {
+        return Qt::DotLine;
+    }
+
+    if (pSedmlLineStyle == libsedml::SEDML_LINETYPE_DASHDOT) {
+        return Qt::DashDotLine;
+    }
+
+//---ISSUE2053--- WAITING FOR libsedml::SEDML_LINETYPE_DASHDOTDOT TO BE ADDED
+//                (SEE https://github.com/fbergmann/libSEDML/issues/64)
+//    if (pSedmlLineStyle == libsedml::SEDML_LINETYPE_DASHDOTDOT) {
+//        return Qt::DashDotDotLine;
+//    }
+
+    return Qt::SolidLine;
+}
+
+//==============================================================================
+
 std::string sedmlColor(const QColor &pColor)
 {
     // Return the given colour as a SED-ML colour
@@ -322,6 +357,21 @@ std::string sedmlColor(const QColor &pColor)
     }
 
     return res.toUpper().toStdString();
+}
+
+//==============================================================================
+
+QColor color(const std::string &pSedmlColor)
+{
+    // Return the given SED-ML colour as a colour
+
+    QString alpha;
+
+    if (pSedmlColor.length() == 8) {
+        alpha = QString::fromStdString(pSedmlColor.substr(6));
+    }
+
+    return QColor("#"+alpha+QString::fromStdString(pSedmlColor.substr(0, 6)));
 }
 
 //==============================================================================
