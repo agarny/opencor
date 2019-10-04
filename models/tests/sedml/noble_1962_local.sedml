@@ -195,11 +195,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <line>
-                                <style>solid</style>
-                                <width>3</width>
-                                <color>#000080</color>
-                            </line>
                             <symbol>
                                 <style>none</style>
                                 <size>8</size>
@@ -257,11 +252,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <line>
-                                <style>dot</style>
-                                <width>1</width>
-                                <color>#108001</color>
-                            </line>
                             <symbol>
                                 <style>circle</style>
                                 <size>8</size>
@@ -276,11 +266,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <line>
-                                <style>dot</style>
-                                <width>1</width>
-                                <color>#108001</color>
-                            </line>
                             <symbol>
                                 <style>square</style>
                                 <size>8</size>
@@ -295,11 +280,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <line>
-                                <style>dot</style>
-                                <width>1</width>
-                                <color>#108001</color>
-                            </line>
                             <symbol>
                                 <style>diamond</style>
                                 <size>8</size>
@@ -357,11 +337,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <line>
-                                <style>dot</style>
-                                <width>1</width>
-                                <color>#800002</color>
-                            </line>
                             <symbol>
                                 <style>circle</style>
                                 <size>8</size>
@@ -376,11 +351,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <line>
-                                <style>dot</style>
-                                <width>1</width>
-                                <color>#800002</color>
-                            </line>
                             <symbol>
                                 <style>square</style>
                                 <size>8</size>
@@ -395,11 +365,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <line>
-                                <style>dot</style>
-                                <width>1</width>
-                                <color>#800002</color>
-                            </line>
                             <symbol>
                                 <style>diamond</style>
                                 <size>8</size>

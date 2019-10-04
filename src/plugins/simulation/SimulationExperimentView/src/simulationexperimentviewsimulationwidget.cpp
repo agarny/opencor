@@ -2092,13 +2092,6 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
                                                                              .arg(property->isChecked()?
                                                                                       TrueValue:
                                                                                       FalseValue)
-                                                               +SedmlProperty.arg(SEDMLSupport::Line)
-                                                                             .arg( SedmlProperty.arg(SEDMLSupport::Style)
-                                                                                                .arg(SEDMLSupport::stringLineStyle(lineProperties[0]->listValueIndex()))
-                                                                                  +SedmlProperty.arg(SEDMLSupport::Width)
-                                                                                                .arg(lineProperties[1]->stringValue())
-                                                                                  +SedmlProperty.arg(SEDMLSupport::Color)
-                                                                                                .arg(lineProperties[2]->stringValue()))
                                                                +SedmlProperty.arg(SEDMLSupport::Symbol)
                                                                              .arg( SedmlProperty.arg(SEDMLSupport::Style)
                                                                                                 .arg(SEDMLSupport::stringSymbolStyle(symbolProperties[0]->listValueIndex()))

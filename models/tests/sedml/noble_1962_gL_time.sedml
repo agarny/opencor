@@ -147,11 +147,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <line>
-                                <style>solid</style>
-                                <width>2</width>
-                                <color>#0072bd</color>
-                            </line>
                             <symbol>
                                 <style>none</style>
                                 <size>8</size>
@@ -209,11 +204,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <line>
-                                <style>solid</style>
-                                <width>2</width>
-                                <color>#0072bd</color>
-                            </line>
                             <symbol>
                                 <style>none</style>
                                 <size>8</size>
@@ -271,11 +261,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <line>
-                                <style>solid</style>
-                                <width>2</width>
-                                <color>#0072bd</color>
-                            </line>
                             <symbol>
                                 <style>none</style>
                                 <size>8</size>
@@ -333,11 +318,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <line>
-                                <style>solid</style>
-                                <width>2</width>
-                                <color>#0072bd</color>
-                            </line>
                             <symbol>
                                 <style>none</style>
                                 <size>8</size>
