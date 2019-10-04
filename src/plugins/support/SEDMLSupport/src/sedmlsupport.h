@@ -76,7 +76,7 @@ QwtSymbol::Style SEDMLSUPPORT_EXPORT symbolStyle(const QString &pStringSymbolSty
 
 libsedml::LineType_t SEDMLSUPPORT_EXPORT sedmlLineStyle(int pIndexLineStyle);
 
-QString SEDMLSUPPORT_EXPORT sedmlColor(const QColor &pColor);
+std::string SEDMLSUPPORT_EXPORT sedmlColor(const QColor &pColor);
 
 //==============================================================================
 

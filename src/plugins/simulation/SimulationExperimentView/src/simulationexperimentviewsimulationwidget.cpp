@@ -2076,7 +2076,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
 
             sedmlLine->setStyle(SEDMLSupport::sedmlLineStyle(lineProperties[0]->listValueIndex()));
             sedmlLine->setThickness(lineProperties[1]->doubleValue());
-            sedmlLine->setColor(SEDMLSupport::sedmlColor(lineProperties[2]->colorValue()).toStdString());
+            sedmlLine->setColor(SEDMLSupport::sedmlColor(lineProperties[2]->colorValue()));
 
             sedmlCurve->setStyle(sedmlStyle->getId());
 

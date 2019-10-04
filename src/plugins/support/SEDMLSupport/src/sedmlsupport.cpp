@@ -305,7 +305,7 @@ libsedml::LineType_t sedmlLineStyle(int pIndexLineStyle)
 
 //==============================================================================
 
-QString sedmlColor(const QColor &pColor)
+std::string sedmlColor(const QColor &pColor)
 {
     // Return the given colour as a SED-ML colour
 
@@ -321,7 +321,7 @@ QString sedmlColor(const QColor &pColor)
         res += alpha;
     }
 
-    return res.toUpper();
+    return res.toUpper().toStdString();
 }
 
 //==============================================================================
