@@ -2962,7 +2962,7 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
 
             libsedml::SedAxis *xAxis = sedmlPlot2d->getXAxis();
 
-            if (xAxis) {
+            if (xAxis != nullptr) {
                 Core::Properties xAxisProperties = graphPanelProperties[8]->properties();
 
                 xAxisProperties[0]->setBooleanValue(xAxis->getType() == libsedml::SEDML_AXISTYPE_LOG10);
@@ -2970,7 +2970,7 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
 
             libsedml::SedAxis *yAxis = sedmlPlot2d->getYAxis();
 
-            if (yAxis) {
+            if (yAxis != nullptr) {
                 Core::Properties yAxisProperties = graphPanelProperties[9]->properties();
 
                 yAxisProperties[0]->setBooleanValue(yAxis->getType() == libsedml::SEDML_AXISTYPE_LOG10);
