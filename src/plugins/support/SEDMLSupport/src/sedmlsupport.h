@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //==============================================================================
 
 #include "libsedmlbegin.h"
-    #include "sedml/SedLine.h"
+    #include "sedml/common/SedmlEnumerations.h"
 #include "libsedmlend.h"
 
 //==============================================================================
