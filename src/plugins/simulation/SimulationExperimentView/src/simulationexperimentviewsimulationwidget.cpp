@@ -2690,7 +2690,6 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
     bool isL1V4OrLaterSedmlDocument = mSimulation->sedmlFile()->isL1V4OrLater();
     auto sedmlUniformTimeCourse = static_cast<libsedml::SedUniformTimeCourse *>(sedmlDocument->getSimulation(0));
     auto sedmlOneStep = static_cast<libsedml::SedOneStep *>(sedmlDocument->getSimulation(1));
-
     double startingPoint = sedmlUniformTimeCourse->getOutputStartTime();
     double endingPoint = sedmlUniformTimeCourse->getOutputEndTime();
     double pointInterval = isL1V4OrLaterSedmlDocument?
