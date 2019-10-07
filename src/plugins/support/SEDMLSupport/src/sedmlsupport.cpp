@@ -340,9 +340,137 @@ Qt::PenStyle lineStyle(libsedml::LineType_t pSedmlLineStyle)
 
 //==============================================================================
 
+libsedml::MarkerType_t sedmlMarkerStyle(int pIndexSymbolStyle)
+{
+    // Return the given index symbol style as a SED-ML marker style
+    // Note: if the given index symbol style is invalid then we return the
+    //       SED-ML marker style for no marker...
+
+    if (pIndexSymbolStyle == 0) {
+        return libsedml::SEDML_MARKERTYPE_NONE;
+    }
+
+    if (pIndexSymbolStyle == 1) {
+        return libsedml::SEDML_MARKERTYPE_CIRCLE;
+    }
+
+    if (pIndexSymbolStyle == 2) {
+        return libsedml::SEDML_MARKERTYPE_SQUARE;
+    }
+
+    if (pIndexSymbolStyle == 3) {
+        return libsedml::SEDML_MARKERTYPE_DIAMOND;
+    }
+
+    if (pIndexSymbolStyle == 4) {
+        return libsedml::SEDML_MARKERTYPE_TRIANGLEUP;
+    }
+
+    if (pIndexSymbolStyle == 5) {
+        return libsedml::SEDML_MARKERTYPE_TRIANGLEDOWN;
+    }
+
+    if (pIndexSymbolStyle == 6) {
+        return libsedml::SEDML_MARKERTYPE_TRIANGLELEFT;
+    }
+
+    if (pIndexSymbolStyle == 7) {
+        return libsedml::SEDML_MARKERTYPE_TRIANGLERIGHT;
+    }
+
+    if (pIndexSymbolStyle == 8) {
+        return libsedml::SEDML_MARKERTYPE_PLUS;
+    }
+
+    if (pIndexSymbolStyle == 9) {
+        return libsedml::SEDML_MARKERTYPE_XCROSS;
+    }
+
+    if (pIndexSymbolStyle == 10) {
+        return libsedml::SEDML_MARKERTYPE_HDASH;
+    }
+
+    if (pIndexSymbolStyle == 11) {
+        return libsedml::SEDML_MARKERTYPE_VDASH;
+    }
+
+    if (pIndexSymbolStyle == 12) {
+        return libsedml::SEDML_MARKERTYPE_STAR;
+    }
+
+    return libsedml::SEDML_MARKERTYPE_NONE;
+}
+
+//==============================================================================
+
+QwtSymbol::Style symbolStyle(libsedml::MarkerType_t pSedmlSymbolStyle)
+{
+    // Return the SED-ML marker style as a symbol style
+
+    if (pSedmlSymbolStyle == libsedml::SEDML_MARKERTYPE_NONE) {
+        return QwtSymbol::NoSymbol;
+    }
+
+    if (pSedmlSymbolStyle == libsedml::SEDML_MARKERTYPE_CIRCLE) {
+        return QwtSymbol::Ellipse;
+    }
+
+    if (pSedmlSymbolStyle == libsedml::SEDML_MARKERTYPE_SQUARE) {
+        return QwtSymbol::Rect;
+    }
+
+    if (pSedmlSymbolStyle == libsedml::SEDML_MARKERTYPE_DIAMOND) {
+        return QwtSymbol::Diamond;
+    }
+
+    if (pSedmlSymbolStyle == libsedml::SEDML_MARKERTYPE_TRIANGLEUP) {
+        return QwtSymbol::Triangle;
+    }
+
+    if (pSedmlSymbolStyle == libsedml::SEDML_MARKERTYPE_TRIANGLEDOWN) {
+        return QwtSymbol::DTriangle;
+    }
+
+    if (pSedmlSymbolStyle == libsedml::SEDML_MARKERTYPE_TRIANGLELEFT) {
+        return QwtSymbol::LTriangle;
+    }
+
+    if (pSedmlSymbolStyle == libsedml::SEDML_MARKERTYPE_TRIANGLERIGHT) {
+        return QwtSymbol::RTriangle;
+    }
+
+    if (pSedmlSymbolStyle == libsedml::SEDML_MARKERTYPE_PLUS) {
+        return QwtSymbol::Cross;
+    }
+
+    if (pSedmlSymbolStyle == libsedml::SEDML_MARKERTYPE_XCROSS) {
+        return QwtSymbol::XCross;
+    }
+
+    if (pSedmlSymbolStyle == libsedml::SEDML_MARKERTYPE_HDASH) {
+        return QwtSymbol::HLine;
+    }
+
+    if (pSedmlSymbolStyle == libsedml::SEDML_MARKERTYPE_VDASH) {
+        return QwtSymbol::VLine;
+    }
+
+    if (pSedmlSymbolStyle == libsedml::SEDML_MARKERTYPE_STAR) {
+        return QwtSymbol::Star1;
+    }
+
+    return QwtSymbol::NoSymbol;
+}
+
+//==============================================================================
+
 std::string sedmlColor(const QColor &pColor)
 {
     // Return the given colour as a SED-ML colour
+
+    if (pColor == QColor()) {
+        return {};
+    }
 
     QString res = pColor.name(QColor::HexArgb);
 
@@ -364,6 +492,10 @@ std::string sedmlColor(const QColor &pColor)
 QColor color(const std::string &pSedmlColor)
 {
     // Return the given SED-ML colour as a colour
+
+    if (pSedmlColor == "") {
+        return QColor();
+    }
 
     QString alpha;
 

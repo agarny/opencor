@@ -2078,11 +2078,27 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
             sedmlLine->setThickness(lineProperties[1]->doubleValue());
             sedmlLine->setColor(SEDMLSupport::sedmlColor(lineProperties[2]->colorValue()));
 
+            libsedml::SedMarker *sedmlMarker = sedmlStyle->createMarker();
+            Core::Properties symbolProperties = properties[5]->properties();
+
+            sedmlMarker->setStyle(SEDMLSupport::sedmlMarkerStyle(symbolProperties[0]->listValueIndex()));
+            sedmlMarker->setSize(symbolProperties[1]->doubleValue());
+            sedmlMarker->setLineColor(SEDMLSupport::sedmlColor(symbolProperties[2]->colorValue()));
+            sedmlMarker->setFill(symbolProperties[3]->booleanValue()?
+                                     SEDMLSupport::sedmlColor(symbolProperties[4]->colorValue()):
+                                     "");
+
             sedmlCurve->setStyle(sedmlStyle->getId());
 
             // Customise our curve using an annotation
 
-            Core::Properties symbolProperties = properties[5]->properties();
+            QString symbolAnnotation;
+
+            if (!symbolProperties[3]->booleanValue()) {
+                symbolAnnotation = SedmlProperty.arg(SEDMLSupport::Symbol)
+                                                .arg(SedmlProperty.arg(SEDMLSupport::FillColor)
+                                                                  .arg(symbolProperties[4]->stringValue()));
+            }
 
             sedmlCurve->appendAnnotation(QString(R"(<%1 xmlns="%2">)"
                                                   "    %3"
@@ -2092,17 +2108,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
                                                                              .arg(property->isChecked()?
                                                                                       TrueValue:
                                                                                       FalseValue)
-                                                               +SedmlProperty.arg(SEDMLSupport::Symbol)
-                                                                             .arg( SedmlProperty.arg(SEDMLSupport::Style)
-                                                                                                .arg(SEDMLSupport::stringSymbolStyle(symbolProperties[0]->listValueIndex()))
-                                                                                  +SedmlProperty.arg(SEDMLSupport::Size)
-                                                                                                .arg(symbolProperties[1]->stringValue())
-                                                                                  +SedmlProperty.arg(SEDMLSupport::Color)
-                                                                                                .arg(symbolProperties[2]->stringValue())
-                                                                                  +SedmlProperty.arg(SEDMLSupport::Filled)
-                                                                                                .arg(symbolProperties[3]->stringValue())
-                                                                                  +SedmlProperty.arg(SEDMLSupport::FillColor)
-                                                                                                .arg(symbolProperties[4]->stringValue()))).toStdString());
+                                                               +symbolAnnotation).toStdString());
         }
     }
 
@@ -3150,6 +3156,11 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
             Qt::PenStyle lineStyle = GraphPanelWidget::DefaultGraphLineStyle;
             int lineWidth = GraphPanelWidget::DefaultGraphLineWidth;
             QColor lineColor = GraphPanelWidget::DefaultGraphLineColor;
+            QwtSymbol::Style symbolStyle = GraphPanelWidget::DefaultGraphSymbolStyle;
+            int symbolSize = GraphPanelWidget::DefaultGraphSymbolSize;
+            QColor symbolColor = GraphPanelWidget::DefaultGraphSymbolColor;
+            bool symbolFilled = GraphPanelWidget::DefaultGraphSymbolFilled;
+            QColor symbolFillColor = GraphPanelWidget::DefaultGraphSymbolFillColor;
 
             if (isL1V4OrLaterSedmlDocument) {
                 // Title
@@ -3165,6 +3176,18 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
                     lineStyle = SEDMLSupport::lineStyle(sedmlLine->getStyle());
                     lineWidth = int(sedmlLine->getThickness());
                     lineColor = SEDMLSupport::color(sedmlLine->getColor());
+                }
+
+                // Symbol
+
+                libsedml::SedMarker *sedmlMarker = (sedmlStyle != nullptr)?sedmlStyle->getMarker():nullptr;
+
+                if (sedmlMarker != nullptr) {
+                    symbolStyle = SEDMLSupport::symbolStyle(sedmlMarker->getStyle());
+                    symbolSize = int(sedmlMarker->getSize());
+                    symbolColor = SEDMLSupport::color(sedmlMarker->getLineColor());
+                    symbolFillColor = SEDMLSupport::color(sedmlMarker->getFill());
+                    symbolFilled = symbolFillColor != QColor();
                 }
             }
 
@@ -3207,11 +3230,6 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
             }
 
             bool selected = GraphPanelWidget::DefaultGraphSelected;
-            QwtSymbol::Style symbolStyle = GraphPanelWidget::DefaultGraphSymbolStyle;
-            int symbolSize = GraphPanelWidget::DefaultGraphSymbolSize;
-            QColor symbolColor = GraphPanelWidget::DefaultGraphSymbolColor;
-            bool symbolFilled = GraphPanelWidget::DefaultGraphSymbolFilled;
-            QColor symbolFillColor = GraphPanelWidget::DefaultGraphSymbolFillColor;
 
             annotation = sedmlCurve->getAnnotation();
 
@@ -3258,21 +3276,35 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
                             // Symbol
 
                             } else if (curvePropertyNodeName == SEDMLSupport::Symbol) {
-                                for (uint m = 0, mMax = curvePropertyNode.getNumChildren(); m < mMax; ++m) {
-                                    const libsbml::XMLNode &symbolPropertyNode = curvePropertyNode.getChild(m);
-                                    QString symbolPropertyNodeName = QString::fromStdString(symbolPropertyNode.getName());
-                                    QString symbolPropertyNodeValue = QString::fromStdString(symbolPropertyNode.getChild(0).getCharacters());
+                                if (isL1V4OrLaterSedmlDocument) {
+                                    if (!symbolFilled) {
+                                        for (uint m = 0, mMax = curvePropertyNode.getNumChildren(); m < mMax; ++m) {
+                                            const libsbml::XMLNode &symbolPropertyNode = curvePropertyNode.getChild(m);
+                                            QString symbolPropertyNodeName = QString::fromStdString(symbolPropertyNode.getName());
+                                            QString symbolPropertyNodeValue = QString::fromStdString(symbolPropertyNode.getChild(0).getCharacters());
 
-                                    if (symbolPropertyNodeName == SEDMLSupport::Style) {
-                                        symbolStyle = SEDMLSupport::symbolStyle(symbolPropertyNodeValue);
-                                    } else if (symbolPropertyNodeName == SEDMLSupport::Size) {
-                                        symbolSize = symbolPropertyNodeValue.toInt();
-                                    } else if (symbolPropertyNodeName == SEDMLSupport::Color) {
-                                        symbolColor.setNamedColor(symbolPropertyNodeValue);
-                                    } else if (symbolPropertyNodeName == SEDMLSupport::Filled) {
-                                        symbolFilled = symbolPropertyNodeValue == TrueValue;
-                                    } else if (symbolPropertyNodeName == SEDMLSupport::FillColor) {
-                                        symbolFillColor.setNamedColor(symbolPropertyNodeValue);
+                                            if (symbolPropertyNodeName == SEDMLSupport::FillColor) {
+                                                symbolFillColor.setNamedColor(symbolPropertyNodeValue);
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    for (uint m = 0, mMax = curvePropertyNode.getNumChildren(); m < mMax; ++m) {
+                                        const libsbml::XMLNode &symbolPropertyNode = curvePropertyNode.getChild(m);
+                                        QString symbolPropertyNodeName = QString::fromStdString(symbolPropertyNode.getName());
+                                        QString symbolPropertyNodeValue = QString::fromStdString(symbolPropertyNode.getChild(0).getCharacters());
+
+                                        if (symbolPropertyNodeName == SEDMLSupport::Style) {
+                                            symbolStyle = SEDMLSupport::symbolStyle(symbolPropertyNodeValue);
+                                        } else if (symbolPropertyNodeName == SEDMLSupport::Size) {
+                                            symbolSize = symbolPropertyNodeValue.toInt();
+                                        } else if (symbolPropertyNodeName == SEDMLSupport::Color) {
+                                            symbolColor.setNamedColor(symbolPropertyNodeValue);
+                                        } else if (symbolPropertyNodeName == SEDMLSupport::Filled) {
+                                            symbolFilled = symbolPropertyNodeValue == TrueValue;
+                                        } else if (symbolPropertyNodeName == SEDMLSupport::FillColor) {
+                                            symbolFillColor.setNamedColor(symbolPropertyNodeValue);
+                                        }
                                     }
                                 }
                             }

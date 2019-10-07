@@ -147,13 +147,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <symbol>
-                                <style>none</style>
-                                <size>8</size>
-                                <color>#000080</color>
-                                <filled>true</filled>
-                                <fillColor>#ffffff</fillColor>
-                            </symbol>
                         </properties>
                     </annotation>
                 </curve>
@@ -204,13 +197,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <symbol>
-                                <style>none</style>
-                                <size>8</size>
-                                <color>#000080</color>
-                                <filled>true</filled>
-                                <fillColor>#ffffff</fillColor>
-                            </symbol>
                         </properties>
                     </annotation>
                 </curve>
@@ -261,13 +247,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <symbol>
-                                <style>none</style>
-                                <size>8</size>
-                                <color>#000080</color>
-                                <filled>true</filled>
-                                <fillColor>#ffffff</fillColor>
-                            </symbol>
                         </properties>
                     </annotation>
                 </curve>
@@ -318,13 +297,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <symbol>
-                                <style>none</style>
-                                <size>8</size>
-                                <color>#000080</color>
-                                <filled>true</filled>
-                                <fillColor>#ffffff</fillColor>
-                            </symbol>
                         </properties>
                     </annotation>
                 </curve>
@@ -334,15 +306,19 @@
     <listOfStyles>
         <style id="style1_1">
             <line color="0072BD" style="solid" thickness="2"/>
+            <marker fill="FFFFFF" lineColor="000080" size="8" style="none"/>
         </style>
         <style id="style2_1">
             <line color="0072BD" style="solid" thickness="2"/>
+            <marker fill="FFFFFF" lineColor="000080" size="8" style="none"/>
         </style>
         <style id="style3_1">
             <line color="0072BD" style="solid" thickness="2"/>
+            <marker fill="FFFFFF" lineColor="000080" size="8" style="none"/>
         </style>
         <style id="style4_1">
             <line color="0072BD" style="solid" thickness="2"/>
+            <marker fill="FFFFFF" lineColor="000080" size="8" style="none"/>
         </style>
     </listOfStyles>
 </sedML>

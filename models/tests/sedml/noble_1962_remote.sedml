@@ -195,13 +195,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <symbol>
-                                <style>none</style>
-                                <size>8</size>
-                                <color>#000080</color>
-                                <filled>true</filled>
-                                <fillColor>#ffffff</fillColor>
-                            </symbol>
                         </properties>
                     </annotation>
                 </curve>
@@ -252,13 +245,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <symbol>
-                                <style>circle</style>
-                                <size>8</size>
-                                <color>#108001</color>
-                                <filled>true</filled>
-                                <fillColor>#66ff66</fillColor>
-                            </symbol>
                         </properties>
                     </annotation>
                 </curve>
@@ -266,13 +252,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <symbol>
-                                <style>square</style>
-                                <size>8</size>
-                                <color>#108001</color>
-                                <filled>true</filled>
-                                <fillColor>#66ff66</fillColor>
-                            </symbol>
                         </properties>
                     </annotation>
                 </curve>
@@ -280,13 +259,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <symbol>
-                                <style>diamond</style>
-                                <size>8</size>
-                                <color>#108001</color>
-                                <filled>true</filled>
-                                <fillColor>#66ff66</fillColor>
-                            </symbol>
                         </properties>
                     </annotation>
                 </curve>
@@ -337,13 +309,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <symbol>
-                                <style>circle</style>
-                                <size>8</size>
-                                <color>#800002</color>
-                                <filled>true</filled>
-                                <fillColor>#fd6666</fillColor>
-                            </symbol>
                         </properties>
                     </annotation>
                 </curve>
@@ -351,13 +316,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <symbol>
-                                <style>square</style>
-                                <size>8</size>
-                                <color>#800002</color>
-                                <filled>true</filled>
-                                <fillColor>#fd6666</fillColor>
-                            </symbol>
                         </properties>
                     </annotation>
                 </curve>
@@ -365,13 +323,6 @@
                     <annotation>
                         <properties xmlns="http://www.opencor.ws/">
                             <selected>true</selected>
-                            <symbol>
-                                <style>diamond</style>
-                                <size>8</size>
-                                <color>#800002</color>
-                                <filled>true</filled>
-                                <fillColor>#fd6666</fillColor>
-                            </symbol>
                         </properties>
                     </annotation>
                 </curve>
@@ -381,24 +332,31 @@
     <listOfStyles>
         <style id="style1_1">
             <line color="000080" style="solid" thickness="3"/>
+            <marker fill="FFFFFF" lineColor="000080" size="8" style="none"/>
         </style>
         <style id="style2_1">
             <line color="108001" style="dot" thickness="1"/>
+            <marker fill="66FF66" lineColor="108001" size="8" style="circle"/>
         </style>
         <style id="style2_2">
             <line color="108001" style="dot" thickness="1"/>
+            <marker fill="66FF66" lineColor="108001" size="8" style="square"/>
         </style>
         <style id="style2_3">
             <line color="108001" style="dot" thickness="1"/>
+            <marker fill="66FF66" lineColor="108001" size="8" style="diamond"/>
         </style>
         <style id="style3_1">
             <line color="800002" style="dot" thickness="1"/>
+            <marker fill="FD6666" lineColor="800002" size="8" style="circle"/>
         </style>
         <style id="style3_2">
             <line color="800002" style="dot" thickness="1"/>
+            <marker fill="FD6666" lineColor="800002" size="8" style="square"/>
         </style>
         <style id="style3_3">
             <line color="800002" style="dot" thickness="1"/>
+            <marker fill="FD6666" lineColor="800002" size="8" style="diamond"/>
         </style>
     </listOfStyles>
 </sedML>

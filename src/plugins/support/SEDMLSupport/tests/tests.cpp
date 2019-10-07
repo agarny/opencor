@@ -289,14 +289,51 @@ void Tests::sedmlTests()
 //    QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_DASHDOTDOT), Qt::DashDotDotLine);
     QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_INVALID), Qt::SolidLine);
 
+    // Convert an index symbol style to a SED-ML marker style
+
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(-1), libsedml::SEDML_MARKERTYPE_NONE);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(0), libsedml::SEDML_MARKERTYPE_NONE);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(1), libsedml::SEDML_MARKERTYPE_CIRCLE);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(2), libsedml::SEDML_MARKERTYPE_SQUARE);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(3), libsedml::SEDML_MARKERTYPE_DIAMOND);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(4), libsedml::SEDML_MARKERTYPE_TRIANGLEUP);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(5), libsedml::SEDML_MARKERTYPE_TRIANGLEDOWN);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(6), libsedml::SEDML_MARKERTYPE_TRIANGLELEFT);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(7), libsedml::SEDML_MARKERTYPE_TRIANGLERIGHT);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(8), libsedml::SEDML_MARKERTYPE_PLUS);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(9), libsedml::SEDML_MARKERTYPE_XCROSS);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(10), libsedml::SEDML_MARKERTYPE_HDASH);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(11), libsedml::SEDML_MARKERTYPE_VDASH);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(12), libsedml::SEDML_MARKERTYPE_STAR);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlMarkerStyle(13), libsedml::SEDML_MARKERTYPE_NONE);
+
+    // Convert a SED-ML marker style to a symbol style
+
+    QCOMPARE(OpenCOR::SEDMLSupport::symbolStyle(libsedml::SEDML_MARKERTYPE_NONE), QwtSymbol::NoSymbol);
+    QCOMPARE(OpenCOR::SEDMLSupport::symbolStyle(libsedml::SEDML_MARKERTYPE_CIRCLE), QwtSymbol::Ellipse);
+    QCOMPARE(OpenCOR::SEDMLSupport::symbolStyle(libsedml::SEDML_MARKERTYPE_SQUARE), QwtSymbol::Rect);
+    QCOMPARE(OpenCOR::SEDMLSupport::symbolStyle(libsedml::SEDML_MARKERTYPE_DIAMOND), QwtSymbol::Diamond);
+    QCOMPARE(OpenCOR::SEDMLSupport::symbolStyle(libsedml::SEDML_MARKERTYPE_TRIANGLEUP), QwtSymbol::Triangle);
+    QCOMPARE(OpenCOR::SEDMLSupport::symbolStyle(libsedml::SEDML_MARKERTYPE_TRIANGLEDOWN), QwtSymbol::DTriangle);
+    QCOMPARE(OpenCOR::SEDMLSupport::symbolStyle(libsedml::SEDML_MARKERTYPE_TRIANGLELEFT), QwtSymbol::LTriangle);
+    QCOMPARE(OpenCOR::SEDMLSupport::symbolStyle(libsedml::SEDML_MARKERTYPE_TRIANGLERIGHT), QwtSymbol::RTriangle);
+    QCOMPARE(OpenCOR::SEDMLSupport::symbolStyle(libsedml::SEDML_MARKERTYPE_PLUS), QwtSymbol::Cross);
+    QCOMPARE(OpenCOR::SEDMLSupport::symbolStyle(libsedml::SEDML_MARKERTYPE_XCROSS), QwtSymbol::XCross);
+    QCOMPARE(OpenCOR::SEDMLSupport::symbolStyle(libsedml::SEDML_MARKERTYPE_HDASH), QwtSymbol::HLine);
+    QCOMPARE(OpenCOR::SEDMLSupport::symbolStyle(libsedml::SEDML_MARKERTYPE_VDASH), QwtSymbol::VLine);
+    QCOMPARE(OpenCOR::SEDMLSupport::symbolStyle(libsedml::SEDML_MARKERTYPE_STAR), QwtSymbol::Star1);
+    QCOMPARE(OpenCOR::SEDMLSupport::symbolStyle(libsedml::SEDML_MARKERTYPE_INVALID), QwtSymbol::NoSymbol);
+
     // Convert a Qt colour to a SED-ML colour
 
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlColor(QColor()), "");
     QCOMPARE(OpenCOR::SEDMLSupport::sedmlColor(QColor("#1a2b3c")), "1A2B3C");
     QCOMPARE(OpenCOR::SEDMLSupport::sedmlColor(QColor("#ff1a2b3c")), "1A2B3C");
     QCOMPARE(OpenCOR::SEDMLSupport::sedmlColor(QColor("#7e1a2b3c")), "1A2B3C7E");
 
     // Convert a SED-ML colour to a Qt colour
 
+    QCOMPARE(OpenCOR::SEDMLSupport::color(""), QColor());
     QCOMPARE(OpenCOR::SEDMLSupport::color("1A2B3C"), QColor("#1a2b3c"));
     QCOMPARE(OpenCOR::SEDMLSupport::color("1A2B3C7E"), QColor("#7e1a2b3c"));
 }
