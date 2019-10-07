@@ -3159,11 +3159,13 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
                 // Line
 
                 libsedml::SedStyle *sedmlStyle = sedmlDocument->getStyle(sedmlCurve->getStyle());
-                libsedml::SedLine *sedmlLine = sedmlStyle->getLine();
+                libsedml::SedLine *sedmlLine = (sedmlStyle != nullptr)?sedmlStyle->getLine():nullptr;
 
-                lineStyle = SEDMLSupport::lineStyle(sedmlLine->getStyle());
-                lineWidth = int(sedmlLine->getThickness());
-                lineColor = SEDMLSupport::color(sedmlLine->getColor());
+                if (sedmlLine != nullptr) {
+                    lineStyle = SEDMLSupport::lineStyle(sedmlLine->getStyle());
+                    lineWidth = int(sedmlLine->getThickness());
+                    lineColor = SEDMLSupport::color(sedmlLine->getColor());
+                }
             }
 
             libsedml::SedVariable *xVariable = sedmlDocument->getDataGenerator(sedmlCurve->getXDataReference())->getVariable(0);
