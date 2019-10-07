@@ -4658,7 +4658,7 @@ QVariantList SimulationExperimentViewSimulationWidget::allPropertyValues(Core::P
     QVariantList res = QVariantList();
 
     for (auto property : pPropertyEditor->allProperties()) {
-        res << property->variantValue();
+        res << property->isChecked() << property->variantValue();
     }
 
     return res;
