@@ -2052,7 +2052,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
             sedmlStyle->setId(QString("style%1_%2").arg(data.graphPlotCounter)
                                                    .arg(graphCounter).toStdString());
 
-            libsedml::SedLine *sedmlLine = sedmlStyle->createLine();
+            libsedml::SedLine *sedmlLine = sedmlStyle->createLineStyle();
             Core::Properties lineProperties = properties[4]->properties();
 
             sedmlLine->setStyle(SEDMLSupport::sedmlLineStyle(lineProperties[0]->listValueIndex()));
@@ -3110,7 +3110,7 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
                 // Line
 
                 libsedml::SedStyle *sedmlStyle = sedmlDocument->getStyle(sedmlCurve->getStyle());
-                libsedml::SedLine *sedmlLine = (sedmlStyle != nullptr)?sedmlStyle->getLine():nullptr;
+                libsedml::SedLine *sedmlLine = (sedmlStyle != nullptr)?sedmlStyle->getLineStyle():nullptr;
 
                 if (sedmlLine != nullptr) {
                     lineStyle = SEDMLSupport::lineStyle(sedmlLine->getStyle());
