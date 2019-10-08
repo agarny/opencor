@@ -294,11 +294,9 @@ libsedml::LineType_t sedmlLineStyle(int pIndexLineStyle)
         return libsedml::SEDML_LINETYPE_DASHDOT;
     }
 
-//---ISSUE2053--- WAITING FOR libsedml::SEDML_LINETYPE_DASHDOTDOT TO BE ADDED
-//                (SEE https://github.com/fbergmann/libSEDML/issues/64)
-//    if (pIndexLineStyle == 5) {
-//        return libsedml::SEDML_LINETYPE_DASHDOTDOT;
-//    }
+    if (pIndexLineStyle == 5) {
+        return libsedml::SEDML_LINETYPE_DASHDOTDOT;
+    }
 
     return libsedml::SEDML_LINETYPE_SOLID;
 }
@@ -329,11 +327,9 @@ Qt::PenStyle lineStyle(libsedml::LineType_t pSedmlLineStyle)
         return Qt::DashDotLine;
     }
 
-//---ISSUE2053--- WAITING FOR libsedml::SEDML_LINETYPE_DASHDOTDOT TO BE ADDED
-//                (SEE https://github.com/fbergmann/libSEDML/issues/64)
-//    if (pSedmlLineStyle == libsedml::SEDML_LINETYPE_DASHDOTDOT) {
-//        return Qt::DashDotDotLine;
-//    }
+    if (pSedmlLineStyle == libsedml::SEDML_LINETYPE_DASHDOTDOT) {
+        return Qt::DashDotDotLine;
+    }
 
     return Qt::SolidLine;
 }

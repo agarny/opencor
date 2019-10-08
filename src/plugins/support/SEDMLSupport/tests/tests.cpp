@@ -272,9 +272,7 @@ void Tests::sedmlTests()
     QCOMPARE(OpenCOR::SEDMLSupport::sedmlLineStyle(2), libsedml::SEDML_LINETYPE_DASH);
     QCOMPARE(OpenCOR::SEDMLSupport::sedmlLineStyle(3), libsedml::SEDML_LINETYPE_DOT);
     QCOMPARE(OpenCOR::SEDMLSupport::sedmlLineStyle(4), libsedml::SEDML_LINETYPE_DASHDOT);
-//---ISSUE2053--- WAITING FOR libsedml::SEDML_LINETYPE_DASHDOTDOT TO BE ADDED
-//                (SEE https://github.com/fbergmann/libSEDML/issues/64)
-//    QCOMPARE(OpenCOR::SEDMLSupport::sedmlLineStyle(5), libsedml::SEDML_LINETYPE_DASHDOTDOT);
+    QCOMPARE(OpenCOR::SEDMLSupport::sedmlLineStyle(5), libsedml::SEDML_LINETYPE_DASHDOTDOT);
     QCOMPARE(OpenCOR::SEDMLSupport::sedmlLineStyle(6), libsedml::SEDML_LINETYPE_SOLID);
 
     // Convert a SED-ML line style to a line style
@@ -284,9 +282,7 @@ void Tests::sedmlTests()
     QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_DASH), Qt::DashLine);
     QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_DOT), Qt::DotLine);
     QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_DASHDOT), Qt::DashDotLine);
-//---ISSUE2053--- WAITING FOR libsedml::SEDML_LINETYPE_DASHDOTDOT TO BE ADDED
-//                (SEE https://github.com/fbergmann/libSEDML/issues/64)
-//    QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_DASHDOTDOT), Qt::DashDotDotLine);
+    QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_DASHDOTDOT), Qt::DashDotDotLine);
     QCOMPARE(OpenCOR::SEDMLSupport::lineStyle(libsedml::SEDML_LINETYPE_INVALID), Qt::SolidLine);
 
     // Convert an index symbol style to a SED-ML marker style
