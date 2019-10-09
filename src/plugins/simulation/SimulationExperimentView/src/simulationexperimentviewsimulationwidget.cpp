@@ -2573,7 +2573,7 @@ CellMLSupport::CellmlFileRuntimeParameter * SimulationExperimentViewSimulationWi
 
     if (annotation != nullptr) {
         for (uint i = 0, iMax = annotation->getNumChildren(); i < iMax; ++i) {
-            const libsbml::XMLNode &variableDegreeNode = annotation->getChild(i);
+            libsbml::XMLNode &variableDegreeNode = annotation->getChild(i);
 
             if (   (variableDegree != 1)
                 && (QString::fromStdString(variableDegreeNode.getURI()) == SEDMLSupport::OpencorNamespace)
