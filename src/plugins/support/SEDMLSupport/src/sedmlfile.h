@@ -42,7 +42,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //==============================================================================
 
 namespace libsedml {
-    class SedAlgorithm;
     class SedDocument;
 } // namespace libsedml
 
