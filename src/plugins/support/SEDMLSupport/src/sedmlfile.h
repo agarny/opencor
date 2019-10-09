@@ -105,6 +105,10 @@ namespace Language {
 
 //==============================================================================
 
+static const auto RateOfChangeSymbol = "urn:sedml:symbol:rateOfChange";
+
+//==============================================================================
+
 class SEDMLSUPPORT_EXPORT SedmlFile : public StandardSupport::StandardFile
 {
     Q_OBJECT

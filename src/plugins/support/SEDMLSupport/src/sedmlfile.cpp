@@ -813,10 +813,19 @@ bool SedmlFile::isSupported()
         }
 
         libsedml::SedVariable *variable = dataGenerator->getVariable(0);
+        bool hasUnsupportedSymbol =    !variable->getSymbol().empty()
+                                    &&  (variable->getSymbol() != RateOfChangeSymbol);
 
-        if (!variable->getSymbol().empty() || !variable->getModelReference().empty()) {
+        if (hasUnsupportedSymbol || !variable->getModelReference().empty()) {
             mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
                                       tr("only SED-ML files with data generators for one variable with a target and a task reference are supported"));
+
+            return false;
+        }
+
+        if (hasUnsupportedSymbol) {
+            mIssues << SedmlFileIssue(SedmlFileIssue::Type::Information,
+                                      tr("only SED-ML files with data generators for one variable that is a rate or not are supported"));
 
             return false;
         }

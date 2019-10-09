@@ -1710,11 +1710,15 @@ void SimulationExperimentViewSimulationWidget::addSedmlVariableTarget(libsedml::
                                     .arg(variable).toStdString());
 
     if (variableDegree != 0) {
-        pSedmlVariable->appendAnnotation(QString(R"(<%1 xmlns="%2">)"
-                                                  "    %3"
-                                                  "</%1>").arg(SEDMLSupport::VariableDegree)
-                                                          .arg(SEDMLSupport::OpencorNamespace)
-                                                          .arg(variableDegree).toStdString());
+        if (variableDegree == 1) {
+            pSedmlVariable->setSymbol(SEDMLSupport::RateOfChangeSymbol);
+        } else {
+            pSedmlVariable->appendAnnotation(QString(R"(<%1 xmlns="%2">)"
+                                                      "    %3"
+                                                      "</%1>").arg(SEDMLSupport::VariableDegree)
+                                                              .arg(SEDMLSupport::OpencorNamespace)
+                                                              .arg(variableDegree).toStdString());
+        }
     }
 }
 
@@ -2556,14 +2560,23 @@ CellMLSupport::CellmlFileRuntimeParameter * SimulationExperimentViewSimulationWi
 
     // Check whether the parameter has a degree
 
-    libsbml::XMLNode *annotation = pSedmlVariable->getAnnotation();
+    bool isL1V4OrLaterSedmlDocument = mSimulation->sedmlFile()->isL1V4OrLater();
     int variableDegree = 0;
+
+    if (isL1V4OrLaterSedmlDocument) {
+        if (pSedmlVariable->getSymbol() == SEDMLSupport::RateOfChangeSymbol) {
+            variableDegree = 1;
+        }
+    }
+
+    libsbml::XMLNode *annotation = pSedmlVariable->getAnnotation();
 
     if (annotation != nullptr) {
         for (uint i = 0, iMax = annotation->getNumChildren(); i < iMax; ++i) {
             const libsbml::XMLNode &variableDegreeNode = annotation->getChild(i);
 
-            if (   (QString::fromStdString(variableDegreeNode.getURI()) == SEDMLSupport::OpencorNamespace)
+            if (   (variableDegree != 1)
+                && (QString::fromStdString(variableDegreeNode.getURI()) == SEDMLSupport::OpencorNamespace)
                 && (QString::fromStdString(variableDegreeNode.getName()) == SEDMLSupport::VariableDegree)) {
                 variableDegree = QString::fromStdString(variableDegreeNode.getChild(0).getCharacters()).toInt();
             }

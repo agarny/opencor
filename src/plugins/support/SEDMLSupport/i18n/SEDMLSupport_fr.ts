@@ -107,6 +107,10 @@
         <translation>seulement les fichiers SED-ML avec des générateurs de donnée pour une variable avec une cible et une référence de tâche sont supportés</translation>
     </message>
     <message>
+        <source>only SED-ML files with data generators for one variable that is a rate or not are supported</source>
+        <translation>seulement les fichiers SED-ML avec des générateurs de donnée pour une variable qui est un taux ou non sont supportés</translation>
+    </message>
+    <message>
         <source>only SED-ML files with data generators for one variable with a reference to a repeated task are supported</source>
         <translation>seulement les fichiers SED-ML avec des générateurs de donnée pour une variable avec une référence à une tâche répétitive sont supportés</translation>
     </message>
