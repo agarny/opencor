@@ -59,8 +59,20 @@
         <translation>la valeur pour &apos;numberOfPoints&apos; doit être plus grande que zéro</translation>
     </message>
     <message>
+        <source>%1 (%2) is an NLA solver while an ODE solver is expected</source>
+        <translation>%1 (%2) est un solveur ANL alors qu&apos;un solveur EDO est attendu</translation>
+    </message>
+    <message>
+        <source>%1 (%2) is an ODE solver while an NLA solver is expected</source>
+        <translation>%1 (%2) est un solveur EDO alors qu&apos;un solveur ANL est attendu</translation>
+    </message>
+    <message>
         <source>unsupported algorithm (%1)</source>
         <translation>algorithme non supporté (%1)</translation>
+    </message>
+    <message>
+        <source>only SED-ML files with one or two algorithms are supported</source>
+        <translation>seulement les fichiers SED-ML avec un ou deux algorithmes sont supportés</translation>
     </message>
     <message>
         <source>unsupported algorithm parameter (%1)</source>

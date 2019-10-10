@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sedmlfileissue.h"
 #include "sedmlsupportglobal.h"
+#include "solverinterface.h"
 #include "standardfile.h"
 
 //==============================================================================
@@ -43,11 +44,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace libsedml {
     class SedDocument;
+    class SedListOfAlgorithmParameters;
 } // namespace libsedml
 
 //==============================================================================
 
 namespace OpenCOR {
+
+//==============================================================================
+
+class SolverInterface;
 
 //==============================================================================
 
@@ -104,6 +110,10 @@ namespace Language {
 
 //==============================================================================
 
+static const auto SolverKisaoId = "KISAO:0000000";
+
+//==============================================================================
+
 static const auto RateOfChangeSymbol = "urn:sedml:symbol:rateOfChange";
 
 //==============================================================================
@@ -156,6 +166,12 @@ private:
     bool isSedmlFile() const;
 
     bool hasErrors() const;
+
+    SolverInterface * solverInterface(const QString &pKisaoId,
+                                      Solver::Type pSolverType);
+
+    bool validAlgorithmParameters(libsedml::SedListOfAlgorithmParameters *pSedmlAlgorithmParameters,
+                                  SolverInterface *pSolverInterface);
 
     bool validListPropertyValue(const libsbml::XMLNode &pPropertyNode,
                                 const QString &pPropertyNodeValue,
