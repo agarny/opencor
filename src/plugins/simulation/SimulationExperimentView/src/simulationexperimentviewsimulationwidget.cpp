@@ -1619,12 +1619,12 @@ void SimulationExperimentViewSimulationWidget::addSedmlSimulationAlgorithm(libse
     // properties
 
     if (pSolverInterface != nullptr) {
-        for (const auto &odeSolverProperty : pSolverProperties.keys()) {
-            QString kisaoId = pSolverInterface->kisaoId(odeSolverProperty);
-            QVariant odeSolverPropertyValue = pSolverProperties.value(odeSolverProperty);
-            QString value = (odeSolverPropertyValue.type() == QVariant::Double)?
-                                QString::number(odeSolverPropertyValue.toDouble(), 'g', 15):
-                                odeSolverPropertyValue.toString();
+        for (const auto &solverProperty : pSolverProperties.keys()) {
+            QString kisaoId = pSolverInterface->kisaoId(solverProperty);
+            QVariant solverPropertyValue = pSolverProperties.value(solverProperty);
+            QString value = (solverPropertyValue.type() == QVariant::Double)?
+                                QString::number(solverPropertyValue.toDouble(), 'g', 15):
+                                solverPropertyValue.toString();
 
             libsedml::SedAlgorithmParameter *sedmlAlgorithmParameter = (pAlgorithm != nullptr)?
                                                                            pAlgorithm->createAlgorithmParameter():
@@ -1654,8 +1654,6 @@ void SimulationExperimentViewSimulationWidget::addSedmlSimulation(libsedml::SedD
 
     addSedmlSimulationAlgorithm(sedmlAlgorithm, nullptr, odeSolverInterface,
                                 mSimulation->data()->odeSolverProperties());
-
-    Solver::Solver::Properties odeSolverProperties = mSimulation->data()->odeSolverProperties();
 
     // Check whether the simulation required an NLA solver and, if so, let our
     // SED-ML simulation know about it
@@ -2682,7 +2680,6 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
 {
     // Customise our simulation widget
 
-//---ISSUE2053--- WHICH ONE OF THE FOLLOWING ARE STILL NEEDED?...
     SimulationExperimentViewInformationWidget *informationWidget = mContentsWidget->informationWidget();
     SimulationExperimentViewInformationSimulationWidget *simulationWidget = informationWidget->simulationWidget();
     SimulationExperimentViewInformationSolversWidget *solversWidget = informationWidget->solversWidget();
@@ -2734,9 +2731,9 @@ bool SimulationExperimentViewSimulationWidget::furtherInitialize()
 
                 nlaSolverName = QString::fromStdString(nlaSolverNode.getAttrValue(nlaSolverNode.getAttrIndex(SEDMLSupport::Name.toStdString())));
 
-                for (auto coreSolverInterface : Core::solverInterfaces()) {
-                    if (nlaSolverName == coreSolverInterface->solverName()) {
-                        nlaSolverProperties = nlaSolverData->solversProperties().value(coreSolverInterface->solverName());
+                for (auto solverInterface : Core::solverInterfaces()) {
+                    if (nlaSolverName == solverInterface->solverName()) {
+                        nlaSolverProperties = nlaSolverData->solversProperties().value(solverInterface->solverName());
 
                         nlaSolverData->solversListProperty()->setValue(nlaSolverName);
 

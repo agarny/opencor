@@ -422,8 +422,8 @@ bool SedmlFile::validAlgorithmParameters(libsedml::SedListOfAlgorithmParameters 
             }
 
             if (!validAlgorithmParameters(sedmlAlgorithmParameter->getListOfAlgorithmParameters(),
-                                          SedmlFile::solverInterface(QString::fromStdString(sedmlAlgorithmParameter->getValue()),
-                                                                     Solver::Type::Nla))) {
+                                          solverInterface(QString::fromStdString(sedmlAlgorithmParameter->getValue()),
+                                                          Solver::Type::Nla))) {
                 return false;
             }
         } else {
@@ -597,8 +597,8 @@ bool SedmlFile::isSupported()
         // and that its parameters are also supported
 
         if (!validAlgorithmParameters(firstSimulationAlgorithm->getListOfAlgorithmParameters(),
-                                      SedmlFile::solverInterface(QString::fromStdString(firstSimulationAlgorithm->getKisaoID()),
-                                                                 Solver::Type::Ode))) {
+                                      solverInterface(QString::fromStdString(firstSimulationAlgorithm->getKisaoID()),
+                                                      Solver::Type::Ode))) {
             return false;
         }
 
