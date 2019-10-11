@@ -53,10 +53,6 @@ namespace OpenCOR {
 
 //==============================================================================
 
-class SolverInterface;
-
-//==============================================================================
-
 namespace CellMLSupport {
     class CellmlFile;
 } // namespace CellMLSupport
