@@ -168,8 +168,6 @@ private:
 
     void updateNoViewMsg();
 
-    void importFile(const QString &pFileName);
-
     void openFiles(const QStringList &pFileNames);
 
     bool saveFile(int pIndex, bool pNeedNewFileName = false);
