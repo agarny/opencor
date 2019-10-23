@@ -175,8 +175,8 @@ macro(add_plugin PLUGIN_NAME)
     set(OPTIONS)
     set(ONE_VALUE_KEYWORDS
         EXTERNAL_BINARIES_DIR
-        EXTERNAL_DESTINATION_DIR
         EXTERNAL_SOURCE_DIR
+        EXTERNAL_DESTINATION_DIR
     )
     set(MULTI_VALUE_KEYWORDS
         SOURCES
@@ -208,8 +208,7 @@ macro(add_plugin PLUGIN_NAME)
         string(REPLACE "${CMAKE_SOURCE_DIR}" "${PROJECT_BUILD_DIR}"
                I18N_QRC_FILENAME "${PROJECT_SOURCE_DIR}/res/${PLUGIN_NAME}_i18n.qrc")
 
-        configure_file(${I18N_QRC_IN_FILENAME}
-                       ${I18N_QRC_FILENAME})
+        configure_file(${I18N_QRC_IN_FILENAME} ${I18N_QRC_FILENAME})
 
         list(APPEND RESOURCES ${I18N_QRC_FILENAME})
 
@@ -276,13 +275,13 @@ macro(add_plugin PLUGIN_NAME)
         )
     endforeach()
 
-    # External binaries
+    # Create a custom target for copying external binaries
+    # Note: this is to prevent Ninja from getting confused with circular
+    #       references...
 
-    if(NOT "${ARG_EXTERNAL_BINARIES_DIR}" STREQUAL "")
-        # Create a custom target for copying binaries
-        # Note: this is to prevent Ninja from getting confused with circular
-        #       references...
-
+    if(   NOT "${ARG_EXTERNAL_BINARIES_DIR}" STREQUAL ""
+       OR (    NOT "${ARG_EXTERNAL_SOURCE_DIR}" STREQUAL ""
+           AND NOT "${ARG_EXTERNAL_DESTINATION_DIR}" STREQUAL ""))
         set(COPY_EXTERNAL_BINARIES_TARGET "COPY_${PROJECT_NAME}_EXTERNAL_BINARIES")
 
         add_custom_target(${COPY_EXTERNAL_BINARIES_TARGET})
@@ -291,7 +290,11 @@ macro(add_plugin PLUGIN_NAME)
         if(NOT "${ARG_DEPENDS_ON}" STREQUAL "")
             add_dependencies(${COPY_EXTERNAL_BINARIES_TARGET} ${ARG_DEPENDS_ON})
         endif()
+    endif()
 
+    # External binaries
+
+    if(NOT "${ARG_EXTERNAL_BINARIES_DIR}" STREQUAL "")
         foreach(ARG_EXTERNAL_BINARY ${ARG_EXTERNAL_BINARIES})
             # Make sure that the external binary exists
 
@@ -371,12 +374,11 @@ macro(add_plugin PLUGIN_NAME)
 
     # Check whether an external package has files to install
 
-    if(    NOT "${ARG_EXTERNAL_DESTINATION_DIR}" STREQUAL ""
-       AND NOT "${ARG_EXTERNAL_SOURCE_DIR}" STREQUAL "")
-
+    if(    NOT "${ARG_EXTERNAL_SOURCE_DIR}" STREQUAL ""
+       AND NOT "${ARG_EXTERNAL_DESTINATION_DIR}" STREQUAL "")
         # Copy the entire source directory to the destination
 
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        add_custom_command(TARGET ${COPY_EXTERNAL_BINARIES_TARGET}
                            COMMAND ${CMAKE_COMMAND} -E copy_directory ${ARG_EXTERNAL_SOURCE_DIR}
                                                                       ${ARG_EXTERNAL_DESTINATION_DIR})
     endif()
@@ -657,7 +659,7 @@ endmacro()
 
 #===============================================================================
 
-macro(windows_deploy_qt_plugin PLUGIN_CATEGORY)
+macro(windows_deploy_qt_plugins PLUGIN_CATEGORY)
     foreach(PLUGIN_NAME ${ARGN})
         # Copy the Qt plugin to the plugins folder
 
@@ -725,7 +727,7 @@ endmacro()
 
 #===============================================================================
 
-macro(linux_deploy_qt_plugin PLUGIN_CATEGORY)
+macro(linux_deploy_qt_plugins PLUGIN_CATEGORY)
     foreach(PLUGIN_NAME ${ARGN})
         # Copy the Qt plugin to the plugins folder
 
@@ -803,7 +805,7 @@ endmacro()
 
 #===============================================================================
 
-macro(macos_deploy_qt_plugin PLUGIN_CATEGORY)
+macro(macos_deploy_qt_plugins PLUGIN_CATEGORY)
     foreach(PLUGIN_NAME ${ARGN})
         # Deploy the Qt plugin
 
