@@ -731,7 +731,7 @@ int xdiffCallback(void *data, mmbuffer_t *pBuffer, int pBufferSize)
     // Add the given buffer to the given data
 
     for (int i = 0; i < pBufferSize; ++i) {
-        *static_cast<QString *>(data) += QString(pBuffer[i].ptr).left(int(pBuffer[i].size));
+        *static_cast<QString *>(data) += QString(pBuffer[i].ptr).leftRef(int(pBuffer[i].size));
     }
 
     return 0;
@@ -853,11 +853,11 @@ QString PmrWorkspacesWindowSynchronizeDialog::diffHtml(DifferencesData &pDiffere
     int removeLineNumber = -1;
 
     for (const auto &differenceData : pDifferencesData) {
-        html += QString(Row).arg(differenceData.operation)
-                            .arg(differenceData.removeLineNumber)
-                            .arg(differenceData.addLineNumber)
-                            .arg(differenceData.tag)
-                            .arg((differenceData.tag == '+')?
+        html += QString(Row).arg(differenceData.operation,
+                                 differenceData.removeLineNumber,
+                                 differenceData.addLineNumber,
+                                 differenceData.tag,
+                                 (differenceData.tag == '+')?
                                      newDiffStrings[++addLineNumber]:
                                      oldDiffStrings[++removeLineNumber]);
     }
@@ -930,11 +930,11 @@ QString PmrWorkspacesWindowSynchronizeDialog::diffHtml(const QString &pOld,
 
             removeLineNumber = QString(difference).remove(BeforeRemoveLineNumberRegEx).remove(AfterLineNumberRegEx).toInt()-1;
 
-            html += QString(Row).arg("header")
-                                .arg("...")
-                                .arg("...")
-                                .arg(QString())
-                                .arg(difference);
+            html += QString(Row).arg("header",
+                                     "...",
+                                     "...",
+                                     QString(),
+                                     difference);
         } else {
             QString diff = difference;
             QChar tag = diff[0];
@@ -968,8 +968,8 @@ QString PmrWorkspacesWindowSynchronizeDialog::diffHtml(const QString &pOld,
                                              "default")
                                     .arg(removeLineNumber)
                                     .arg(addLineNumber)
-                                    .arg(QString())
-                                    .arg(cleanHtmlEscaped(diff));
+                                    .arg(QString(),
+                                         cleanHtmlEscaped(diff));
             }
         }
     }

@@ -480,9 +480,9 @@ void MainWindow::registerOpencorUrlScheme()
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
 #elif defined(Q_OS_LINUX)
     if (exec("which", QStringList() << "xdg-mime") == 0) {
-        QString iconPath = canonicalFileName(QString("%1/.local/share/%2/%3/%3.png").arg(QDir::homePath())
-                                                                                    .arg(qApp->organizationName())
-                                                                                    .arg(qApp->applicationName()));
+        QString iconPath = canonicalFileName(QString("%1/.local/share/%2/%3/%3.png").arg(QDir::homePath(),
+                                                                                         qApp->organizationName(),
+                                                                                         qApp->applicationName()));
 
         writeResourceToFile(iconPath, ":/app_icon");
 
@@ -493,9 +493,9 @@ void MainWindow::registerOpencorUrlScheme()
                           "Exec=%2 %u\n"
                           "Icon=%3\n"
                           "Terminal=false\n"
-                          "MimeType=x-scheme-handler/opencor\n").arg(qApp->applicationName())
-                                                                .arg(canonicalFileName(qApp->applicationFilePath()))
-                                                                .arg(iconPath));
+                          "MimeType=x-scheme-handler/opencor\n").arg(qApp->applicationName(),
+                                                                     canonicalFileName(qApp->applicationFilePath()),
+                                                                     iconPath));
 
         exec("xdg-mime", QStringList() << "default" << "opencor.desktop" << "x-scheme-handler/opencor");
     }
@@ -888,8 +888,8 @@ void MainWindow::setLocale(const QString &pRawLocale, bool pForceSetting)
         //       plugin to work properly...
 
         for (auto plugin : mLoadedI18nPlugins) {
-            qobject_cast<I18nInterface *>(plugin->instance())->updateTranslator(QString(":/%1_%2").arg(plugin->name())
-                                                                                                  .arg(newLocale));
+            qobject_cast<I18nInterface *>(plugin->instance())->updateTranslator(QString(":/%1_%2").arg(plugin->name(),
+                                                                                                       newLocale));
         }
 
         // Retranslate our various plugins

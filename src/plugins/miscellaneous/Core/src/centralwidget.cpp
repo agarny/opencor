@@ -219,7 +219,7 @@ CentralWidget::CentralWidget(QWidget *pParent) :
     layout->addWidget(mModeTabs);
     layout->addWidget(centralWidget);
 
-    for (auto mode : mModes.values()) {
+    for (auto mode : mModes) {
         layout->addWidget(mode->viewTabs());
     }
 
@@ -257,7 +257,7 @@ CentralWidget::CentralWidget(QWidget *pParent) :
 
     // Some connections to handle our mode views tab bar
 
-    for (auto mode : mModes.values()) {
+    for (auto mode : mModes) {
         connect(mode->viewTabs(), &TabBarWidget::currentChanged,
                 this, &CentralWidget::updateGui);
         connect(mode->viewTabs(), &TabBarWidget::currentChanged,
@@ -284,7 +284,7 @@ CentralWidget::~CentralWidget()
 
     // Delete our various modes
 
-    for (auto mode : mModes.values()) {
+    for (auto mode : mModes) {
         delete mode;
     }
 }
@@ -367,8 +367,8 @@ void CentralWidget::loadSettings(QSettings &pSettings)
         for (int i = 0, iMax = mModeTabs->count(); i < iMax; ++i) {
             fileMode = mModeTabIndexModes.value(i);
 
-            QString viewPluginName = pSettings.value(QString(SettingsFileModeView).arg(fileNameOrUrl)
-                                                                                  .arg(ViewInterface::modeAsString(fileMode))).toString();
+            QString viewPluginName = pSettings.value(QString(SettingsFileModeView).arg(fileNameOrUrl,
+                                                                                       ViewInterface::modeAsString(fileMode))).toString();
             Plugins viewPlugins = mModes.value(fileMode)->viewPlugins();
 
             for (int j = 0, jMax = viewPlugins.count(); j < jMax; ++j) {
@@ -417,8 +417,8 @@ void CentralWidget::loadSettings(QSettings &pSettings)
             fileMode = mModeTabIndexModes.value(i);
 
             CentralWidgetMode *mode = mModes.value(fileMode);
-            QString viewPluginName = pSettings.value(QString(SettingsFileModeView).arg(QString())
-                                                                                  .arg(ViewInterface::modeAsString(fileMode))).toString();
+            QString viewPluginName = pSettings.value(QString(SettingsFileModeView).arg(QString(),
+                                                                                       ViewInterface::modeAsString(fileMode))).toString();
             Plugins viewPlugins = mode->viewPlugins();
 
             for (int j = 0, jMax = viewPlugins.count(); j < jMax; ++j) {
@@ -439,8 +439,8 @@ void CentralWidget::saveSettings(QSettings &pSettings) const
     // Remove all the settings related to previously opened files
 
     static const QString SettingsFileModeHeader = QString(SettingsFileMode).arg(QString());
-    static const QString SettingsFileModeViewHeader = QString(SettingsFileModeView).arg(QString())
-                                                                                   .arg(QString());
+    static const QString SettingsFileModeViewHeader = QString(SettingsFileModeView).arg(QString(),
+                                                                                        QString());
 
     for (const auto &key : pSettings.allKeys()) {
         if (   key.startsWith(SettingsFileModeHeader)
@@ -488,8 +488,8 @@ void CentralWidget::saveSettings(QSettings &pSettings) const
         for (int i = 0, iMax = mModeTabs->count(); i < iMax; ++i) {
             ViewInterface::Mode fileMode = mModeTabIndexModes.value(i);
 
-            pSettings.setValue(QString(SettingsFileModeView).arg(fileNameOrUrl)
-                                                            .arg(ViewInterface::modeAsString(fileMode)),
+            pSettings.setValue(QString(SettingsFileModeView).arg(fileNameOrUrl,
+                                                                 ViewInterface::modeAsString(fileMode)),
                                mModes.value(fileMode)->viewPlugins()[modeViewTabIndexes.value(i)]->name());
         }
     }
@@ -522,8 +522,8 @@ void CentralWidget::saveSettings(QSettings &pSettings) const
         ViewInterface::Mode fileMode = mModeTabIndexModes.value(i);
         CentralWidgetMode *mode = mModes.value(fileMode);
 
-        pSettings.setValue(QString(SettingsFileModeView).arg(QString())
-                                                        .arg(ViewInterface::modeAsString(fileMode)),
+        pSettings.setValue(QString(SettingsFileModeView).arg(QString(),
+                                                             ViewInterface::modeAsString(fileMode)),
                            mode->viewPlugins()[mode->viewTabs()->currentIndex()]->name());
     }
 }
@@ -594,7 +594,7 @@ void CentralWidget::retranslateUi()
 
     // Retranslate our mode views tab bar
 
-    for (auto mode : mModes.values()) {
+    for (auto mode : mModes) {
         TabBarWidget *viewTabs = mode->viewTabs();
 
         for (int i = 0, iMax = viewTabs->count(); i < iMax; ++i) {
@@ -742,8 +742,8 @@ void CentralWidget::importRemoteFile(const QString &pFileNameOrUrl)
             }
         } else {
             warningMessageBox(tr("Import Remote File"),
-                              tr("<strong>%1</strong> could not be saved locally (%2).").arg(fileNameOrUrl)
-                                                                                        .arg(formatMessage(errorMessage)));
+                              tr("<strong>%1</strong> could not be saved locally (%2).").arg(fileNameOrUrl,
+                                                                                             formatMessage(errorMessage)));
         }
 
         QFile::remove(temporaryFileName);
@@ -752,8 +752,8 @@ void CentralWidget::importRemoteFile(const QString &pFileNameOrUrl)
         // the user know about it
 
         warningMessageBox(tr("Import Remote File"),
-                          tr("<strong>%1</strong> could not be imported (%2).").arg(fileNameOrUrl)
-                                                                               .arg(formatMessage(errorMessage)));
+                          tr("<strong>%1</strong> could not be imported (%2).").arg(fileNameOrUrl,
+                                                                                    formatMessage(errorMessage)));
     }
 }
 
@@ -919,8 +919,8 @@ void CentralWidget::openRemoteFile(const QString &pUrl, bool pShowWarning)
                 hideBusyWidget();
 
                 warningMessageBox(tr("Open Remote File"),
-                                  tr("<strong>%1</strong> could not be opened (%2).").arg(fileNameOrUrl)
-                                                                                     .arg(formatMessage(errorMessage)));
+                                  tr("<strong>%1</strong> could not be opened (%2).").arg(fileNameOrUrl,
+                                                                                          formatMessage(errorMessage)));
             }
         }
     } else {
@@ -995,8 +995,8 @@ void CentralWidget::reloadFile(int pIndex, bool pForce)
                         fileManagerInstance->reload(fileName);
                     } else {
                         warningMessageBox(tr("Reload Remote File"),
-                                          tr("<strong>%1</strong> could not be reloaded (%2).").arg(url)
-                                                                                               .arg(formatMessage(errorMessage)));
+                                          tr("<strong>%1</strong> could not be reloaded (%2).").arg(url,
+                                                                                                    formatMessage(errorMessage)));
                     }
                 } else {
                     fileManagerInstance->reload(fileName);
@@ -1037,7 +1037,7 @@ void CentralWidget::duplicateFile()
 
 #ifdef QT_DEBUG
     if (status != FileManager::Status::Duplicated) {
-        qFatal("FATAL ERROR | %s:%d: '%s' could not be duplicated.", __FILE__, __LINE__, qPrintable(fileName));
+        qFatal("FATAL ERROR | %s:%d: '%s' could not be duplicated.", __FILE__, __LINE__, qPrintable(fileName)); // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay, cppcoreguidelines-pro-type-vararg)
     }
 #endif
 }
@@ -1063,8 +1063,8 @@ void CentralWidget::toggleLockedFile()
         warningMessageBox(fileLocked?
                               tr("Unlock File"):
                               tr("Lock File"),
-                          tr("<strong>%1</strong> could not be %2.").arg(QDir::toNativeSeparators(fileName))
-                                                                    .arg(fileLocked?
+                          tr("<strong>%1</strong> could not be %2.").arg(QDir::toNativeSeparators(fileName),
+                                                                         fileLocked?
                                                                              tr("unlocked"):
                                                                              tr("locked")));
     }
@@ -1099,8 +1099,8 @@ bool CentralWidget::saveFile(int pIndex, bool pNeedNewFileName)
 
     if (viewInterface->viewWidget(oldFileName) == nullptr) {
         warningMessageBox(tr("Save File"),
-                          tr("The <strong>%1</strong> view cannot save <strong>%2</strong>.").arg(viewInterface->viewName())
-                                                                                             .arg(oldFileName));
+                          tr("The <strong>%1</strong> view cannot save <strong>%2</strong>.").arg(viewInterface->viewName(),
+                                                                                                  oldFileName));
 
         return false;
     }
@@ -1148,8 +1148,8 @@ bool CentralWidget::saveFile(int pIndex, bool pNeedNewFileName)
     if (!fileHandlingInterface->saveFile(oldFileName, newFileName, needFeedback)) {
         if (needFeedback) {
             warningMessageBox(tr("Save File"),
-                              tr("The <strong>%1</strong> view could not save <strong>%2</strong>.").arg(viewInterface->viewName())
-                                                                                                    .arg(QDir::toNativeSeparators(newFileName)));
+                              tr("The <strong>%1</strong> view could not save <strong>%2</strong>.").arg(viewInterface->viewName(),
+                                                                                                         QDir::toNativeSeparators(newFileName)));
         }
 
         return false;
@@ -1177,7 +1177,7 @@ bool CentralWidget::saveFile(int pIndex, bool pNeedNewFileName)
 
 #ifdef QT_DEBUG
         if (status != FileManager::Status::Renamed) {
-            qFatal("FATAL ERROR | %s:%d: '%s' could not be renamed to '%s'.", __FILE__, __LINE__, qPrintable(oldFileName), qPrintable(newFileName));
+            qFatal("FATAL ERROR | %s:%d: '%s' could not be renamed to '%s'.", __FILE__, __LINE__, qPrintable(oldFileName), qPrintable(newFileName)); // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay, cppcoreguidelines-pro-type-vararg)
         }
 #endif
     }
@@ -1204,7 +1204,7 @@ bool CentralWidget::saveFile(int pIndex, bool pNeedNewFileName)
 
 #ifdef QT_DEBUG
         if (status != FileManager::Status::Removed) {
-            qFatal("FATAL ERROR | %s:%d: '%s' could not be unmanaged.", __FILE__, __LINE__, qPrintable(newFileName));
+            qFatal("FATAL ERROR | %s:%d: '%s' could not be unmanaged.", __FILE__, __LINE__, qPrintable(newFileName)); // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay, cppcoreguidelines-pro-type-vararg)
         }
 
         status =
@@ -1213,7 +1213,7 @@ bool CentralWidget::saveFile(int pIndex, bool pNeedNewFileName)
 
 #ifdef QT_DEBUG
         if (status != FileManager::Status::Added) {
-            qFatal("FATAL ERROR | %s:%d: '%s' could not be managed.", __FILE__, __LINE__, qPrintable(newFileName));
+            qFatal("FATAL ERROR | %s:%d: '%s' could not be managed.", __FILE__, __LINE__, qPrintable(newFileName)); // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay, cppcoreguidelines-pro-type-vararg)
         }
 #endif
     }
@@ -1738,7 +1738,7 @@ void CentralWidget::updateGui()
     bool changedModes = sender() == mModeTabs;
     bool changedViews = false;
 
-    for (auto mode : mModes.values()) {
+    for (auto mode : mModes) {
         if (sender() == mode->viewTabs()) {
             changedViews = true;
 
@@ -2144,7 +2144,7 @@ void CentralWidget::updateModifiedSettings()
     mModeTabs->setEnabled(true);
     mModeTabs->setToolTip(QString());
 
-    for (auto mode : mModes.values()) {
+    for (auto mode : mModes) {
         TabBarWidget *viewTabs = mode->viewTabs();
 
         viewTabs->setEnabled(true);
