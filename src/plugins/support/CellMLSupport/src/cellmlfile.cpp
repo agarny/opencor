@@ -267,9 +267,9 @@ bool CellmlFile::fullyInstantiateImports(iface::cellml_api::Model *pModel,
                                 // Something went wrong with the instantiation
                                 // of the import
 
-                                throw std::runtime_error(tr("<strong>%1</strong> imports <strong>%2</strong>, which contents could not be retrieved (%3)").arg(QDir::toNativeSeparators(xmlBaseFileNameOrUrl))
-                                                                                                                                                          .arg(xlinkHrefString)
-                                                                                                                                                          .arg(Core::formatMessage(QString::fromStdWString(exception.explanation))).toStdString());
+                                throw std::runtime_error(tr("<strong>%1</strong> imports <strong>%2</strong>, which contents could not be retrieved (%3)").arg(QDir::toNativeSeparators(xmlBaseFileNameOrUrl),
+                                                                                                                                                               xlinkHrefString,
+                                                                                                                                                               Core::formatMessage(QString::fromStdWString(exception.explanation))).toStdString());
                             }
 
                             // Keep track of the import contents
@@ -284,8 +284,8 @@ bool CellmlFile::fullyInstantiateImports(iface::cellml_api::Model *pModel,
                                 dependencies << fileNameOrUrl;
                             }
                         } else {
-                            throw std::runtime_error(tr("<strong>%1</strong> imports <strong>%2</strong>, which contents could not be retrieved").arg(QDir::toNativeSeparators(xmlBaseFileNameOrUrl))
-                                                                                                                                                 .arg(xlinkHrefString).toStdString());
+                            throw std::runtime_error(tr("<strong>%1</strong> imports <strong>%2</strong>, which contents could not be retrieved").arg(QDir::toNativeSeparators(xmlBaseFileNameOrUrl),
+                                                                                                                                                      xlinkHrefString).toStdString());
                         }
                     }
 
@@ -295,8 +295,8 @@ bool CellmlFile::fullyInstantiateImports(iface::cellml_api::Model *pModel,
                     ObjRef<iface::cellml_api::Model> importModel = import->importedModel();
 
                     if (importModel == nullptr) {
-                        throw std::runtime_error(tr("<strong>%1</strong> imports <strong>%2</strong>, which CellML object could not be retrieved").arg(QDir::toNativeSeparators(xmlBaseFileNameOrUrl))
-                                                                                                                                                  .arg(xlinkHrefString).toStdString());
+                        throw std::runtime_error(tr("<strong>%1</strong> imports <strong>%2</strong>, which CellML object could not be retrieved").arg(QDir::toNativeSeparators(xmlBaseFileNameOrUrl),
+                                                                                                                                                       xlinkHrefString).toStdString());
                     }
 
                     retrieveImports(isLocalFile?
