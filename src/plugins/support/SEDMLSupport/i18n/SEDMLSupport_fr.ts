@@ -63,10 +63,6 @@
         <translation>%1 (%2) est un solveur ANL alors qu&apos;un solveur EDO est attendu</translation>
     </message>
     <message>
-        <source>%1 (%2) is an ODE solver while an NLA solver is expected</source>
-        <translation>%1 (%2) est un solveur EDO alors qu&apos;un solveur ANL est attendu</translation>
-    </message>
-    <message>
         <source>unsupported algorithm (%1)</source>
         <translation>algorithme non supporté (%1)</translation>
     </message>

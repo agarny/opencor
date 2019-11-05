@@ -1930,7 +1930,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
 
         sedmlPlot2d->setXAxis(xAxis);
 
-        annotation += SedmlProperty.arg(SEDMLSupport::XAxis),
+        annotation += SedmlProperty.arg(SEDMLSupport::XAxis,
                                         SedmlProperty.arg(SEDMLSupport::Title,
                                                           xAxisProperties[1]->stringValue()));
 
