@@ -24,6 +24,7 @@ add_plugin(Core
         ../../plugininterface.cpp
         ../../pluginmanager.cpp
         ../../preferencesinterface.cpp
+        ../../pythoninterface.cpp
         ../../solverinterface.cpp
         ../../viewinterface.cpp
         ../../windowinterface.cpp
@@ -61,8 +62,12 @@ add_plugin(Core
         Widgets
         Xml
         XmlPatterns
+    SYSTEM_BINARIES
+        ${PYTHON_LIBRARY}
     TESTS
         clitests
         generaltests
         mathmltests
+    DEPENDS_ON
+        ${PYTHON_DEPENDENCIES}
 )

@@ -44,7 +44,9 @@ class CORE_EXPORT TabBarWidget : public QTabBar
 
 public:
     explicit TabBarWidget(QWidget *pParent);
+#ifdef Q_OS_MAC
     ~TabBarWidget() override;
+#endif
 
     int insertTab(int pIndex, const QString &pText);
 

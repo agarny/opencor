@@ -85,8 +85,6 @@ TabBarWidget::~TabBarWidget()
 
     delete style();
 }
-#else
-TabBarWidget::~TabBarWidget() = default;
 #endif
 
 //==============================================================================
