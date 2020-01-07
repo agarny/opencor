@@ -121,7 +121,7 @@ void SplashScreenWindow::changeEvent(QEvent *pEvent)
 
 //==============================================================================
 
-void SplashScreenWindow::closeAndDeleteAfter(QWidget *pWindow)
+void SplashScreenWindow::deleteLater(QWidget *pWindow)
 {
     // Wait for our window to expose itself
 
@@ -155,31 +155,18 @@ void SplashScreenWindow::closeAndDeleteAfter(QWidget *pWindow)
 #endif
     }
 
-    // Close ourselves with a bit of a delay
+    // Have ourselves deleted, but with a bit of a delay
 
-    QTimer::singleShot(500, this, &SplashScreenWindow::close);
+    QTimer::singleShot(500, this, &QObject::deleteLater);
 }
 
 //==============================================================================
 
 void SplashScreenWindow::closeEvent(QCloseEvent *pEvent)
 {
-    // Accept the event and ask for ourselves to be deleted later
+    // Prevent ourselves from being closed
 
-    pEvent->accept();
-
-    deleteLater();
-}
-
-//==============================================================================
-
-void SplashScreenWindow::mousePressEvent(QMouseEvent *pEvent)
-{
-    // Accept the event and hide ourselves
-
-    pEvent->accept();
-
-    hide();
+    pEvent->ignore();
 }
 
 //==============================================================================
