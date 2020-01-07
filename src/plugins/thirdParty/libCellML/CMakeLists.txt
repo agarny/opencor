@@ -3,11 +3,11 @@ project(libCellMLPlugin)
 # Name and version of our package
 
 set(PACKAGE_NAME libCellML)
-set(PACKAGE_VERSION 0.1.0)
+set(PACKAGE_VERSION 0.2.0)
 
 # Version of our package's libraries
 
-set(LIBRARY_VERSION 0.1.0)
+set(LIBRARY_VERSION 0.2.0)
 
 # Git tag for our library
 
