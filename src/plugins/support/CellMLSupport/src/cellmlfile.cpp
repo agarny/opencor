@@ -343,19 +343,19 @@ bool CellmlFile::load(const QString &pFileContents,
     // errors were found (i.e. we consider it as a CellML 2.0 file)
 
     bool validFile = true;
-    libcellml::Parser parser;
+    libcellml::ParserPtr parser = libcellml::Parser::create();
 
     if (pFileContents.isEmpty()) {
         QByteArray fileContents;
 
         validFile = Core::readFile(mFileName, fileContents);
 
-        parser.parseModel(fileContents.toStdString());
+        parser->parseModel(fileContents.toStdString());
     } else {
-        parser.parseModel(pFileContents.toStdString());
+        parser->parseModel(pFileContents.toStdString());
     }
 
-    if (validFile && (parser.errorCount() == 0)) {
+    if (validFile && (parser->errorCount() == 0)) {
         return true;
     }
 
