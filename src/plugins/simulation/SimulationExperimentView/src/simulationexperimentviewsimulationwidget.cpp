@@ -511,8 +511,6 @@ SimulationExperimentViewSimulationWidget::SimulationExperimentViewSimulationWidg
     mSplitterWidget->addWidget(mContentsWidget);
     mSplitterWidget->addWidget(simulationOutputWidget);
 
-    mSplitterWidget->setSizes(QIntList() << availableGeometry.height() << 1);
-
     layout->addWidget(mSplitterWidget);
 
     // Create our (thin) simulation progress widget
@@ -1171,9 +1169,7 @@ void SimulationExperimentViewSimulationWidget::setSizes(const QIntList &pSizes)
     // Set the sizes of our spliter widget, but only if there effectively are
     // some
 
-    if (!pSizes.isEmpty()) {
-        mSplitterWidget->setSizes(pSizes);
-    }
+    mSplitterWidget->setSizes(pSizes);
 }
 
 //==============================================================================
@@ -1906,8 +1902,13 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
 
         // Legend
 
+        Core::Properties legendProperties = graphPanelProperties[4]->properties();
+
         annotation += SedmlProperty.arg(SEDMLSupport::Legend,
-                                        graphPanelProperties[4]->stringValue());
+                                         SedmlProperty.arg(SEDMLSupport::FontSize,
+                                                           legendProperties[0]->stringValue())
+                                        +SedmlProperty.arg(SEDMLSupport::Visible,
+                                                           legendProperties[1]->stringValue()));
 
         // Point coordinates
 
@@ -1921,7 +1922,9 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
                                         +SedmlProperty.arg(SEDMLSupport::Color,
                                                            pointCoordinatesProperties[2]->stringValue())
                                         +SedmlProperty.arg(SEDMLSupport::FontColor,
-                                                           pointCoordinatesProperties[3]->stringValue()));
+                                                           pointCoordinatesProperties[3]->stringValue())
+                                        +SedmlProperty.arg(SEDMLSupport::FontSize,
+                                                           pointCoordinatesProperties[4]->stringValue()));
 
         // Surrounding area
 
@@ -1943,20 +1946,24 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
         Core::Properties xAxisProperties = graphPanelProperties[8]->properties();
 
         annotation += SedmlProperty.arg(SEDMLSupport::XAxis,
-                                         SedmlProperty.arg(SEDMLSupport::LogarithmicScale,
+                                         SedmlProperty.arg(SEDMLSupport::FontSize,
                                                            xAxisProperties[0]->stringValue())
+                                        +SedmlProperty.arg(SEDMLSupport::LogarithmicScale,
+                                                           xAxisProperties[1]->stringValue())
                                         +SedmlProperty.arg(SEDMLSupport::Title,
-                                                           xAxisProperties[1]->stringValue()));
+                                                           xAxisProperties[2]->stringValue()));
 
         // Y axis
 
         Core::Properties yAxisProperties = graphPanelProperties[9]->properties();
 
         annotation += SedmlProperty.arg(SEDMLSupport::YAxis,
-                                         SedmlProperty.arg(SEDMLSupport::LogarithmicScale,
+                                         SedmlProperty.arg(SEDMLSupport::FontSize,
                                                            yAxisProperties[0]->stringValue())
+                                        +SedmlProperty.arg(SEDMLSupport::LogarithmicScale,
+                                                           yAxisProperties[1]->stringValue())
                                         +SedmlProperty.arg(SEDMLSupport::Title,
-                                                           yAxisProperties[1]->stringValue()));
+                                                           yAxisProperties[2]->stringValue()));
 
         // Zoom region
 
@@ -1971,17 +1978,21 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
                                                            zoomRegionProperties[2]->stringValue())
                                         +SedmlProperty.arg(SEDMLSupport::FontColor,
                                                            zoomRegionProperties[3]->stringValue())
-                                        +SedmlProperty.arg(SEDMLSupport::Filled,
+                                        +SedmlProperty.arg(SEDMLSupport::FontSize,
                                                            zoomRegionProperties[4]->stringValue())
+                                        +SedmlProperty.arg(SEDMLSupport::Filled,
+                                                           zoomRegionProperties[5]->stringValue())
                                         +SedmlProperty.arg(SEDMLSupport::FillColor,
-                                                           zoomRegionProperties[5]->stringValue()));
+                                                           zoomRegionProperties[6]->stringValue()));
 
         // Add our properties as an annotation
 
-        sedmlPlot2d->appendAnnotation(QString(R"(<%1 xmlns="%2">)"
-                                               "    %3"
+        sedmlPlot2d->appendAnnotation(QString(R"(<%1 %2="%3" xmlns="%4">)"
+                                               "    %5"
                                                "</%1>").arg(SEDMLSupport::Properties,
-                                                            SEDMLSupport::OpencorNamespace,
+                                                            SEDMLSupport::Version)
+                                                       .arg(SEDMLSupport::VersionValue)
+                                                       .arg(SEDMLSupport::OpencorNamespace,
                                                             annotation).toStdString());
 
         // Keep track of the graph panel's graphs, if any
@@ -3144,7 +3155,7 @@ void SimulationExperimentViewSimulationWidget::simulationResultsReset()
 {
     setUpdatesEnabled(false);
         // Update our simulation mode and check for results
-        // Note: see clearSimulationResults() for the reason behing temporarily
+        // Note: see clearSimulationResults() for the reason behind temporarily
         //       disabling updates...
 
         updateSimulationMode();
