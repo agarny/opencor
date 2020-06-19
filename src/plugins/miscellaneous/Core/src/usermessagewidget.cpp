@@ -70,21 +70,21 @@ UserMessageWidget::UserMessageWidget(const QString &pIcon,
 UserMessageWidget::UserMessageWidget(const QString &pIcon,
                                      const QString &pMessage,
                                      QWidget *pParent) :
-    UserMessageWidget(pIcon, pMessage, QString(), pParent)
+    UserMessageWidget(pIcon, pMessage, {}, pParent)
 {
 }
 
 //==============================================================================
 
 UserMessageWidget::UserMessageWidget(const QString &pIcon, QWidget *pParent) :
-    UserMessageWidget(pIcon, QString(), QString(), pParent)
+    UserMessageWidget(pIcon, {}, {}, pParent)
 {
 }
 
 //==============================================================================
 
 UserMessageWidget::UserMessageWidget(QWidget *pParent) :
-    UserMessageWidget(QString(), QString(), QString(), pParent)
+    UserMessageWidget({}, {}, {}, pParent)
 {
 }
 
@@ -135,7 +135,7 @@ void UserMessageWidget::updateGui()
     //       So, instead, we retrieve a data URI for our resized icon...
 
     if (mIcon.isEmpty() && mMessage.isEmpty() && mExtraMessage.isEmpty()) {
-        setText(QString());
+        setText({});
     } else {
         static const QString Message = "<table align=center>\n"
                                        "    <tbody>\n"
@@ -242,7 +242,7 @@ void UserMessageWidget::resetMessage()
 {
     // Reset our message
 
-    setIconMessage(QString(), QString());
+    setIconMessage({}, {});
 }
 
 //==============================================================================

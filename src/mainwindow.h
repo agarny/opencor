@@ -121,8 +121,7 @@ private:
     void loadSettings();
     void saveSettings() const;
 
-    void setLocale(const QString &pRawLocale = QString(),
-                   bool pForceSetting = false);
+    void setLocale(const QString &pRawLocale = {}, bool pForceSetting = false);
 
     void reorderViewWindowsMenu();
 
@@ -130,7 +129,7 @@ private:
 
     void restart(bool pSaveSettings) const;
 
-    void showPreferencesDialog(const QString &pPluginName = QString());
+    void showPreferencesDialog(const QString &pPluginName = {});
 
     void showDockedWindows(bool pShow, bool pInitialisation);
 
