@@ -67,6 +67,10 @@ along with this program. If not, see <https://gnu.org/licenses>.
 
 //==============================================================================
 
+#include <memory>
+
+//==============================================================================
+
 #include "qwtbegin.h"
     #include "qwt_wheel.h"
 #include "qwtend.h"
@@ -193,7 +197,7 @@ SimulationExperimentViewSimulationWidget::SimulationExperimentViewSimulationWidg
     connect(mResetAllModelParametersAction, &QAction::triggered,
             this, &SimulationExperimentViewSimulationWidget::resetAllModelParameters);
     connect(mClearSimulationResultsAction, &QAction::triggered,
-            this, QOverload<>::of(&SimulationExperimentViewSimulationWidget::clearSimulationResults));
+            this, &SimulationExperimentViewSimulationWidget::clearSimulationResults);
     connect(mDevelopmentModeAction, &QAction::triggered,
             this, &SimulationExperimentViewSimulationWidget::developmentMode);
     connect(mAddGraphPanelAction, &QAction::triggered,
@@ -491,7 +495,7 @@ SimulationExperimentViewSimulationWidget::SimulationExperimentViewSimulationWidg
     auto simulationOutputWidget = new QWidget(this);
     auto simulationOutputLayout= new QVBoxLayout(simulationOutputWidget);
 
-    simulationOutputLayout->setContentsMargins(QMargins());
+    simulationOutputLayout->setContentsMargins({});
     simulationOutputLayout->setSpacing(0);
 
     simulationOutputWidget->setLayout(simulationOutputLayout);
@@ -877,7 +881,7 @@ static const char *OutputBrLn = "<br/>\n";
 
 //==============================================================================
 
-void SimulationExperimentViewSimulationWidget::initialize(bool pReloadingView)
+void SimulationExperimentViewSimulationWidget::initialize(bool pReloading)
 {
     // In the case of a SED-ML file and of a COMBINE archive, we will need
     // to further initialise ourselves, to customise graph panels, etc. (see
@@ -914,7 +918,7 @@ void SimulationExperimentViewSimulationWidget::initialize(bool pReloadingView)
 
         // Clean up our output, if needed
 
-        if (pReloadingView) {
+        if (pReloading) {
             mOutputMessage = QString();
         }
 
@@ -996,16 +1000,14 @@ void SimulationExperimentViewSimulationWidget::initialize(bool pReloadingView)
 
             mRunPauseResumeSimulationAction->setEnabled(voi != nullptr);
 
-            // Update our simulation mode or clear our simulation results
-            // (should there be some) in case we are reloading ourselves
-            // Note: to clear our simualtion data will also update our
-            //       simulation mode, so we are fine...
+            // Clear our simulation results, in case we are reloading ourselves,
+            // and update our simulation mode
 
-            if (pReloadingView) {
+            if (pReloading) {
                 clearSimulationResults();
-            } else {
-                updateSimulationMode();
             }
+
+            updateSimulationMode();
 
             // Initialise our contents widget and make sure that we have the
             // required type(s) of solvers
@@ -1104,7 +1106,7 @@ void SimulationExperimentViewSimulationWidget::initialize(bool pReloadingView)
             // Now, we can safely update our parameters widget since our model
             // parameters have been computed
 
-            mContentsWidget->informationWidget()->parametersWidget()->initialize(mSimulation, pReloadingView);
+            mContentsWidget->informationWidget()->parametersWidget()->initialize(mSimulation, pReloading);
         }
 
         // Resume the tracking of certain things
@@ -1211,7 +1213,7 @@ QIcon SimulationExperimentViewSimulationWidget::doFileTabIcon(bool pForEmitting)
 
     // Return a file tab icon that shows the given file's simulation progress
 
-    static const QIcon NoIcon = QIcon();
+    static const QIcon NoIcon;
 
     QIcon res = NoIcon;
 
@@ -1257,7 +1259,7 @@ bool SimulationExperimentViewSimulationWidget::save(const QString &pFileName)
         // object with their 'new' values, unless they are imported, in which
         // case we let the user know that their 'new' values cannot be saved
 
-        QString importedParameters = QString();
+        QString importedParameters;
         ObjRef<iface::cellml_api::CellMLComponentSet> components = mSimulation->cellmlFile()->model()->localComponents();
         QMap<Core::Property *, CellMLSupport::CellmlFileRuntimeParameter *> parameters = mContentsWidget->informationWidget()->parametersWidget()->parameters();
         Core::Properties propertyKeys = parameters.keys();
@@ -1268,11 +1270,9 @@ bool SimulationExperimentViewSimulationWidget::save(const QString &pFileName)
             if (   (parameter->type() == CellMLSupport::CellmlFileRuntimeParameter::Type::State)
                 || (parameter->type() == CellMLSupport::CellmlFileRuntimeParameter::Type::Constant)) {
                 ObjRef<iface::cellml_api::CellMLComponent> component = components->getComponent(parameter->componentHierarchy().last().toStdWString());
-                ObjRef<iface::cellml_api::CellMLVariableSet>  variables = component->variables();
-                ObjRef<iface::cellml_api::CellMLVariable> variable = variables->getVariable(property->name().toStdWString());
-                ObjRef<iface::cellml_api::CellMLVariable> sourceVariable = variable->sourceVariable();
+                ObjRef<iface::cellml_api::CellMLVariable> variable = component->variables()->getVariable(property->name().toStdWString());
 
-                if (variable == sourceVariable) {
+                if (variable == variable->sourceVariable()) {
                     variable->initialValue(property->value().toStdWString());
                 } else {
                     importedParameters += "\n - "+QString::fromStdWString(component->name())+" | "+QString::fromStdWString(variable->name());
@@ -1672,7 +1672,7 @@ void SimulationExperimentViewSimulationWidget::addSedmlSimulation(libsedml::SedD
     if ((runtime != nullptr) && runtime->needNlaSolver()) {
         Solver::Solver::Properties nlaSolverProperties = mSimulation->data()->nlaSolverProperties();
         QStringList nlaSolverPropertyKeys = nlaSolverProperties.keys();
-        QString nlaSolverAnnotation = QString();
+        QString nlaSolverAnnotation;
 
         for (const auto &nlaSolverProperty : nlaSolverPropertyKeys) {
             nlaSolverAnnotation += QString(R"(<%1 %2="%3" %4="%5"/>)").arg(SEDMLSupport::SolverProperty,
@@ -1867,8 +1867,8 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
     SimulationExperimentViewInformationGraphPanelAndGraphsWidget *graphPanelAndGraphsWidget = mContentsWidget->informationWidget()->graphPanelAndGraphsWidget();
     GraphPanelWidget::GraphPanelsWidget *graphPanelsWidget = mContentsWidget->graphPanelsWidget();
     QIntList graphPanelsWidgetSizes = graphPanelsWidget->sizes();
-    QList<Core::Properties> graphsPropertiesList = QList<Core::Properties>();
-    QMap<Core::Properties, GraphsData> graphsData = QMap<Core::Properties, GraphsData>();
+    QList<Core::Properties> graphsPropertiesList;
+    QMap<Core::Properties, GraphsData> graphsData;
     int graphPlotCounter = 0;
 
     for (auto graphPanel : graphPanelsWidget->graphPanels()) {
@@ -2210,7 +2210,7 @@ void SimulationExperimentViewSimulationWidget::sedmlExportSedmlFile()
 {
     // Export the simulation to a SED-ML file
 
-    sedmlExportSedmlFile(QString());
+    sedmlExportSedmlFile({});
 }
 
 //==============================================================================
@@ -2259,7 +2259,7 @@ void SimulationExperimentViewSimulationWidget::sedmlExportCombineArchive(const Q
                                      fileManagerInstance->url(localCellmlFileName):
                                      localCellmlFileName;
         QString commonPath = QString(cellmlFileName).remove(FileNameRegEx)+"/";
-        QMap<QString, QString> remoteImportedFileNames = QMap<QString, QString>();
+        QMap<QString, QString> remoteImportedFileNames;
 
         for (const auto &importedFileName : cellmlFile->importedFileNames()) {
             // Check for the common path
@@ -2298,7 +2298,7 @@ void SimulationExperimentViewSimulationWidget::sedmlExportCombineArchive(const Q
         // Create a copy of the SED-ML file that will be the master file in our
         // COMBINE archive
 
-        QString errorMessage = QString();
+        QString errorMessage;
         QString sedmlFileName = Core::temporaryFileName();
         SEDMLSupport::SedmlFile sedmlFile(sedmlFileName, true);
 
@@ -2392,7 +2392,7 @@ void SimulationExperimentViewSimulationWidget::sedmlExportCombineArchive()
 {
     // Export the simulation to a COMBINE archive
 
-    sedmlExportCombineArchive(QString());
+    sedmlExportCombineArchive({});
 }
 
 //==============================================================================
@@ -2683,7 +2683,7 @@ GraphPanelWidget::GraphPanelPlotGraphProperties SimulationExperimentViewSimulati
 {
     // Return our default graph properties
 
-    return defaultGraphProperties(QString(), pColor);
+    return defaultGraphProperties({}, pColor);
 }
 
 //==============================================================================
@@ -2801,7 +2801,7 @@ bool SimulationExperimentViewSimulationWidget::import(const QString &pFileName,
         MemoryAllocation
     };
 
-    QList<quint64> runSizes = QList<quint64>();
+    QList<quint64> runSizes;
 
     for (int i = 0, iMax = mSimulation->runsCount(); i < iMax; ++i) {
         runSizes << mSimulation->runSize(i);
@@ -2831,7 +2831,11 @@ bool SimulationExperimentViewSimulationWidget::import(const QString &pFileName,
     // people know about the problem
 
     if (problem == None) {
-        // Everything is fine, so do the actual import
+        // Everything is fine, so do the actual import, waiting for the import
+        // to be done before carrying on
+        // Note: this is needed since we may have to import several files and we
+        //       don't want the GUI to be all messed up (e.g. with the progress
+        //       with an import "overlapping" with that of another)...
 
         Core::showCentralProgressBusyWidget();
 
@@ -2848,17 +2852,16 @@ bool SimulationExperimentViewSimulationWidget::import(const QString &pFileName,
         connect(this, &SimulationExperimentViewSimulationWidget::importDone,
                 this, &SimulationExperimentViewSimulationWidget::resetDataStoreImporterConnections);
 
-        dataStoreImporter->importData(dataStoreImportData);
-
-        // Wait for the import to be done before carrying on
-        // Note: this is needed since we may have to import several files and we
-        //       don't want the GUI to be all messed up (e.g. with the progress
-        //       with an import "overlapping" with that of another)...
-
         QEventLoop waitLoop;
+        auto connection = std::make_shared<QMetaObject::Connection>();
 
-        connect(this, &SimulationExperimentViewSimulationWidget::importDone,
-                &waitLoop, &QEventLoop::quit);
+        *connection = connect(this, &SimulationExperimentViewSimulationWidget::importDone, [&]() {
+            waitLoop.quit();
+
+            disconnect(*connection);
+        });
+
+        dataStoreImporter->importData(dataStoreImportData);
 
         waitLoop.exec();
 
@@ -3081,7 +3084,7 @@ void SimulationExperimentViewSimulationWidget::resetFileTabIcon()
 {
     // Let people know that our file tab icon should be reset
 
-    static const QIcon NoIcon = QIcon();
+    static const QIcon NoIcon;
 
     emit mViewWidget->updateFileTabIcon(mPlugin->viewName(),
                                         mSimulation->fileName(),
@@ -3428,7 +3431,7 @@ bool SimulationExperimentViewSimulationWidget::updatePlot(GraphPanelWidget::Grap
     double minY = GraphPanelWidget::DefaultMinAxis;
     double maxY = GraphPanelWidget::DefaultMaxAxis;
 
-    QRectF dataRect = QRectF();
+    QRectF dataRect;
 
     if (pPlot->dataRect(dataRect)) {
         minX = dataRect.left();
@@ -3442,7 +3445,7 @@ bool SimulationExperimentViewSimulationWidget::updatePlot(GraphPanelWidget::Grap
     double minLogY = GraphPanelWidget::DefaultMinLogAxis;
     double maxLogY = GraphPanelWidget::DefaultMaxAxis;
 
-    QRectF dataLogRect = QRectF();
+    QRectF dataLogRect;
 
     if (pPlot->dataLogRect(dataLogRect)) {
         minLogX = dataLogRect.left();
@@ -3987,6 +3990,8 @@ void SimulationExperimentViewSimulationWidget::checkGraphPanelsAndGraphs()
     mGraphPanelsWidgetSizesModified = graphPanelsWidget->sizes() != mGraphPanelsWidgetSizes;
 
     // Check whether any of our graph panel / graphs properties has changed
+    // Note: we check that allPropertyValues is not empty since it may be when
+    //       reloading...
 
     SimulationExperimentViewInformationGraphPanelAndGraphsWidget *graphPanelAndGraphsWidget = mContentsWidget->informationWidget()->graphPanelAndGraphsWidget();
 
@@ -3996,17 +4001,25 @@ void SimulationExperimentViewSimulationWidget::checkGraphPanelsAndGraphs()
     for (auto graphPanel : graphPanelsWidget->graphPanels()) {
         Core::PropertyEditorWidget *propertyEditor = graphPanelAndGraphsWidget->graphPanelPropertyEditor(graphPanel);
 
-        mGraphPanelPropertiesModified.insert(propertyEditor,
-                                             mGraphPanelProperties.contains(propertyEditor)?
-                                                 allPropertyValues(propertyEditor) != mGraphPanelProperties.value(propertyEditor):
-                                                 true);
+        if (mGraphPanelProperties.contains(propertyEditor)) {
+            QVariantList allPropertyValues = this->allPropertyValues(propertyEditor);
+
+            if (!allPropertyValues.isEmpty()) {
+                mGraphPanelPropertiesModified.insert(propertyEditor,
+                                                     allPropertyValues != mGraphPanelProperties.value(propertyEditor));
+            }
+        }
 
         propertyEditor = graphPanelAndGraphsWidget->graphsPropertyEditor(graphPanel);
 
-        mGraphsPropertiesModified.insert(propertyEditor,
-                                         mGraphsProperties.contains(propertyEditor)?
-                                             allPropertyValues(propertyEditor) != mGraphsProperties.value(propertyEditor):
-                                             true);
+        if (mGraphsProperties.contains(propertyEditor)) {
+            QVariantList allPropertyValues = this->allPropertyValues(propertyEditor);
+
+            if (!allPropertyValues.isEmpty()) {
+                mGraphsPropertiesModified.insert(propertyEditor,
+                                                 allPropertyValues != mGraphsProperties.value(propertyEditor));
+            }
+        }
     }
 
     // Update our file's modified status
@@ -4020,7 +4033,7 @@ QVariantList SimulationExperimentViewSimulationWidget::allPropertyValues(Core::P
 {
     // Return all the property values of the given property editor
 
-    QVariantList res = QVariantList();
+    QVariantList res;
 
     for (auto property : pPropertyEditor->allProperties()) {
         res << property->isChecked() << property->variantValue();

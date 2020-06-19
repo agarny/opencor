@@ -1365,7 +1365,7 @@ void GraphPanelPlotLegendWidget::renderLegend(QPainter *pPainter,
     QList<QRect> itemRects = legendLayout->layoutItems(layoutRect, legendLayout->columnsForWidth(layoutRect.width()));
 
     if ((legendLayout->expandingDirections() & Qt::Horizontal) != 0) {
-        for (auto itemRect : itemRects) {
+        for (auto &itemRect : itemRects) {
             itemRect.adjust(layoutRect.left(), 0, layoutRect.left(), 0);
         }
     }
@@ -3027,8 +3027,8 @@ QRectF GraphPanelPlotWidget::realDataRect()
     // Return an optimised version of dataRect()/dataLogRect() or a default
     // rectangle, if no dataRect()/dataLogRect() exists
 
-    QRectF dRect = QRectF();
-    QRectF dLogRect = QRectF();
+    QRectF dRect;
+    QRectF dLogRect;
 
     if (dataRect(dRect) && dataLogRect(dLogRect)) {
         // Optimise our axes' values
@@ -4034,8 +4034,8 @@ void GraphPanelPlotWidget::exportTo()
     static const QString ImageXpixmap         = "image/x-xpixmap";
 
     QString pdfFilter = tr("PDF File - Portable Document Format (*.pdf)");
-    QStringList filters = QStringList() << pdfFilter
-                                        << tr("SVG File - Scalable Vector Graphics (*.svg)");
+    QStringList filters = { pdfFilter,
+                            tr("SVG File - Scalable Vector Graphics (*.svg)") };
 
     for (const auto &supportedMimeType : QImageWriter::supportedMimeTypes()) {
         if (supportedMimeType == ImageBmp) {
@@ -4062,13 +4062,13 @@ void GraphPanelPlotWidget::exportTo()
     QString fileName = Core::getSaveFileName(tr("Export To"), filters, &pdfFilter);
 
     if (!fileName.isEmpty()) {
-        static double InToMm = 25.4;
         static int Dpi = 85;
+        static double InToMmPerDpi = 25.4/Dpi;
 
         if (QFileInfo(fileName).completeSuffix().isEmpty()) {
-            QwtPlotRenderer().renderDocument(this, fileName, "pdf", QSizeF(width()*InToMm/Dpi, height()*InToMm/Dpi), Dpi);
+            QwtPlotRenderer().renderDocument(this, fileName, "pdf", QSizeF(width()*InToMmPerDpi, height()*InToMmPerDpi), Dpi);
         } else {
-            QwtPlotRenderer().renderDocument(this, fileName, QSizeF(width()*InToMm/Dpi, height()*InToMm/Dpi), Dpi);
+            QwtPlotRenderer().renderDocument(this, fileName, QSizeF(width()*InToMmPerDpi, height()*InToMmPerDpi), Dpi);
         }
     }
 

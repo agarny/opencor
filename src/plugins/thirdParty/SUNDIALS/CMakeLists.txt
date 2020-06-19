@@ -3,37 +3,37 @@ project(SUNDIALSPlugin)
 # Name and version of our package
 
 set(PACKAGE_NAME SUNDIALS)
-set(PACKAGE_VERSION 5.1.0)
+set(PACKAGE_VERSION 5.3.0)
 
 # Version of our package's libraries
 
 set(MAJOR_ARKODE_LIBRARY_VERSION 4)
-set(ARKODE_LIBRARY_VERSION ${MAJOR_ARKODE_LIBRARY_VERSION}.1.0)
+set(ARKODE_LIBRARY_VERSION ${MAJOR_ARKODE_LIBRARY_VERSION}.3.0)
 
 set(MAJOR_CVODES_LIBRARY_VERSION 5)
-set(CVODES_LIBRARY_VERSION ${MAJOR_CVODES_LIBRARY_VERSION}.1.0)
+set(CVODES_LIBRARY_VERSION ${MAJOR_CVODES_LIBRARY_VERSION}.3.0)
 
 set(MAJOR_IDAS_LIBRARY_VERSION 4)
-set(IDAS_LIBRARY_VERSION ${MAJOR_IDAS_LIBRARY_VERSION}.1.0)
+set(IDAS_LIBRARY_VERSION ${MAJOR_IDAS_LIBRARY_VERSION}.3.0)
 
 set(MAJOR_KINSOL_LIBRARY_VERSION 5)
-set(KINSOL_LIBRARY_VERSION ${MAJOR_KINSOL_LIBRARY_VERSION}.1.0)
+set(KINSOL_LIBRARY_VERSION ${MAJOR_KINSOL_LIBRARY_VERSION}.3.0)
 
 set(MAJOR_NVEC_LIBRARY_VERSION 5)
-set(NVEC_LIBRARY_VERSION ${MAJOR_NVEC_LIBRARY_VERSION}.1.0)
+set(NVEC_LIBRARY_VERSION ${MAJOR_NVEC_LIBRARY_VERSION}.3.0)
 
 set(MAJOR_SUNLINSOL_LIBRARY_VERSION 3)
-set(SUNLINSOL_LIBRARY_VERSION ${MAJOR_SUNLINSOL_LIBRARY_VERSION}.1.0)
+set(SUNLINSOL_LIBRARY_VERSION ${MAJOR_SUNLINSOL_LIBRARY_VERSION}.3.0)
 
 set(MAJOR_SUNNONLINSOL_LIBRARY_VERSION 2)
-set(SUNNONLINSOL_LIBRARY_VERSION ${MAJOR_SUNNONLINSOL_LIBRARY_VERSION}.1.0)
+set(SUNNONLINSOL_LIBRARY_VERSION ${MAJOR_SUNNONLINSOL_LIBRARY_VERSION}.3.0)
 
 set(MAJOR_SUNMATRIX_LIBRARY_VERSION 3)
-set(SUNMATRIX_LIBRARY_VERSION ${MAJOR_SUNMATRIX_LIBRARY_VERSION}.1.0)
+set(SUNMATRIX_LIBRARY_VERSION ${MAJOR_SUNMATRIX_LIBRARY_VERSION}.3.0)
 
 # Git tag for our library
 
-set(GIT_TAG v5.1.0)
+set(GIT_TAG v5.3.0)
 
 # Specify where our local package will be installed
 
@@ -222,123 +222,123 @@ if(USE_PREBUILT_SUNDIALS_PACKAGE)
     if(WIN32)
         if(RELEASE_MODE)
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 136dde590cb19a8d77dba5c03a92ba316f881ef8
+                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 8ca172395cbb1b0825e27bae269d663075e11ea4
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 24f78a4cfff26ab7c8f1856be265daa8eb19c537
-                                              38bf3074b4188b9f9956da23bf00b755658348f1
-                                              1c0cd9b7915235e87446f867f4d64321450c034f
-                                              505fdaf3d91435ea6c5d2da66758086f04894e06
-                                              81006596415f100d268485b2a00a2e9bf87de3fc
-                                              0a6ed440ee2e781f3944938f3a3fbddba1e740f4
-                                              914431337c0eac18a5ffb3118b7a2f8d8ee9cbe8
-                                              05bb6874ea665f281bba95e11634768bfb78eec2
-                                              ba8eadefb03fa0a1c355d9ab7329b7677f9ac833
-                                              28caa06b5802add6219d83de78bb72343092023d
-                                              8bf1d2ab96c83e8fa481b9b4e160298105bb0e92
-                                              fe3e7795f5a05af8328c1fb0a4b96ab7b45b192b
-                                              64e4bcf9171596f30a36f3101cd0a9d7cf80bd6c
-                                              05a48d2e3c7c3b450120b6e6c75ce30288884386
-                                              abcff9f399a979e90fe09bb9fa862fac74ceb08c
-                                              eefe012b928afe825b2fa87597cdd00388ddeae8
-                                              51498d1d227a2ac8f3ceb077e4c34449d7bbce9a
-                                              d4209899f0661058e6017dd0defee862f1596cfe
-                                              8b3042eb65f15a30143e35d1b2426b4055262940
-                                              6c9473350b3cd18e24637785f1b6d89f06fb144f
-                                              4d12cc0303e7a84f5eff17ca4d776481b2c1ea4f
-                                              78a90a301bc79e129fcb3861b92e2b190fb7dee4
+                                  SHA1_VALUES ab2c6fe2e4d68c45fd25e3905629445f0858579c
+                                              399d1e0bf066e1c7016ac08dca0c09a8b83f1b6b
+                                              130d4169c7fb978a448e09fb33b35ec501b61234
+                                              3973ba3d5db3e59bd80f9cf97342c44730c827a9
+                                              3d0e88d09018d242f65e900945e01a1a9a855e40
+                                              bcc568c02e799cdd03d8ba0ff2f9dd461ecd6fa4
+                                              eb0ae7a2331a2eb3f66683b9029b90510f9ae4e2
+                                              173c0fc40547cd62ca1d14104945447efbeec5d2
+                                              64423c727dd27b3757d2958fd2e7c37360f9a2d1
+                                              5ea969b8b0b9a56728b9549f588214f90e4df042
+                                              48e00197b6e6c3a9a2da5144ce9d47cb07e9791d
+                                              23742efd04fd6796be6bef7e9176fa33eb5fa293
+                                              8d1f051103016136d6b816f9e8e7d1548676296f
+                                              5c81edfefc2c244d3411cbd09c64c4ecd77be9ba
+                                              e67a868b91cad1718db31016356977fa40f0738c
+                                              6b95917b994aad2a5898e6e910a96224c20e2f09
+                                              0f517a5334b470f242aec2af08cdbcbddb117a90
+                                              4390099b1c504876653b632404e1bbfd2a2b07fd
+                                              4ee0b27d02ddc8c12eefb950cace1332d818497a
+                                              11b675ca08297560357b9105d1454a4ef560d1d0
+                                              d1f7ee6bf0cf850d0753eca3379927bfb526be25
+                                              ed7311fca916dfb98167f6d09ac64af04ca2e2c6
                                               cc6949ae8e43048c675debc0b97f46bac5798908
                                               59beefc52a273119cb325057847de9d48cc38004
-                                              3c9b276aa57548bacd9bef0a2826efd8db933d05
-                                              40ee1e72ab18d48a79e75dc40d5963ebefdf3068
-                                              8d237a014e38f5c3d102f0ad095e372ebc80ca1e
-                                              4669751027a1185c2d21e41839ea579c58de1dd1
-                                              8cbe2a14bf78e4faebe3a0b6623033e4ab393432
-                                              0ac9cb2832cddeee24cd2505597a72c0614c17a6
-                                              9e288809b6b1cc4e83066f6a68e33b9277e0a98b
-                                              ffce64f42b3101107ee92abd974428b753de7fbc
-                                              c39403638de47e06629bfac742c17de3ba1a5775
-                                              a673cb21b1f163725ba8be4e1dd4e1ab6a4e5a55)
+                                              60e61d30139f5285257ae33b37055a2738bceac0
+                                              1df6d629bd2676de9988d7b07da07ef516724da8
+                                              4e8b4dafda86804ea7a30f4354d6f1ef4073327c
+                                              22d21ababfff4530714a29993ef87b47614d47de
+                                              096a24abe4e31eb3eae30cdb96846880f5350086
+                                              80e57067d809d83b6335ddddcced11792be0060c
+                                              1011f42dd84e3b27dc997381b63cb325c4e35486
+                                              a9defac61e498f6314b102186690ed14a42ea61c
+                                              65f63a45fc19dd0689d34810088b0f3e67b6c5cc
+                                              b0c1cfaea4e88fce0d729d30f0cf1825016ffac0)
         else()
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 53f6e37a41200fa40f60a648a212350e5df0a52d
+                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} fb11c91804bccd2709313fa32c9719e8af8c079a
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 88bf26625453e2a8f139f103dfdb566476c650bc
-                                              6c6d271eccb280c8895b445b633f77f637155fb4
-                                              eeed793e86a26f614dcebf08c56e10bb9651e082
-                                              938e36cf7c50659ab4684e6a6f83387ffbbeff18
-                                              ec6b94e9c80e3986f4abd7f7d0eb43917fba86ed
-                                              36c8278eb93184f5d13ad54995b7ecc9653d5ada
-                                              a54a810063bb3c33f1f778c1afd03abe4122b68c
-                                              39d0af33bd6654ad92d2f6b675f422beeb8dedfd
-                                              02b144363da93e2ba70f72632d78c06d1585f6bf
-                                              4608bbcebe6297238e57b7061c1a5129dd6f2be8
-                                              80c494fc1b37138e8a7c04a4dd438dd7de71d74f
-                                              8590ff7338a3d7f3e43a6f80581a5a71e3ca1b0d
-                                              31dbfcd4c9bf95c0e5c97c329ee02c1cb2940eb8
-                                              91a8360ec8c06b7dc845b57149758c9bb5671f47
-                                              d77e8be5e58cc85151000cb32b0c900bc2b15e9d
-                                              c130fccec37ee515864c5ef5ef343024bb61da05
-                                              f922d618fedc56b573108f2a0e48e410ae49af73
-                                              d4209899f0661058e6017dd0defee862f1596cfe
-                                              8b3042eb65f15a30143e35d1b2426b4055262940
-                                              6c9473350b3cd18e24637785f1b6d89f06fb144f
-                                              4d12cc0303e7a84f5eff17ca4d776481b2c1ea4f
-                                              78a90a301bc79e129fcb3861b92e2b190fb7dee4
+                                  SHA1_VALUES af13976498330f9f6ba607cb1af4df0cb75f1b72
+                                              550c4deaea692662cd880e1e31334bd9cc20dfba
+                                              42c2e878c830dd19f880ba6f656830842f372ea6
+                                              1465f3a707f9c221ea3dfd83763caf1ccd413395
+                                              6331a618dd98c225f069bf3ac036ab6bdfdde924
+                                              3793735e584c8a7b6480ca97ca2e702f6f760698
+                                              89e7e52a4692d316035a978e85953156cbdea6ad
+                                              7e45c7d00fc5ba021aabc93903514aaabb21638b
+                                              9e488a32cd59fe77e200bd6998e2ef3de9609e42
+                                              d1a441f0ccec36785835a278d0b290dd8e41f8f8
+                                              2d1e16bbc6791ed5f6fcb3913a0bafe31a91fd05
+                                              e12e34196e7e48a7b4c96eff9936677eb3b3e15c
+                                              83d6e89f98db7dff19f75185f8614859ae542500
+                                              8841a042c3b971963e01e17d89710a84c48e1496
+                                              b306fb8306308fcf24c698cfbd8c3ce07d6557cd
+                                              bf6cdbc9cc274b933e0c7fac7e2c32e8a67a7695
+                                              83455aa67a0da828237c3f7ef387d65e53427d8e
+                                              4390099b1c504876653b632404e1bbfd2a2b07fd
+                                              4ee0b27d02ddc8c12eefb950cace1332d818497a
+                                              11b675ca08297560357b9105d1454a4ef560d1d0
+                                              d1f7ee6bf0cf850d0753eca3379927bfb526be25
+                                              ed7311fca916dfb98167f6d09ac64af04ca2e2c6
                                               cc6949ae8e43048c675debc0b97f46bac5798908
                                               59beefc52a273119cb325057847de9d48cc38004
-                                              3c9b276aa57548bacd9bef0a2826efd8db933d05
-                                              40ee1e72ab18d48a79e75dc40d5963ebefdf3068
-                                              8d237a014e38f5c3d102f0ad095e372ebc80ca1e
-                                              4669751027a1185c2d21e41839ea579c58de1dd1
-                                              8cbe2a14bf78e4faebe3a0b6623033e4ab393432
-                                              0ac9cb2832cddeee24cd2505597a72c0614c17a6
-                                              9e288809b6b1cc4e83066f6a68e33b9277e0a98b
-                                              ffce64f42b3101107ee92abd974428b753de7fbc
-                                              c39403638de47e06629bfac742c17de3ba1a5775
-                                              a673cb21b1f163725ba8be4e1dd4e1ab6a4e5a55)
+                                              60e61d30139f5285257ae33b37055a2738bceac0
+                                              1df6d629bd2676de9988d7b07da07ef516724da8
+                                              4e8b4dafda86804ea7a30f4354d6f1ef4073327c
+                                              22d21ababfff4530714a29993ef87b47614d47de
+                                              096a24abe4e31eb3eae30cdb96846880f5350086
+                                              80e57067d809d83b6335ddddcced11792be0060c
+                                              1011f42dd84e3b27dc997381b63cb325c4e35486
+                                              a9defac61e498f6314b102186690ed14a42ea61c
+                                              65f63a45fc19dd0689d34810088b0f3e67b6c5cc
+                                              b0c1cfaea4e88fce0d729d30f0cf1825016ffac0)
         endif()
     elseif(APPLE)
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} b0ce112d2f2ad5a4d6b1b4b6cfbd71f651cb0aab
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} bfea64bca4fb6426d5f0d4bec8c239b974abbabe
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES cfb52fd02fe45d7ba949cef5a6a89360f4b4f7f9
-                                          edec135d0602adb22057cb476142b07690038a4f
-                                          6432b769a3e84c315544c1f9b519de2ba9ec210a
-                                          65e18e2c9c87b81989d286e4e680c4b1913203ef
-                                          c9387d8992d5db5c84a0c835a3ba463dc7b56e50
-                                          87d801591fe019d30a6a209b44ec9fca0531e4cb
-                                          03abff0bc1069e42f573eaa08cf1869e4c861b3e
-                                          6e00881dd3e5f5275254ff7da0216eceef45e443
-                                          fac964c11b69346263a2247f211734b0bff59bac
-                                          c994968231e85206a41ad69c142f89d9b99b7495
-                                          20a3ef00c4d00bd1793fef1a96da514c0132224e
-                                          25940325113044e2cb6ffadf059bf3f38ddd703c
-                                          ef0212f5c4abaa598a4f1ac3e71a71c89750bd84
-                                          0832b4ff8a520cdbcd91333718f95a2d8253b835
-                                          25c2f9d0406ab29f468ae1299a872b94571b0edc
-                                          8d5a49ac4ca2bc54f8dd873cfa7aa0372324778f
-                                          3c6e550ce8ae1ec9280a7b446f66ccbdf89e4750)
+                              SHA1_VALUES 3b347a656382e5fc0e676ec900b3c14d090f09c4
+                                          1972e3dd2a79720a818d6a394d84ef4f643b4b77
+                                          73e4b9ab3f593ee404e41b8c26748c18c2af7c13
+                                          13666ce63814dafa8f610c2d5e07dd84cef38cd1
+                                          1338e4463299bbffe9e52264de80ca7630bd0fe3
+                                          8180710f229faab8fe8e3ceade511f4bf4207f25
+                                          f7c34c36f36d095a3b53cc986944b4828f579ab8
+                                          e90ba885b75915993ff17a1dff81241c76936df2
+                                          68b26c9e44c09e4061241f54ebcc14b869818c7e
+                                          84f6007411d9b5f2810f4ee85a98cdebba8c4775
+                                          6b4b31589c9c1fafc6df243c1bb617c664692e0c
+                                          e80c20f7cb4c620724f310609424884371d2bf33
+                                          5f94ce26ec03c6fefa81571f90af5b648a466d8c
+                                          0029c5aa4c835ae5bbe0ebdad4cfcd87e9d2fc82
+                                          1da894f720dabddafa3f5bd3e43fc55f5de085dc
+                                          e0e2ee77ffed9144792ca81bdbc21880ea85e857
+                                          831773d238e9407f876d8f5bca72b970fd36726a)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 0d1f390242f85876bbd9bca86bbf54048306e368
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} b15e6b8e3a412a0bd566f8c6984b8307109bf39f
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 566dc07cc619cc05f0145b9b7d60713851817369
-                                          f4bc96d982e32f492c372ec78174e75d0b4a0ffc
-                                          b9a4830a04ee5f416f61de3b7d7f3e1444aaaf9c
-                                          3ca68cd83c511abd725e36469ef614e74f45fe19
-                                          fd859bca3cecafeca52e882c5804d96e9fe47e80
-                                          417c81ac4b93fe01e95f6865c2db83e6a0b6494d
-                                          0aba846c3ec2524c400634b6930d9fd57a7f635a
-                                          703b2ceb95e8d57d1207a6c067cdddf8e777f9c4
-                                          b61d945d5524dcdc762908b45c8dc055ce7a61f9
-                                          366550166697aaeace76b991af283cfaaf66be52
-                                          bc8221cff89b934cc9819438dfe45d87dc98e7ed
-                                          1186bba6042bc451b531b40109bcf985571e252e
-                                          9eef04e46ff9ebe93e2bf75d0d534e79ea65e5af
-                                          f988358c02d4dda835c64507f067c3ea5ca829db
-                                          e34015490994e3566a772969bcf07913c0d09dae
-                                          cfe2adbb5f41205bf3d33d8e7f4e84e8b8e8a2e7
-                                          2ba94a9f4f12731cc17ec07bd346ffe174fc9144)
+                              SHA1_VALUES b734392d6780f7214f6f89004cc1396bf94639cd
+                                          c1a73e22941cc991e5ccc3a45e08e724f8cfaa0a
+                                          13ddace9342783e57a498f1eb788e8ea8c28e892
+                                          c0706f7654a6c89d3edf894e0195de31568aceae
+                                          bb80ecb9eba09a0ec683d9360f086a805653a95a
+                                          ad1de9b2b614c58391b4de59623427b891edbe31
+                                          0ef039bc2f88a49e46ce6e08f7a906754b31044e
+                                          af403028f001f7a5cb493abc09636087db50612d
+                                          85c5985524bcb8c294edc7960bb5cd37c7dbb56c
+                                          ff6981b9e3768490954ed187b6ffca1308e40c7f
+                                          10522584a6a9ea18a356a59381bbf367cf2fa016
+                                          449d8d427b0e9b8b4476512f764458b668d6728d
+                                          1360083ba49479b08ff444682a665955195b0607
+                                          1d7b2e2a1d4c275a7567cfb6a3b575cfbdf3c7c2
+                                          653dcbf682716e4f511a089160a2811d27f4d449
+                                          37ecd364026bf17fdfee32977acfc71748f17a73
+                                          edd98d2e08d2254950dd54797786d279b49e9ecf)
     endif()
 else()
     # Ignore some warnings
