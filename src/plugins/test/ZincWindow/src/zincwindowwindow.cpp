@@ -60,6 +60,12 @@ ZincWindowWindow::ZincWindowWindow(QWidget *pParent) :
 
     mGui->setupUi(this);
 
+    // Create a temporary copy of our .exfile file
+
+    mExFile = Core::canonicalFileName(QDir::tempPath()+"/ZincWindow/trilinearCube.exfile");
+
+    Core::writeResourceToFile(mExFile, ":/ZincWindow/trilinearCube.exfile");
+
     // Create and add a Zinc widget
 
     mZincWidget = new ZincWidget::ZincWidget(this);
@@ -87,9 +93,15 @@ ZincWindowWindow::ZincWindowWindow(QWidget *pParent) :
 
 ZincWindowWindow::~ZincWindowWindow()
 {
+    // Delete the temporary copy of our .exfile file
+
+    QFile::remove(mExFile);
+
     // Delete some internal objects
 
     delete mZincContext;
+
+    mZincWidget = nullptr;
 
     // Delete the GUI
 
@@ -109,6 +121,13 @@ void ZincWindowWindow::retranslateUi()
 
 void ZincWindowWindow::createAndSetZincContext()
 {
+    // Make sure that we still have a Zinc widget (i.e. skip the case where we
+    // are coming here as a result of closing OpenCOR)
+
+    if (mZincWidget == nullptr) {
+        return;
+    }
+
     // Keep track of our current scene viewer's description
 
     mZincSceneViewerDescription = mZincWidget->sceneViewer().writeDescription();
@@ -127,15 +146,9 @@ void ZincWindowWindow::createAndSetZincContext()
     // Load our .exfile to our default region using a temporary copy of our
     // .exfile file
 
-    QString exFile = Core::canonicalFileName(QDir::tempPath()+"/ZincWindow/trilinearCube.exfile");
-
-    Core::writeResourceToFile(exFile, ":/ZincWindow/trilinearCube.exfile");
-
     OpenCMISS::Zinc::Region region = mZincContext->getDefaultRegion();
 
-    region.readFile(exFile.toUtf8().constData());
-
-    QFile::remove(exFile);
+    region.readFile(mExFile.toUtf8().constData());
 
     // Create a field magnitude for our default region
 
@@ -217,7 +230,7 @@ void ZincWindowWindow::createAndSetZincContext()
         isosurfaces.setTessellation(fineTessellation);
     scene.endChange();
 
-    // Update our scene using our initial devide pixel ratio
+    // Update our scene using our initial device pixel ratio
 
     devicePixelRatioChanged(mZincWidget->devicePixelRatio());
 }
@@ -244,7 +257,7 @@ void ZincWindowWindow::graphicsInitialized()
 
 void ZincWindowWindow::devicePixelRatioChanged(int pDevicePixelRatio)
 {
-    // Update our scene using the given devide pixel ratio
+    // Update our scene using the given device pixel ratio
 
     OpenCMISS::Zinc::Scene scene = mZincContext->getDefaultRegion().getScene();
 
