@@ -607,36 +607,6 @@ void PendulumWindowWindow::timeSliderValueChanged(int pTime)
     mTimeLabel->setText(tr("Time: %1 s").arg(time));
 
     mTimeKeeper.setTime(time);
-
-    // Retrieve the viewing volume, as well as look at and eye positions, and
-    // the vector
-    // Note: this is so that we can customise the way we want our pendulum scene
-    //       to look...
-
-//#define CAN_CUSTOMIZE
-
-#ifdef CAN_CUSTOMIZE
-    OpenCMISS::Zinc::Sceneviewer sceneViewer = mZincWidget->sceneViewer();
-
-    double left, right, bottom, top, nearPlane, farPlane;
-
-    sceneViewer.getViewingVolume(&left, &right, &bottom, &top, &nearPlane, &farPlane);
-
-    qDebug("---------");
-    qDebug("sceneViewer.setViewingVolume(%f, %f, %f, %f, %f, %f);\n", left, right, bottom, top, nearPlane, farPlane);
-
-    double lookAtPosition[3];
-    double eyePosition[3];
-    double upVector[3];
-
-    sceneViewer.getLookatPosition(lookAtPosition);
-    sceneViewer.getEyePosition(eyePosition);
-    sceneViewer.getUpVector(upVector);
-
-    qDebug("const double lookAtPosition[] = { %f, %f, %f };", lookAtPosition[0], lookAtPosition[1], lookAtPosition[2]);
-    qDebug("const double eyePosition[] = { %f, %f, %f };", eyePosition[0], eyePosition[1], eyePosition[2]);
-    qDebug("const double upVector[] = { %f, %f, %f };", upVector[0], upVector[1], upVector[2]);
-#endif
 }
 
 //==============================================================================
