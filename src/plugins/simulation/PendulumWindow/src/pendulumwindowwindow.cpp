@@ -275,8 +275,8 @@ void PendulumWindowWindow::initializeZincScene(int pDataSize)
     mFieldModule.endChange();
 
     mFieldModule.beginChange();
-        // Create a field looking up the node coordinates at time as a
-        // function of element xi
+        // Create a field looking up the node coordinates at time as a function
+        // of element xi
         // Note: Zinc has a known defect in that the xi field doesn't appear
         //       until change caching ends, hence the need to call
         //       endChange() and beginChange() above, to get things to work
