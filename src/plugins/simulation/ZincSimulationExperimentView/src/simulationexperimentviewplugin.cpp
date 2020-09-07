@@ -231,7 +231,7 @@ void SimulationExperimentViewPlugin::pluginsInitialized(const Plugins &pLoadedPl
                                                      cellmlSimulationViewPlugins,
                                                      Core::mainWindow());
 
-    mViewWidget->setObjectName("SimulationExperimentViewWidget");
+    mViewWidget->setObjectName("ZincSimulationExperimentViewWidget");
 
     // Hide our Simulation Experiment view widget since it may not initially be
     // shown in our central widget
