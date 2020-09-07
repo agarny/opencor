@@ -932,6 +932,7 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
             organisation/PMRWorkspacesWindow
 
             simulation/SimulationExperimentView
+            simulation/ZincSimulationExperimentView
 
             solver/CVODESolver
             solver/ForwardEulerSolver

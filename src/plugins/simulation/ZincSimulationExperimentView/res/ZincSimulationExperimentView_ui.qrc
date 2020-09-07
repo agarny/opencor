@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/ZincSimulationExperimentView">
+        <file>blank.png</file>
+    </qresource>
+</RCC>
