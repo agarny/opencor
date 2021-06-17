@@ -9,6 +9,10 @@ set(PACKAGE_VERSION 21.0.3)
 
 set(GIT_TAG v21.0.3)
 
+# Release tag
+
+set(RELEASE_TAG v21.0.3-centos7)
+
 # Specify where our local package will be installed
 
 string(REGEX REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
@@ -30,9 +34,10 @@ if(USE_PREBUILT_MESA_PACKAGE)
     # Retrieve the library's package
 
     retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                          ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 1cc9b433a174488e99a72c57d66451588424c733
+                          ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 87d6ccbd53a9352a40cccff11433949b82bc3a66
+                          RELEASE_TAG ${RELEASE_TAG}
                           SHA1_FILES ${SHA1_FILES}
-                          SHA1_VALUES 4b65001b31d58a47d8bae87d50d6b2d1a363b446)
+                          SHA1_VALUES 7bdc6ae57843e0ce6f3cebbac6cf1e52dbe98942)
 else()
     # Build Mesa as an external project
 
@@ -65,6 +70,7 @@ else()
     # Package our external project
 
     create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                        RELEASE_TAG ${RELEASE_TAG}
                         PACKAGED_FILES ${SHA1_FILES}
                         SHA1_FILES ${SHA1_FILES}
                         TARGET ${PACKAGE_BUILD})
