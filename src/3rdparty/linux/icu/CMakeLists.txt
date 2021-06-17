@@ -12,7 +12,11 @@ set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.1)
 
 # Git tag for our library
 
-set(GIT_TAG v56.1)
+set(GIT_TAG v56.1-centos7)
+
+# Release tag
+
+set(RELEASE_TAG v56.1-centos7)
 
 # Specify where our local package will be installed
 
@@ -39,11 +43,12 @@ if(USE_PREBUILT_ICU_PACKAGE)
     # Retrieve the library's package
 
     retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                          ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 37cf2e70a0e2aa3f3814360e182a45269c7001f6
+                          ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} bc06c8427b1da4da0031e42a5ba1b7c30be78c56
+                          RELEASE_TAG ${RELEASE_TAG}
                           SHA1_FILES ${SHA1_FILES}
-                          SHA1_VALUES 09c48c1e7ecaee2ce66d2214eb791bf14a58ed9c
-                                      8ce5cb893e638bc02060271c0fc2f7cbf0156590
-                                      34be5958abf7a7af5f624893925b60cf069f7c43)
+                          SHA1_VALUES 4941bffe14b2ad7ca226e52d8127d6b151a3c95d
+                                      f767fe82c7f455e9fa5649e8c24577c663ea5d81
+                                      95445c9b3d6156764e842d73704c511d3190046f)
 else()
     # Build ICU as an external project
 
