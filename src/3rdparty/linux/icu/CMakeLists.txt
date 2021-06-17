@@ -43,12 +43,12 @@ if(USE_PREBUILT_ICU_PACKAGE)
     # Retrieve the library's package
 
     retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                          ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} bc06c8427b1da4da0031e42a5ba1b7c30be78c56
+                          ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 76d881d6b30d3bb94be1349d92069fac031a6779
                           RELEASE_TAG ${RELEASE_TAG}
                           SHA1_FILES ${SHA1_FILES}
-                          SHA1_VALUES 4941bffe14b2ad7ca226e52d8127d6b151a3c95d
-                                      f767fe82c7f455e9fa5649e8c24577c663ea5d81
-                                      95445c9b3d6156764e842d73704c511d3190046f)
+                          SHA1_VALUES 54b4e964806b5e3ff3c63f6f03e39e439cf201df
+                                      ac5084b2f0a5db96de3083108963baf94c3da380
+                                      8d843da52202cd08b9301c36ad4e768eead222fd)
 else()
     # Build ICU as an external project
 
@@ -76,6 +76,7 @@ else()
     # Package our external project
 
     create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                        RELEASE_TAG ${RELEASE_TAG}
                         PACKAGED_FILES include lib
                         SHA1_FILES ${SHA1_FILES}
                         TARGET ${PACKAGE_BUILD})
