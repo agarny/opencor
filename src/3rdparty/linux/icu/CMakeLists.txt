@@ -12,7 +12,7 @@ set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.1)
 
 # Git tag for our library
 
-set(GIT_TAG v56.1-centos7)
+set(GIT_TAG v56.1)
 
 # Release tag
 
