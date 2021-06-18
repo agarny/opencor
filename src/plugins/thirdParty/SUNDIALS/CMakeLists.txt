@@ -35,6 +35,10 @@ set(SUNMATRIX_LIBRARY_VERSION ${MAJOR_SUNMATRIX_LIBRARY_VERSION}.7.0)
 
 set(GIT_TAG v5.7.0)
 
+# Release tag
+
+set(RELEASE_TAG v5.7.0-centos7)
+
 # Specify where our local package will be installed
 
 string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
@@ -320,25 +324,26 @@ if(USE_PREBUILT_SUNDIALS_PACKAGE)
                                           9eb8bc9ee9dabaf66ac88dcb64d73a605273ee31)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 804b8aed16886d625cff90c1cd171b75ec760d22
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} d643b518bb0c962774f93827fcd07cbf3e254fea
+                              RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 41b36fdcbd2678d9350585225c08ba9509fd6fc5
-                                          96d06b1854acde2103ed653632dc8d2738da5706
-                                          3317e5795f37be83b9e78c8e307522640ba91e2a
-                                          b049e158d7d67387c6a8527240dca6fe0e8ad3a4
-                                          d0762cf3e56820be313284f6e26595fc9c1b25c0
-                                          0727f2dff4db111025f22ab4a0ca3d45b1778306
-                                          531bcb6ce0cbfc61eb1d69baf1e642276763a2de
-                                          25a1f0b03fa2888cedc0d8a248b070afe0214f85
-                                          65be6ed5a954092320f703e0801214e73b0bfe00
-                                          8a039d4c8cc187c2b13a870b9a30658e2b15018f
-                                          31a7fb0a85bc6b2d285371cc0894153f0b3e11e6
-                                          930472d4ff58381b2d028111d6bb9d53d6763af1
-                                          3c7e358c255cd1d6ab8fece3f90c067995b4b53c
-                                          debc1af47b76cfac4535403c90be437ab2aa0a50
-                                          ba27a9714e1377e6069c046849706384e363211b
-                                          de04eada07f204e8efd017adc31e43834e477024
-                                          b6a0aa287fabb82cb46773be361569c52d0ef3e4)
+                              SHA1_VALUES 2ef61f1f1e17dbf8dd90d7f78abd743ca6e9bcef
+                                          2bd3d0f29dae9521c9722df1d72954d8a1d44dce
+                                          9c1a87143c9ff387888df5e4665099f97c47a8b3
+                                          f90013dc2cdd1a722b66c0b0f52efe1c4994c76c
+                                          39e5cede536fc89458509133458144a23d060814
+                                          a50b99de519409617b42e3b29ff98ef9b4369f6f
+                                          c7dd4055969193125c4fa3d9cef03720ebd92b05
+                                          715c655878599a3e4b0f6fbc3eedd69ef19d6313
+                                          a08ab72d9cdcb2138f908b93dd77286600aefd37
+                                          6991f980bb1c8d5f10deb46f3d58ac1269cee97a
+                                          256effd15ad1206739c74e5168d41af1759b5a35
+                                          50c96ef2e477ae7c4f4234f024f6421b1bb4ccc1
+                                          fb2ecd1a79ff8a7f45f782227a682421179a5f16
+                                          ba569cbde38be88350d00e94ec30bab61721a59e
+                                          22c39b2e65a7fce78f723a3e7aff33cedea17188
+                                          be1cc8a8180b847a1be0a40b4aa4a00076dd5775
+                                          c31fa8a9ab0829ddeb05f3b866f06db7904034ce)
     endif()
 else()
     # Ignore some warnings
@@ -525,6 +530,7 @@ else()
     # Package our external project
 
     create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                        RELEASE_TAG ${RELEASE_TAG}
                         PACKAGED_FILES include ${SHA1_FILES}
                         SHA1_FILES ${SHA1_FILES}
                         TARGET ${PACKAGE_BUILD})
