@@ -14,6 +14,10 @@ set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.0.1)
 
 set(GIT_TAG v2.12.1)
 
+# Release tag
+
+set(RELEASE_TAG v2.12.1-centos7)
+
 # Specify where our local package will be installed
 
 string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
@@ -87,9 +91,10 @@ if(USE_PREBUILT_QSCINTILLA_PACKAGE)
                               SHA1_VALUES 49b8439da99a850eb31bdb48c9d44d1af2c93451)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 9486767d0738e47c7765de8665b51e1abf713f6c
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} cc3382d884715569eee06b57448f768e5a3a3207
+                              RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 455572417164a96240c7d5938ddd1be7b2524dd3)
+                              SHA1_VALUES 46ba232cddc80b7a8706d30a71c9fe0d6fb34cb0)
     endif()
 else()
     # Set platform specific configuration options
@@ -166,6 +171,7 @@ else()
     # Package our external project
 
     create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                        RELEASE_TAG ${RELEASE_TAG}
                         PACKAGED_FILES include ${SHA1_FILES}
                         SHA1_FILES ${SHA1_FILES}
                         TARGET ${PACKAGE_BUILD}
