@@ -17,7 +17,7 @@ set(GIT_TAG v1.1.0-opencor)
 
 # Release tag
 
-set(RELEASE_TAG v1.1.0-opencor)
+set(RELEASE_TAG v1.1.0-opencor-centos7)
 
 # Specify where our local package will be installed
 
@@ -86,10 +86,10 @@ if(USE_PREBUILT_LIBGIT2_PACKAGE)
                               SHA1_VALUES 2bf3a0031d5a6a0528543d7af7698c79c9af7ae9)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} ce1dc4326f39e575d543148ae17032ddd6c01a47
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 537cd9a58cb477344a12370f77ff4c9ceec094c5
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES c3c0ef0c25acdd40dcd68882ed7dc84a8e8a23a7)
+                              SHA1_VALUES 056bee17166532b501438b7b4311212992d645e7)
     endif()
 else()
     # Ignore some warnings
