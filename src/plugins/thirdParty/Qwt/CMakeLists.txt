@@ -14,6 +14,10 @@ set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.1.5)
 
 set(GIT_TAG v6.1.5)
 
+# Release tag
+
+set(RELEASE_TAG v6.1.5-centos7)
+
 # Specify where our local package will be installed
 
 string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
@@ -101,10 +105,11 @@ if(USE_PREBUILT_QWT_PACKAGE)
                                           c5f75ce6480ea2de0f09d833820ef5c3596f248e)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 5ee172c1ac68e68769547df0cac4542c90b1f678
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 9d10bd88dba8dbca51d6d37c0f51871e41987498
+                              RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES c9ce68c39227122df1db28c27dda10f2e7ce9ea4
-                                          49ab4378944896e7dfdecf29d32b6bd0e4cafcd4)
+                              SHA1_VALUES 04d95df013ef552cf128be91b5c49f2f49aa1749
+                                          6871bd2d3d5b4df17abd767009bd9868322b2016)
     endif()
 else()
     # Set platform specific configuration options
@@ -194,6 +199,7 @@ else()
     # Package our external project
 
     create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                        RELEASE_TAG ${RELEASE_TAG}
                         PACKAGED_FILES include ${SHA1_FILES}
                         SHA1_FILES ${SHA1_FILES}
                         TARGET ${PACKAGE_BUILD}
