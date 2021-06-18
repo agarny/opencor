@@ -14,9 +14,10 @@ set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.1.4)
 
 set(GIT_TAG v1.1.4)
 
-# Package repository
+# Package repository and release tags
 
 set(PACKAGE_REPOSITORY NuML)
+set(RELEASE_TAG v1.1.4-centos7)
 
 # Specify where our local package will be installed
 
@@ -82,10 +83,11 @@ if(USE_PREBUILT_LIBNUML_PACKAGE)
                               SHA1_VALUES f39b6a01e5cf3dba2f679507577357cfcf1707fb)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} d6e144496043bd9916a85d998bbf3f97d4b95991
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} d2d638aef7f34cc7550ef9212175a781f9b88840
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
+                              RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 92b1e91be089a379b08b3df683bc965604450dd4)
+                              SHA1_VALUES ef590fa9f8b9d0619b8c4b661d1aef70fef4ded2)
     endif()
 else()
     # Build libNuML as an external project
@@ -155,6 +157,7 @@ else()
 
     create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
                         PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
+                        RELEASE_TAG ${RELEASE_TAG}
                         PACKAGED_FILES include ${SHA1_FILES}
                         SHA1_FILES ${SHA1_FILES}
                         TARGET ${PACKAGE_BUILD})
