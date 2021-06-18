@@ -41,7 +41,7 @@ set(GIT_TAG 1.12)
 # Package repository and release tags
 
 set(PACKAGE_REPOSITORY cellml-api)
-set(RELEASE_TAG 1.12)
+set(RELEASE_TAG 1.12-centos7)
 
 # Specify where our local package will be installed
 
@@ -222,19 +222,19 @@ if(USE_PREBUILT_CELLMLAPI_PACKAGE)
                                           6436271e06982312e90ed9967d381318b9ab31f3)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 62f4f9e61fe1c9dfadbfbeb324f81eb618d1e104
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 0ac645c7b14e9592446acace2ee7b4eeded5b181
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES bba7a197e467e2d0f456b689ba4ac61d0d691ba9
-                                          a63ccaa2653827c48ae2f0dd09cb1cc68367c98d
-                                          c374ec9d91e7a3ca58ada73d91302bb77c5b1f1c
-                                          22b6e5ed021ae004712c3f8cd06f9f3a01b2d6b5
-                                          d79e131d044122c70d284416fdcdb310bc3c748a
-                                          2c883f78053574d23f3717d0349baa7a8f3f0d17
-                                          6242794b4069e6072275455619244eeccd4c2c7a
-                                          f078565570e72e36feea1b26258ccf3582c95cf4
-                                          9ca52e05bb6772b8e01d650648c4c09045a21946)
+                              SHA1_VALUES f1a81c0e0e0ae22bcb6918953a4ef0f7cdd34a42
+                                          ca297c7026e7803974e7a0a7b09ebfe3451d8c3f
+                                          f9a65fe023c6e02ffd18a33002d04233600c8c03
+                                          91c0ebbe958bbb30acf3d096eb0ecc89b2b08363
+                                          87173ddf1e648ea9830ca01896e5ba154fc69417
+                                          031b2cb2ac17d8c6f8e87a17fcc9309a905e4f6b
+                                          049e9111e3cee8be3ded3882509ca6747b9dbc1a
+                                          3fc73c1cc21efa9d3e7878be6028081e72771f29
+                                          9d909beb142559d64b35eac931f3706146272069)
     endif()
 else()
     # Set some compilation flags and/or ignore some warnings
@@ -243,7 +243,7 @@ else()
         set(PACKAGE_C_FLAGS "${CMAKE_C_FLAGS} /wd4005 /wd4244 /wd4267 /wd4311 /wd4312")
         set(PACKAGE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244 /wd4267 /wd4309 /wd4477 /wd4530 /wd4577")
     elseif(NOT APPLE)
-        set(PACKAGE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wno-deprecated -Wno-misleading-indentation -Wno-reorder -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable")
+        set(PACKAGE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wno-catch-value -Wno-deprecated -Wno-misleading-indentation -Wno-pessimizing-move -Wno-reorder -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable")
     endif()
 
     # Build the CellML API as an external project
