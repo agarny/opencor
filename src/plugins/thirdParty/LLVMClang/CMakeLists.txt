@@ -14,6 +14,10 @@ set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.0.0)
 
 set(GIT_TAG v12.0.0)
 
+# Release tag
+
+set(RELEASE_TAG v12.0.0-centos7)
+
 # Specify where our local package will be installed
 
 string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
@@ -75,9 +79,10 @@ if(USE_PREBUILT_LLVMCLANG_PACKAGE)
                               SHA1_VALUES 730a63044bf0ba0734cc5fcece0229419a0d7384)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} e350de937fa02d80b85b49aac0df0177502efcdb
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 16fe87ceef03ed6d1b2521a35b6f7d40a6f0496c
+                              RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 00a2579d3ca3bedb67f744d09c30910fb55e949c)
+                              SHA1_VALUES 47a14b357d1dc3e2edaa6cd525dd287ead3895d7)
     endif()
 else()
     # Allow for big objects and ignore some warnings
@@ -147,6 +152,7 @@ else()
     # Package our external project
 
     create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                        RELEASE_TAG ${RELEASE_TAG}
                         PACKAGED_FILES include ${SHA1_FILES}
                         SHA1_FILES ${SHA1_FILES}
                         TARGET ${PACKAGE_BUILD})
