@@ -14,9 +14,10 @@ set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.4.4)
 
 set(GIT_TAG 0.4.4)
 
-# Package repository
+# Package repository and release tags
 
 set(PACKAGE_REPOSITORY libSEDML)
+set(RELEASE_TAG v0.4.4-centos7)
 
 # Specify where our local package will be installed
 
@@ -82,10 +83,11 @@ if(USE_PREBUILT_LIBSEDML_PACKAGE)
                               SHA1_VALUES cbac855943b834817a33c0f619afb9379098e777)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} e7eee27dd9797404650e9fa7efd060db1ca81c0f
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 51943410503f4c876a4d13356f829b53e3f7d424
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
+                              RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 81fd13a50eab84d6acaf1562bb515aa055638a5d)
+                              SHA1_VALUES e3ca92ce28c99800004277b1c730db8144fd6c12)
     endif()
 else()
     # Build libSEDML as an external project
@@ -158,6 +160,7 @@ else()
 
     create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
                         PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
+                        RELEASE_TAG ${RELEASE_TAG}
                         PACKAGED_FILES include ${SHA1_FILES}
                         SHA1_FILES ${SHA1_FILES}
                         TARGET ${PACKAGE_BUILD})
