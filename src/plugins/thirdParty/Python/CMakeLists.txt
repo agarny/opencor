@@ -9,9 +9,10 @@ set(PACKAGE_VERSION 3.7.5)
 
 set(GIT_TAG opencor-3.7.5)
 
-# Package repository tag
+# Package repository and release tags
 
 set(PACKAGE_REPOSITORY python)
+set(RELEASE_TAG v3.7.5-centos7)
 
 # Version of our library
 
@@ -244,14 +245,15 @@ if(USE_PREBUILT_PYTHON_PACKAGE)
                                           0984ed1d0834eb67b3a2f2b39589663dd020d19a)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 0982331f1719017596c28e010cc5b46825346d99
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} cc5c61ac60761e5eef95a569bb2e60b2c53f3778
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
+                              RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 50b47e10df44209b3e78f145350a2e1e35b960f7
-                                          920daa60a973fbc24cc05f7ad12ee90dd9e69a56
-                                          ee42ca256c6feb7412c37313e1935d2e31a0a1de
-                                          d850f87b53d12db9434476fa84977e69c8ceb243
-                                          38161dee3a32f4b3a70ffa997aa42c9c8a8b2aa3)
+                              SHA1_VALUES a8776201f0fb0d63682f6918b22e2c385f1bea8f
+                                          1cc8a4415a7bdee1ae1a9f776c064ae75d4b42d1
+                                          03386df9acf4b0c11ae22387be42a9ab1ee4f99d
+                                          20d58494104412602d67a1ea1d8cc52fbd775617
+                                          0017db8b4b929ed1546c36324d81bef62a163c06)
     endif()
 else()
     # Set platform-specific configuration options
@@ -604,6 +606,7 @@ else()
 
     create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
                         PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
+                        RELEASE_TAG ${RELEASE_TAG}
                         PACKAGED_FILES ${PACKAGED_FILES}
                         SHA1_FILES ${SHA1_FILES}
                         TARGET ${PACKAGE_BUILD})
