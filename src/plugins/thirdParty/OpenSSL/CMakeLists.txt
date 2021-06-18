@@ -19,7 +19,7 @@ set(GIT_TAG OpenSSL_1_1_1k)
 
 # Release tag
 
-set(RELEASE_TAG OpenSSL_1_1_1k)
+set(RELEASE_TAG OpenSSL_1_1_1k-centos7)
 
 # Specify where our local package will be installed
 
@@ -114,11 +114,11 @@ if(USE_PREBUILT_OPENSSL_PACKAGE)
                                           00afa273c9242fdc32a614ae7e1f4c5ac0c294c5)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 5132d09ae5c5e7194b055307285d08dfba9a1036
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} a4b581c132c45f85fc169c4f07aee7837c72e110
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES f6b8243469ed0dbcda08b10f7616c25944a6631e
-                                          24da4d03d04b4ca46759c8f5a026905e17c70ea1)
+                              SHA1_VALUES 567752b097a8103a94a947ef3230c53c7444f217
+                                          4e95d62ff7b616846f1646a2e64fcfdc92318647)
     endif()
 else()
     # We require Perl to build OpenSSL
