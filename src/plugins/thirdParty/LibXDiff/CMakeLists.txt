@@ -14,6 +14,10 @@ set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.23)
 
 set(GIT_TAG v0.23)
 
+# Release tag
+
+set(RELEASE_TAG v0.23-centos7)
+
 # Specify where our local package will be installed
 
 string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
@@ -75,9 +79,10 @@ if(USE_PREBUILT_LIBXDIFF_PACKAGE)
                               SHA1_VALUES d74f9864f2a173f076740486482f753e5604ab90)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 5ddc9aebee50d09abfb1f5b1f486050cce6abcfe
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} b0534fd9fbe915e2e45ef4e1161a3f89d915f92e
+                              RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 0f402c516a226632106cceeda8f0c7fbf8cccd8d)
+                              SHA1_VALUES b7e2043286980bb23d79a11c1862b7c58fb4ab36)
     endif()
 else()
     # Ignore some warnings
@@ -135,6 +140,7 @@ else()
     # Package our external project
 
     create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                        RELEASE_TAG ${RELEASE_TAG}
                         PACKAGED_FILES include ${SHA1_FILES}
                         SHA1_FILES ${SHA1_FILES}
                         TARGET ${PACKAGE_BUILD})
