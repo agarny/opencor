@@ -20,7 +20,7 @@ set(GIT_TAG_ZLIB v1.2.11)
 
 # Release tag
 
-set(RELEASE_TAG v5.12.0)
+set(RELEASE_TAG v5.12.0-centos7)
 
 # Specify where our local package will be installed
 
@@ -130,11 +130,11 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
                                           cbace54abac7c6df21d1c0f8a2e00fc9a0c9a696)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} bba1e82441095e952716b247ce280dd51721bb22
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 9f3c58551f4498734778e01bb8e6ab4642b35638
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 687d5b9d508ed450315cc8b93dfb269696921ebe
-                                          91fd09d27e4e80cf6ac6e60a6263abb09e690989)
+                              SHA1_VALUES d85aa1188b05de97513d8008a950edd3ba805225
+                                          fdf551e1f536edac94a7aaec711a3a67b69f3549)
     endif()
 else()
     # Build JPEG, PNG and ZLIB as external projects, if on Linux or macOS
