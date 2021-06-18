@@ -14,9 +14,10 @@ set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.19.0)
 
 set(GIT_TAG v5.19.0)
 
-# Package repository
+# Package repository and release tags
 
 set(PACKAGE_REPOSITORY libsbml)
+set(RELEASE_TAG v5.19.0-centos7)
 
 # Specify where our local package will be installed
 
@@ -82,10 +83,11 @@ if(USE_PREBUILT_LIBSBML_PACKAGE)
                               SHA1_VALUES c917dd10671822b851c73fa34c3ece15dfd24ab6)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} e27ea428b40a2e5187264e4cd131af7b3b5c3346
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 78e3098ce3c46bdab73796f138928ee215d561a5
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
+                              RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES df5d322aaf83965ae599a2d7aefca5ca33f027d4)
+                              SHA1_VALUES 0a2814cb28b4c5d5209bae2783241a2b77ca7b34)
     endif()
 else()
     # Download some dependencies for Windows, if needed
@@ -195,6 +197,7 @@ else()
 
     create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
                         PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
+                        RELEASE_TAG ${RELEASE_TAG}
                         PACKAGED_FILES include ${SHA1_FILES}
                         SHA1_FILES ${SHA1_FILES}
                         TARGET ${PACKAGE_BUILD})
