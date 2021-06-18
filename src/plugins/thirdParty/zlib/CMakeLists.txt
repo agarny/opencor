@@ -14,6 +14,10 @@ set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.2.11)
 
 set(GIT_TAG v1.2.11)
 
+# Release tag
+
+set(RELEASE_TAG v1.2.11-centos7)
+
 # Specify where our local package will be installed
 
 string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
@@ -81,9 +85,10 @@ if(USE_PREBUILT_ZLIB_PACKAGE)
                               SHA1_VALUES 078be4cd94765d3bd18cf2a8cc3ac6d3a3fc1058)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 31a17a86ec78a19bae8df80a1a1a69dae990a710
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 865abbb3add5469c7174369100498d1fb32956c6
+                              RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 112f25f4f4b2a9c4e223970851e3392182d06ef8)
+                              SHA1_VALUES 4981539d637482cdd717f5dbfa14a96ceea27a20)
     endif()
 else()
     # Ignore some warnings
@@ -141,6 +146,7 @@ else()
     # Package our external project
 
     create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                        RELEASE_TAG ${RELEASE_TAG}
                         PACKAGED_FILES include ${SHA1_FILES}
                         SHA1_FILES ${SHA1_FILES}
                         TARGET ${PACKAGE_BUILD})
