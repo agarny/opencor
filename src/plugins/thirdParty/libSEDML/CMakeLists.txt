@@ -83,7 +83,7 @@ if(USE_PREBUILT_LIBSEDML_PACKAGE)
                               SHA1_VALUES cbac855943b834817a33c0f619afb9379098e777)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 51943410503f4c876a4d13356f829b53e3f7d424
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 8e26e75982a3bc680f30c5deb1ee1f66d3e64e9f
                               PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
