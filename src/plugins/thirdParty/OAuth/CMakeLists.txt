@@ -16,7 +16,7 @@ set(GIT_TAG 1.0.1b)
 
 # Release tag
 
-set(RELEASE_TAG 1.0.1b)
+set(RELEASE_TAG 1.0.1b-centos7)
 
 # Specify where our local package will be installed
 
@@ -82,10 +82,10 @@ if(USE_PREBUILT_OAUTH_PACKAGE)
                               SHA1_VALUES 922108ebdaf0411e18aa4c388e68ec52439b2ee4)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 306865920c09701db8b6d6ba68d5506c85d27588
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} b64b9deda79c743476642316f1bfeb25f0959dc1
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES da4be265eb87ee21f2164c03cf79e834d11f5350)
+                              SHA1_VALUES 8f2ab725a75a270652cb540b45033339c7cf047d)
     endif()
 else()
     # Ignore some warnings
