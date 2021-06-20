@@ -140,7 +140,7 @@ else()
     set(SUNMATRIXDENSE_SHARED_LIBRARY ${CMAKE_SHARED_LIBRARY_PREFIX}sundials_sunmatrixdense${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${MAJOR_SUNMATRIX_LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST})
     set(SUNMATRIXDENSE_IMPORT_LIBRARY ${SUNMATRIXDENSE_SHARED_LIBRARY})
 
-    set(SUNMATRIXSPARSE_SHARED_LIBRARY ${CMAKE_SHARED_LIBRARY_PREFIX}sundials_sunmatrixsparse${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${SUNMATRIX_LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST})
+    set(SUNMATRIXSPARSE_SHARED_LIBRARY ${CMAKE_SHARED_LIBRARY_PREFIX}sundials_sunmatrixsparse${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${MAJOR_SUNMATRIX_LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST})
     set(SUNMATRIXSPARSE_IMPORT_LIBRARY ${SUNMATRIXSPARSE_SHARED_LIBRARY})
 
     set(SUNNONLINSOLFIXEDPOINT_SHARED_LIBRARY ${CMAKE_SHARED_LIBRARY_PREFIX}sundials_sunnonlinsolfixedpoint${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${SUNNONLINSOL_LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST})
@@ -324,7 +324,7 @@ if(USE_PREBUILT_SUNDIALS_PACKAGE)
                                           9eb8bc9ee9dabaf66ac88dcb64d73a605273ee31)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 4ff2cf383d62f8933bdad6fc1e1ed801db3f5cf6
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 81a5685a1a192c321eaf2ddccbc6ec9add597d10
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
                               SHA1_VALUES 2ef61f1f1e17dbf8dd90d7f78abd743ca6e9bcef
@@ -400,6 +400,69 @@ else()
             <INSTALL_DIR>/lib/${SUNMATRIXDENSE_IMPORT_LIBRARY}
             <INSTALL_DIR>/lib/${SUNMATRIXSPARSE_IMPORT_LIBRARY}
     )
+
+    # Do some post-processing that is specific to each platform
+
+    if(NOT WIN32)
+        # Dereference the symbolic link to the libraries since CMake's tar can't
+        # do this
+
+        ExternalProject_Add_Step(${PACKAGE_BUILD} copyArkodeLibrary
+                                 COMMAND ${CMAKE_COMMAND} -E remove -f ${ARKODE_SHARED_LIBRARY}
+                                 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SHARED_LIBRARY_PREFIX}sundials_arkode${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${ARKODE_LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST}
+                                                                  ${ARKODE_SHARED_LIBRARY}
+                                 WORKING_DIRECTORY ${EXTERNAL_BINARIES_DIR}
+                                 DEPENDEES install)
+
+        ExternalProject_Add_Step(${PACKAGE_BUILD} copyCvodesLibrary
+                                 COMMAND ${CMAKE_COMMAND} -E remove -f ${CVODES_SHARED_LIBRARY}
+                                 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SHARED_LIBRARY_PREFIX}sundials_cvodes${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${CVODES_LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST}
+                                                                  ${CVODES_SHARED_LIBRARY}
+                                 WORKING_DIRECTORY ${EXTERNAL_BINARIES_DIR}
+                                 DEPENDEES install)
+
+        ExternalProject_Add_Step(${PACKAGE_BUILD} copyIdasLibrary
+                                 COMMAND ${CMAKE_COMMAND} -E remove -f ${IDAS_SHARED_LIBRARY}
+                                 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SHARED_LIBRARY_PREFIX}sundials_idas${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${IDAS_LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST}
+                                                                  ${IDAS_SHARED_LIBRARY}
+                                 WORKING_DIRECTORY ${EXTERNAL_BINARIES_DIR}
+                                 DEPENDEES install)
+
+        ExternalProject_Add_Step(${PACKAGE_BUILD} copyKinsolLibrary
+                                 COMMAND ${CMAKE_COMMAND} -E remove -f ${KINSOL_SHARED_LIBRARY}
+                                 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SHARED_LIBRARY_PREFIX}sundials_kinsol${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${KINSOL_LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST}
+                                                                  ${KINSOL_SHARED_LIBRARY}
+                                 WORKING_DIRECTORY ${EXTERNAL_BINARIES_DIR}
+                                 DEPENDEES install)
+
+        ExternalProject_Add_Step(${PACKAGE_BUILD} copyNvecserialLibrary
+                                 COMMAND ${CMAKE_COMMAND} -E remove -f ${NVECSERIAL_SHARED_LIBRARY}
+                                 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SHARED_LIBRARY_PREFIX}sundials_nvecserial${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${NVEC_LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST}
+                                                                  ${NVECSERIAL_SHARED_LIBRARY}
+                                 WORKING_DIRECTORY ${EXTERNAL_BINARIES_DIR}
+                                 DEPENDEES install)
+
+        ExternalProject_Add_Step(${PACKAGE_BUILD} copySunmatrixbandLibrary
+                                 COMMAND ${CMAKE_COMMAND} -E remove -f ${SUNMATRIXBAND_SHARED_LIBRARY}
+                                 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SHARED_LIBRARY_PREFIX}sundials_sunmatrixband${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${SUNMATRIX_LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST}
+                                                                  ${SUNMATRIXBAND_SHARED_LIBRARY}
+                                 WORKING_DIRECTORY ${EXTERNAL_BINARIES_DIR}
+                                 DEPENDEES install)
+
+        ExternalProject_Add_Step(${PACKAGE_BUILD} copySunmatrixdenseLibrary
+                                 COMMAND ${CMAKE_COMMAND} -E remove -f ${SUNMATRIXDENSE_SHARED_LIBRARY}
+                                 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SHARED_LIBRARY_PREFIX}sundials_sunmatrixdense${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${SUNMATRIX_LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST}
+                                                                  ${SUNMATRIXDENSE_SHARED_LIBRARY}
+                                 WORKING_DIRECTORY ${EXTERNAL_BINARIES_DIR}
+                                 DEPENDEES install)
+
+        ExternalProject_Add_Step(${PACKAGE_BUILD} copySunmatrixsparseLibrary
+                                 COMMAND ${CMAKE_COMMAND} -E remove -f ${SUNMATRIXSPARSE_SHARED_LIBRARY}
+                                 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SHARED_LIBRARY_PREFIX}sundials_sunmatrixsparse${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${SUNMATRIX_LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST}
+                                                                  ${SUNMATRIXSPARSE_SHARED_LIBRARY}
+                                 WORKING_DIRECTORY ${EXTERNAL_BINARIES_DIR}
+                                 DEPENDEES install)
+    endif()
 
     # Package our external project
 
