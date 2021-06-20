@@ -68,7 +68,7 @@ else()
     if(APPLE)
         set(SHARED_LIBRARIES_DIR lib)
     else()
-        set(SHARED_LIBRARIES_DIR lib/x86_64-linux-gnu)
+        set(SHARED_LIBRARIES_DIR lib64)
     endif()
 
     set(IMPORT_LIBRARIES_DIR ${SHARED_LIBRARIES_DIR})
@@ -130,10 +130,10 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
                                           cbace54abac7c6df21d1c0f8a2e00fc9a0c9a696)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 9f3c58551f4498734778e01bb8e6ab4642b35638
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} fb630b70239c97eeceef0f98ee8103e2917ba54a
                               RELEASE_TAG ${RELEASE_TAG}
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES d85aa1188b05de97513d8008a950edd3ba805225
+                              SHA1_VALUES 42e2b5005b04f9981f2347a3ed4db18ac6aec952
                                           fdf551e1f536edac94a7aaec711a3a67b69f3549)
     endif()
 else()
@@ -144,7 +144,7 @@ else()
 
         # JPEG
 
-        set(LIBJPEG_STATIC_LIBRARY ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/lib/libturbojpeg${CMAKE_STATIC_LIBRARY_SUFFIX})
+        set(LIBJPEG_STATIC_LIBRARY ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/lib64/libturbojpeg${CMAKE_STATIC_LIBRARY_SUFFIX})
 
         ExternalProject_Add(libjpegBuild
             SOURCE_DIR
@@ -168,7 +168,7 @@ else()
 
         # PNG
 
-        set(LIBPNG_STATIC_LIBRARY ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/lib/libpng16${CMAKE_STATIC_LIBRARY_SUFFIX})
+        set(LIBPNG_STATIC_LIBRARY ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/lib64/libpng16${CMAKE_STATIC_LIBRARY_SUFFIX})
 
         ExternalProject_Add(libpngBuild
             SOURCE_DIR
