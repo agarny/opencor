@@ -1506,12 +1506,12 @@ else()
     install(FILES ${MESA_LIBRARY}
             DESTINATION lib)
 
-    # Library needed by Qt, but not present on Ubuntu 20.04 LTS and later
+    # Library needed on CentOS 7
 
-    foreach(LIBRARY tinfo.so.5)
+    foreach(LIBRARY stdc++.so.6)
         set(FULL_LIBRARY ${CMAKE_SHARED_LIBRARY_PREFIX}${LIBRARY})
 
-        get_filename_component(REAL_FULL_LIBRARY /lib/x86_64-linux-gnu/${FULL_LIBRARY} REALPATH)
+        get_filename_component(REAL_FULL_LIBRARY /usr/local/lib64/${FULL_LIBRARY} REALPATH)
 
         install(FILES ${REAL_FULL_LIBRARY}
                 DESTINATION lib
