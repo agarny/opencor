@@ -3,16 +3,16 @@ project(LLVMClangPlugin)
 # Name and version of our package
 
 set(PACKAGE_NAME LLVMClang)
-set(PACKAGE_VERSION 11.0.0)
+set(PACKAGE_VERSION 12.0.0)
 
 # Version of our library
 
-set(MAJOR_LIBRARY_VERSION 11)
+set(MAJOR_LIBRARY_VERSION 12)
 set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.0.0)
 
 # Git tag for our library
 
-set(GIT_TAG v11.0.0)
+set(GIT_TAG v12.0.0)
 
 # Specify where our local package will be installed
 
@@ -57,27 +57,27 @@ if(USE_PREBUILT_LLVMCLANG_PACKAGE)
     if(WIN32)
         if(RELEASE_MODE)
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} d0cf5666a8db7feb6122fc7bf8b45fd9359e09da
+                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} ed82257c05796e6d9eba1bd696d14427d40d2a87
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES e4056001ab75f17e9ab57f2b106bf3a9da7566b4
-                                              4adac8a5ffaac57e8abc4ad9db7050fd7f55252b)
+                                  SHA1_VALUES 83496be750265ec150cd130ec5abe055b542463e
+                                              799be50704e088e602bf8e2ccffeb92593132fc4)
         else()
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 649ff30fccf8302f9e5238e09a9b2e5388267fe6
+                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 6927384d0456e8bc5e4508b81620d11ba4a4f752
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES aa8a0e7e65d13f6a8e24352d18e80d8243ebc7b4
-                                              8c3ea3520af92030a911bc08d6dfe28ed7c11465)
+                                  SHA1_VALUES f7c6a3288d49d844b30a4f4f6d1c8cf158231004
+                                              63e71c681f8df925bfb630b08e2baac6916c36a8)
         endif()
     elseif(APPLE)
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 8c692cc68ce70182cf2df70f4ce194611ea59f33
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} f525ec8f5e0a6e09478d1ad40ff4663b4a75c76d
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 0d0c1d0b8040d6e9fe371553726f6bbb3da28048)
+                              SHA1_VALUES 730a63044bf0ba0734cc5fcece0229419a0d7384)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 6f2aa312c360c0c9a38e2fe2590d0d9b5dedd3d8
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} e350de937fa02d80b85b49aac0df0177502efcdb
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES b1941f64a576991d0e70db0477393e5ea750976b)
+                              SHA1_VALUES 00a2579d3ca3bedb67f744d09c30910fb55e949c)
     endif()
 else()
     # Allow for big objects and ignore some warnings
@@ -130,6 +130,7 @@ else()
             -DLLVM_ENABLE_PLUGINS=OFF
             -DLLVM_ENABLE_TERMINFO=OFF
             -DLLVM_ENABLE_WARNINGS=OFF
+            -DLLVM_ENABLE_ZLIB=OFF
             -DLLVM_INCLUDE_BENCHMARKS=OFF
             -DLLVM_INCLUDE_DOCS=OFF
             -DLLVM_INCLUDE_EXAMPLES=OFF

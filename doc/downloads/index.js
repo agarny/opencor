@@ -18,7 +18,7 @@ var jsonData = { "versions": [
                        }
                      ]
                    },
-                   { "major": 0, "minor": 0, "patch": 0, "day": 13, "month": 1, "year": 2021, "type": 2, "license": 2,
+                   { "major": 0, "minor": 0, "patch": 0, "day": 19, "month": 5, "year": 2021, "type": 2, "license": 2,
                      "platforms": [
                        { "name": "Windows", "supported": "Windows 10",
                          "files": [
@@ -37,10 +37,11 @@ var jsonData = { "versions": [
                        }
                      ],
                      "changes": [
-                       { "change": "<strong>General:</strong> all the widgets in a tool bar are now visible in the corresponding context menu (see issue <a href=\"https://github.com/opencor/opencor/issues/2395\">#2395</a>). Officially support <a href=\"https://en.wikipedia.org/wiki/Ubuntu_version_history#Ubuntu_20.04_LTS_(Focal_Fossa)\">Ubuntu 20.04 LTS</a> (see issues <a href=\"https://github.com/opencor/opencor/issues/2423\">#2423</a> and <a href=\"https://github.com/opencor/opencor/issues/2436\">#2436</a>)." },
-                       { "change": "<strong>Tab Bar widget:</strong> fixed a small problem with using the mouse wheel to switch tabs (see issue <a href=\"https://github.com/opencor/opencor/issues/2427\">#2427</a>)." },
-                       { "change": "<strong>Third-party libraries:</strong> upgraded <a href=\"http://qwt.sourceforge.net/\">Qwt</a> to version 6.1.5 (see issue <a href=\"https://github.com/opencor/opencor/issues/2365\">#2365</a>). Upgraded <a href=\"https://mesa3d.org/\">Mesa</a> to version 20.0.7 (see issue <a href=\"https://github.com/opencor/opencor/issues/2342\">#2342</a>). Upgraded <a href=\"https://llvm.org/\">LLVM</a>+<a href=\"https://clang.llvm.org/\">Clang</a> to version 11.0.0 (see issue <a href=\"https://github.com/opencor/opencor/issues/2410\">#2410</a>). Upgraded <a href=\"https://libgit2.github.com/\">libgit2</a> to version 1.1.0 (see issue <a href=\"https://github.com/opencor/opencor/issues/2414\">#2414</a>). Upgraded <a href=\"https://riverbankcomputing.com/software/qscintilla/intro\">QScintilla</a> to version 2.11.6 (see issue <a href=\"https://github.com/opencor/opencor/issues/2424\">#2424</a>). Upgraded <a href=\"http://sbml.org/Software/libSBML/\">libSBML</a> to version 5.19.0 (see issue <a href=\"https://github.com/opencor/opencor/issues/2425\">#2425</a>). Upgraded <a href=\"https://openssl.org/\">OpenSSL</a> to version 1.1.1i (see issue <a href=\"https://github.com/opencor/opencor/issues/2430\">#2430</a>). Upgraded <a href=\"https://computation.llnl.gov/projects/sundials\">SUNDIALS</a> to version 5.6.1 (see issue <a href=\"https://github.com/opencor/opencor/issues/2431\">#2431</a>)." }
-                     ]
+                      { "change": "<strong>General:</strong> improved the quality of our codebase (see issue <a href=\"https://github.com/opencor/opencor/issues/2499\">#2499</a>)." },
+                      { "change": "<strong>Python support:</strong> improved error handling (see issue <a href=\"https://github.com/opencor/opencor/issues/2493\">#2493</a>). Provided a script to run <a href=\"https://ipython.org/\">IPython</a> (see issue <a href=\"https://github.com/opencor/opencor/issues/2486\">#2486</a>)." },
+                      { "change": "<strong>Simulation Experiment view:</strong> prevent a potential crash on <a href=\"https://en.wikipedia.org/wiki/Microsoft_Windows\">Windows</a> when clearing all simulation results (see issue <a href=\"https://github.com/opencor/opencor/issues/2497\">#2497</a>)." },
+                      { "change": "<strong>Third-party libraries:</strong> upgraded <a href=\"http://qwt.sourceforge.net/\">Qwt</a> to version 6.1.6 (see issue <a href=\"https://github.com/opencor/opencor/issues/2483\">#2483</a>). Upgraded <a href=\"https://katex.org/\">KaTeX</a> to version 0.13.11 (see issue <a href=\"https://github.com/opencor/opencor/issues/2504\">#2504</a>). Upgraded <a href=\"https://riverbankcomputing.com/software/qscintilla/intro\">QScintilla</a> to version 2.13.0 (see issue <a href=\"https://github.com/opencor/opencor/issues/2503\">#2503</a>)." }
+                    ]
                    },
                    { "major": 0, "minor": 5, "patch": 0, "day": 15, "month": 10, "year": 2016, "type": 0, "license": 1,
                      "platforms": [

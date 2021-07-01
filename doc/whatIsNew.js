@@ -1,8 +1,9 @@
 var jsonData = { "versions": [
-                   { "anchor": "latest", "description": "Latest snapshot", "day": 13, "month": 1, "year": 2021,
+                   { "anchor": "latest", "description": "Latest snapshot", "day": 19, "month": 5, "year": 2021,
                      "categories": [
                        { "name": "General",
                          "entries": [
+                           { "type": "improved", "description": "Support for <a href=\"https://en.wikipedia.org/wiki/Microsoft_Windows\">Windows</a>." },
                            { "type": "improved", "description": "Rendering of the <a href=\"https://en.wikipedia.org/wiki/Graphical_user_interface\">GUI</a>." },
                            { "type": "improved", "description": "Plugin framework." },
                            { "type": "added", "description": "Support for <a href=\"https://python.org/\">Python</a>." }
@@ -50,6 +51,7 @@ var jsonData = { "versions": [
                                { "type": "improved", "description": "Plotting of simulations." },
                                { "type": "fixed", "description": "Issue with handling the Graph Panel properties." },
                                { "type": "fixed", "description": "Various issues with saving a file under a new name." },
+                               { "type": "fixed", "description": "Potential issue with clearing simulation results on <a href=\"https://en.wikipedia.org/wiki/Microsoft_Windows\">Windows</a>." },
                                { "type": "fixed", "description": "Issue with reopening a remote <a href=\"https://cellml.org/\">CellML</a> file from a <a href=\"https://sed-ml.github.io/\">SED-ML</a> file." },
                                { "type": "fixed", "description": "Issue with a <a href=\"https://sed-ml.github.io/\">SED-ML</a> file / <a href=\"https://co.mbine.org/documents/archive\">COMBINE archive</a> not necessarily saving all of a solver's properties." },
                                { "type": "fixed", "description": "Issue with a <a href=\"https://sed-ml.github.io/\">SED-ML</a> file / <a href=\"https://co.mbine.org/documents/archive\">COMBINE archive</a> being considered modified after changing languages." }
@@ -87,7 +89,8 @@ var jsonData = { "versions": [
                          "entries": [
                            { "type": "subCategory", "name": "CellML tools",
                              "entries": [
-                               { "type": "added", "description": "Validation of a <a href=\"https://cellml.org/\">CellML</a> file from the <a href=\"https://en.wikipedia.org/wiki/Command-line_interface\">CLI</a>." }
+                               { "type": "added", "description": "Validation of a <a href=\"https://cellml.org/\">CellML</a> file from the <a href=\"https://en.wikipedia.org/wiki/Command-line_interface\">CLI</a>." },
+                               { "type": "fixed", "description": "Export of a <a href=\"https://cellml.org/\">CellML</a> 1.1 model with e-notation based numbers to <a href=\"https://cellml.org/\">CellML</a> 1.0." }
                              ]
                            }
                          ]

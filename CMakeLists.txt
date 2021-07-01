@@ -11,8 +11,8 @@ if(WIN32)
     find_program(C_COMPILER cl)
     find_program(CXX_COMPILER cl)
 else()
-    find_program(C_COMPILER cc)
-    find_program(CXX_COMPILER c++)
+    find_program(C_COMPILER gcc)
+    find_program(CXX_COMPILER g++)
 endif()
 
 set(ENV{CC} ${C_COMPILER})
@@ -165,7 +165,7 @@ else()
         set(INCLUDE_ARGUMENT -I ${CMAKE_OSX_SYSROOT}/usr/include)
     endif()
 
-    execute_process(COMMAND ${C_COMPILER} -O3 ${INCLUDE_ARGUMENT} -o ${SILENTRUN} ${PROJECT_SOURCE_DIR}/cmake/silentrun.c
+    execute_process(COMMAND ${C_COMPILER} -std=c99 -O3 ${INCLUDE_ARGUMENT} -o ${SILENTRUN} ${PROJECT_SOURCE_DIR}/cmake/silentrun.c
                     RESULT_VARIABLE RESULT OUTPUT_QUIET ERROR_QUIET)
 endif()
 
@@ -1369,7 +1369,7 @@ if(WIN32)
     install(DIRECTORY ${PROJECT_BUILD_DIR}/Python
             DESTINATION .)
 
-    # Batch files to setup and run Python and Jupyter
+    # Batch files to setup and run Python, IPython and Jupyter
     # Note: on Windows, it's technically very difficult, if not impossible, to
     #       get a debug version of any of our Jupyter-related scripts, so we
     #       skip them in that case (see
@@ -1377,22 +1377,30 @@ if(WIN32)
 
     if(PYTHON_SUPPORT)
         if(RELEASE_MODE)
+            copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPT_DIR} runipython.bat)
             copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPT_DIR} runjupyter.bat)
+            copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPT_DIR} start_ipython.py)
             copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPT_DIR} start_jupyter.py)
 
-            install(FILES ${PLATFORM_DISTRIB_DIR}/runjupyter.bat
+            install(FILES ${PLATFORM_DISTRIB_DIR}/runipython.bat
+                          ${PLATFORM_DISTRIB_DIR}/runjupyter.bat
+                          ${PLATFORM_DISTRIB_DIR}/start_ipython.py
                           ${PLATFORM_DISTRIB_DIR}/start_jupyter.py
                     DESTINATION ${RELATIVE_PYTHON_SCRIPT_DIR})
 
             set(JUPYTER_CONSOLE_FILENAME "${PROJECT_BUILD_DIR}/jupyterconsole.bat")
 
+            copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} . ipython.bat)
+            copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} . jupyter.bat)
             configure_file(${PLATFORM_DISTRIB_DIR}/jupyterconsole.bat.in ${JUPYTER_CONSOLE_FILENAME})
             copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} . jupyterlab.bat)
             copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} . jupyterlab.vbs)
             copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} . jupyternotebook.bat)
             copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} . jupyternotebook.vbs)
 
-            install(FILES ${JUPYTER_CONSOLE_FILENAME}
+            install(FILES ${PLATFORM_DISTRIB_DIR}/ipython.bat
+                          ${PLATFORM_DISTRIB_DIR}/jupyter.bat
+                          ${JUPYTER_CONSOLE_FILENAME}
                           ${PLATFORM_DISTRIB_DIR}/jupyterlab.bat
                           ${PLATFORM_DISTRIB_DIR}/jupyterlab.vbs
                           ${PLATFORM_DISTRIB_DIR}/jupyternotebook.bat
@@ -1457,24 +1465,32 @@ elseif(APPLE)
             RENAME ${CMAKE_PROJECT_NAME}
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-    # Shell scripts to setup and run Python and Jupyter
+    # Shell scripts to setup and run Python, IPython and Jupyter
 
     if(PYTHON_SUPPORT)
+        set(RUN_IPYTHON_FILENAME ${PYTHON_SCRIPT_DIR}/runipython)
         set(RUN_JUPYTER_FILENAME ${PYTHON_SCRIPT_DIR}/runjupyter)
 
+        configure_file(${PLATFORM_DISTRIB_DIR}/runipython.in ${RUN_IPYTHON_FILENAME} @ONLY)
         configure_file(${PLATFORM_DISTRIB_DIR}/runjupyter.in ${RUN_JUPYTER_FILENAME} @ONLY)
 
+        set(IPYTHON_FILENAME ${PROJECT_BUILD_DIR}/ipython)
+        set(JUPYTER_FILENAME ${PROJECT_BUILD_DIR}/jupyter)
         set(JUPYTER_CONSOLE_FILENAME ${PROJECT_BUILD_DIR}/jupyterconsole)
         set(JUPYTER_LAB_FILENAME ${PROJECT_BUILD_DIR}/jupyterlab)
         set(JUPYTER_NOTEBOOK_FILENAME ${PROJECT_BUILD_DIR}/jupyternotebook)
         set(PYTHON_SHELL_FILENAME ${PROJECT_BUILD_DIR}/pythonshell)
 
+        configure_file(${PLATFORM_DISTRIB_DIR}/ipython.in ${IPYTHON_FILENAME} @ONLY)
+        configure_file(${PLATFORM_DISTRIB_DIR}/jupyter.in ${JUPYTER_FILENAME} @ONLY)
         configure_file(${PLATFORM_DISTRIB_DIR}/jupyterconsole.in ${JUPYTER_CONSOLE_FILENAME} @ONLY)
         configure_file(${PLATFORM_DISTRIB_DIR}/jupyterlab.in ${JUPYTER_LAB_FILENAME} @ONLY)
         configure_file(${PLATFORM_DISTRIB_DIR}/jupyternotebook.in ${JUPYTER_NOTEBOOK_FILENAME} @ONLY)
         configure_file(${PLATFORM_DISTRIB_DIR}/pythonshell.in ${PYTHON_SHELL_FILENAME} @ONLY)
 
-        install(FILES ${JUPYTER_CONSOLE_FILENAME}
+        install(FILES ${IPYTHON_FILENAME}
+                      ${JUPYTER_FILENAME}
+                      ${JUPYTER_CONSOLE_FILENAME}
                       ${JUPYTER_LAB_FILENAME}
                       ${JUPYTER_NOTEBOOK_FILENAME}
                       ${PYTHON_SHELL_FILENAME}
@@ -1540,24 +1556,30 @@ else()
             DESTINATION .
             USE_SOURCE_PERMISSIONS)
 
-    # Shell scripts to setup and run Python and Jupyter
+    # Shell scripts to setup and run Python, IPython and Jupyter
 
     if(PYTHON_SUPPORT)
+        copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPT_DIR} runipython)
         copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPT_DIR} runjupyter)
 
-        install(FILES ${PLATFORM_DISTRIB_DIR}/runjupyter
+        install(FILES ${PLATFORM_DISTRIB_DIR}/runipython
+                      ${PLATFORM_DISTRIB_DIR}/runjupyter
                 DESTINATION ${RELATIVE_PYTHON_SCRIPT_DIR}
                 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
         set(JUPYTER_CONSOLE_FILENAME ${PROJECT_BUILD_DIR}/jupyterconsole)
         set(PYTHON_SHELL_FILENAME ${PROJECT_BUILD_DIR}/pythonshell)
 
+        copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} . ipython)
+        copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} . jupyter)
         configure_file(${PLATFORM_DISTRIB_DIR}/jupyterconsole.in ${JUPYTER_CONSOLE_FILENAME} @ONLY)
         copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} . jupyterlab)
         copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} . jupyternotebook)
         configure_file(${PLATFORM_DISTRIB_DIR}/pythonshell.in ${PYTHON_SHELL_FILENAME} @ONLY)
 
-        install(FILES ${JUPYTER_CONSOLE_FILENAME}
+        install(FILES ${PLATFORM_DISTRIB_DIR}/ipython
+                      ${PLATFORM_DISTRIB_DIR}/jupyter
+                      ${JUPYTER_CONSOLE_FILENAME}
                       ${PLATFORM_DISTRIB_DIR}/jupyterlab
                       ${PLATFORM_DISTRIB_DIR}/jupyternotebook
                       ${PYTHON_SHELL_FILENAME}

@@ -3,16 +3,16 @@ project(QScintillaPlugin)
 # Name and version of our package
 
 set(PACKAGE_NAME QScintilla)
-set(PACKAGE_VERSION 2.11.6)
+set(PACKAGE_VERSION 2.13.0)
 
 # Version of our library
 
 set(MAJOR_LIBRARY_VERSION 15)
-set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.0.0)
+set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.1.0)
 
 # Git tag for our library
 
-set(GIT_TAG v2.11.6)
+set(GIT_TAG v2.13.0)
 
 # Specify where our local package will be installed
 
@@ -69,27 +69,27 @@ if(USE_PREBUILT_QSCINTILLA_PACKAGE)
     if(WIN32)
         if(RELEASE_MODE)
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 81998fa0ae79174ee46ae407259f71833e063d5c
+                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} d31479f7e03503524a31d8aa243f38d7318dd194
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 68c226988931b88333dc4ce076b7b573e46e816b
-                                              1c253a60134481292b9ea508c79ca42b2808f8e0)
+                                  SHA1_VALUES e2085e483f2e7798c3a3364514ce9bd1f8461662
+                                              8f097f18710b492395b10734e6ed666f9b5f5206)
         else()
             retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} d9125662875f47675539ef0bbd76ed48a12456c7
+                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} aeace81825c1853a906dffc8b9880389f373636c
                                   SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 248466d735dceb87e8c56f532795a1eb46b8f777
-                                              62af84b7b5119516b6a804c5cce55457087bd514)
+                                  SHA1_VALUES 54f65f9559b3ec0590d7cc428d7d4218d9158e08
+                                              67eb6c99fec840dbdf52515249df46b78a3425e7)
         endif()
     elseif(APPLE)
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 23400baf34f48d68236a5c53de21199978532cfd
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 677fbd7b4eff1a00703abde3e9d69f5130fc1961
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES edc99e05796941b7d5ba949b655224d7e1aae45b)
+                              SHA1_VALUES 00f6c44db323702bddc36906574b27fac8a3742a)
     else()
         retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 831204f5747e1e831d1670d0025f53b447784602
+                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} cdd4fc923739c833ace583c4a8db407204c23f0a
                               SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES d91f27b0f9bcacd86e771cc56fee3d8714425ad4)
+                              SHA1_VALUES 17a04d3c57482818beb6f512abe436bd1bf7f064)
     endif()
 else()
     # Set platform specific configuration options
@@ -118,7 +118,7 @@ else()
         GIT_TAG
             ${GIT_TAG}
         CONFIGURE_COMMAND
-            ${QMAKE_COMMAND} <SOURCE_DIR>/Qt4Qt5 OBJECTS_DIR=${EXTERNAL_PROJECT_BUILD_DIR}/Build/${PACKAGE_BUILD} INSTALL_DIR=<INSTALL_DIR>
+            ${QMAKE_COMMAND} <SOURCE_DIR>/src OBJECTS_DIR=${EXTERNAL_PROJECT_BUILD_DIR}/Build/${PACKAGE_BUILD} INSTALL_DIR=<INSTALL_DIR>
         BUILD_COMMAND
             ${MAKE_JOM_COMMAND} ${MAKEFILE}
         INSTALL_COMMAND
