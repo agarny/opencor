@@ -252,8 +252,10 @@ SimulationExperimentViewSimulationWidget::SimulationExperimentViewSimulationWidg
 
     mCellmlOpenDropDownMenu = new QMenu(mToolBarWidget);
 
-    for (auto cellmlEditingViewPlugin : pViewWidget->cellmlEditingViewPlugins()) {
-        auto action = Core::newAction(Core::mainWindow());
+    const Plugins cellmlEditingPlugins = pViewWidget->cellmlEditingViewPlugins();
+
+    for (auto cellmlEditingViewPlugin : cellmlEditingPlugins) {
+        QAction *action = Core::newAction(Core::mainWindow());
 
         mCellmlOpenDropDownMenu->addAction(action);
 
@@ -265,8 +267,10 @@ SimulationExperimentViewSimulationWidget::SimulationExperimentViewSimulationWidg
 
     mCellmlOpenDropDownMenu->addSeparator();
 
-    for (auto cellmlSimulationViewPlugin : pViewWidget->cellmlSimulationViewPlugins()) {
-        auto action = Core::newAction(Core::mainWindow());
+    const Plugins cellmlSimulationViewPlugins = pViewWidget->cellmlSimulationViewPlugins();
+
+    for (auto cellmlSimulationViewPlugin : cellmlSimulationViewPlugins) {
+        QAction *action = Core::newAction(Core::mainWindow());
 
         mCellmlOpenDropDownMenu->addAction(action);
 
@@ -293,7 +297,9 @@ SimulationExperimentViewSimulationWidget::SimulationExperimentViewSimulationWidg
 
     mSimulationResultsExportDropDownMenu = new QMenu(mToolBarWidget);
 
-    for (auto dataStoreInterface : Core::dataStoreInterfaces()) {
+    const DataStoreInterfaces dataStoreInterfaces = Core::dataStoreInterfaces();
+
+    for (auto dataStoreInterface : dataStoreInterfaces) {
         QString dataStoreName = dataStoreInterface->dataStoreName();
         QAction *action = mSimulationResultsExportDropDownMenu->addAction(dataStoreName+"...");
 
@@ -591,7 +597,7 @@ void SimulationExperimentViewSimulationWidget::retranslateUi()
 
     // Retranslate our CellML editing view actions
 
-    QList<QAction *> cellmlEditingViewActionKeys = mCellmlBasedViewPlugins.keys();
+    const QList<QAction *> cellmlEditingViewActionKeys = mCellmlBasedViewPlugins.keys();
 
     for (auto cellmlEditingViewAction : cellmlEditingViewActionKeys) {
         Plugin *plugin = mCellmlBasedViewPlugins.value(cellmlEditingViewAction);
@@ -651,10 +657,12 @@ void SimulationExperimentViewSimulationWidget::dragEnterEvent(QDragEnterEvent *p
     // Accept the proposed action for the event, but only if it refers to one or
     // several data store files
 
+    const QStringList fileNames = Core::droppedFileNames(pEvent);
+    const FileTypeInterfaces fileTypeInterfaces = Core::dataStoreFileTypeInterfaces();
     bool acceptEvent = false;
 
-    for (const auto &fileName : Core::droppedFileNames(pEvent)) {
-        for (auto fileTypeInterface : Core::dataStoreFileTypeInterfaces()) {
+    for (const auto &fileName : fileNames) {
+        for (auto fileTypeInterface : fileTypeInterfaces) {
             if (fileTypeInterface->isFile(fileName)) {
                 mFileTypeInterfaces.insert(fileName, fileTypeInterface);
 
@@ -687,7 +695,9 @@ void SimulationExperimentViewSimulationWidget::dropEvent(QDropEvent *pEvent)
 {
     // Import/open the one or several files
 
-    for (const auto &fileName : Core::droppedFileNames(pEvent)) {
+    const QStringList fileNames = Core::droppedFileNames(pEvent);
+
+    for (const auto &fileName : fileNames) {
         if (mFileTypeInterfaces.contains(fileName)) {
             import(fileName);
         } else {
@@ -706,7 +716,7 @@ void SimulationExperimentViewSimulationWidget::updateDataStoreActions()
 {
     // Update our data store actions
 
-    QList<QAction *> actionKeys = mDataStoreInterfaces.keys();
+    const QList<QAction *> actionKeys = mDataStoreInterfaces.keys();
 
     for (auto action : actionKeys) {
         I18nInterface::retranslateAction(action,
@@ -845,7 +855,9 @@ void SimulationExperimentViewSimulationWidget::updateDelayWheelWidgetAction()
 {
     // Update our delay wheel widget action
 
-    for (auto *wheel : mDelayWheelWidgetAction->wheels()) {
+    const QList<QwtWheel *> wheels = mDelayWheelWidgetAction->wheels();
+
+    for (auto *wheel : wheels) {
         updateDelayWidget(wheel);
     }
 }
@@ -860,7 +872,9 @@ void SimulationExperimentViewSimulationWidget::updateDelayLabelValueWidgetAction
     // Note: we do this because we want to display the delay using digit
     //       grouping, this respecting the current locale...
 
-    for (auto *label : mDelayLabelValueWidgetAction->labels()) {
+    const QList<QLabel *> labels = mDelayLabelValueWidgetAction->labels();
+
+    for (auto *label : labels) {
         updateDelayWidget(label);
     }
 }
@@ -907,11 +921,11 @@ void SimulationExperimentViewSimulationWidget::initialize(bool pReloading)
     //       updates (e.g. when reloading a SED-ML file that references a remote
     //       CellML file)...
 
-    mContentsWidget->setUpdatesEnabled(false);
-        // Stop tracking certain things (so that updatePlot() doesn't get called
-        // unnecessarily)
-        // Note: see the corresponding code towards the end of this method...
+    // Stop tracking certain things (so that updatePlot() doesn't get called
+    // unnecessarily)
+    // Note: see the corresponding code towards the end of this method...
 
+    mContentsWidget->setUpdatesEnabled(false);
         SimulationExperimentViewInformationWidget *informationWidget = mContentsWidget->informationWidget();
         SimulationExperimentViewInformationSimulationWidget *simulationWidget = informationWidget->simulationWidget();
 
@@ -938,7 +952,7 @@ void SimulationExperimentViewSimulationWidget::initialize(bool pReloading)
                                    fileManagerInstance->url(simulationFileName):
                                    simulationFileName;
         QString information = "<strong>"+QDir::toNativeSeparators(fileName)+"</strong>"+OutputBrLn;
-        SimulationSupport::SimulationIssues simulationIssues = mSimulation->issues();
+        const SimulationSupport::SimulationIssues simulationIssues = mSimulation->issues();
         CellMLSupport::CellmlFileRuntime *runtime = mSimulation->runtime();
         bool validRuntime = (runtime != nullptr) && runtime->isValid();
         CellMLSupport::CellmlFileRuntimeParameter *voi = validRuntime?runtime->voi():nullptr;
@@ -1267,15 +1281,16 @@ bool SimulationExperimentViewSimulationWidget::save(const QString &pFileName)
 
         QString importedParameters;
         ObjRef<iface::cellml_api::CellMLComponentSet> components = mSimulation->cellmlFile()->model()->localComponents();
-        QMap<Core::Property *, CellMLSupport::CellmlFileRuntimeParameter *> parameters = mContentsWidget->informationWidget()->parametersWidget()->parameters();
-        Core::Properties propertyKeys = parameters.keys();
+        QHash<Core::Property *, CellMLSupport::CellmlFileRuntimeParameter *> parameters = mContentsWidget->informationWidget()->parametersWidget()->parameters();
+        const Core::Properties propertyKeys = parameters.keys();
 
         for (auto property : propertyKeys) {
             CellMLSupport::CellmlFileRuntimeParameter *parameter = parameters.value(property);
 
             if (   (parameter->type() == CellMLSupport::CellmlFileRuntimeParameter::Type::State)
                 || (parameter->type() == CellMLSupport::CellmlFileRuntimeParameter::Type::Constant)) {
-                ObjRef<iface::cellml_api::CellMLComponent> component = components->getComponent(parameter->componentHierarchy().last().toStdWString());
+                QStringList parameterComponents = parameter->componentHierarchy();
+                ObjRef<iface::cellml_api::CellMLComponent> component = components->getComponent(parameterComponents.last().toStdWString());
                 ObjRef<iface::cellml_api::CellMLVariable> variable = component->variables()->getVariable(property->name().toStdWString());
 
                 if (variable == variable->sourceVariable()) {
@@ -1408,7 +1423,7 @@ void SimulationExperimentViewSimulationWidget::runPauseResumeSimulation()
         // simulation and solvers properties (without resetting our NLA solver)
         // before running/resuming it
 
-        mContentsWidget->informationWidget()->finishEditing(mSimulation->isPaused());
+        mContentsWidget->informationWidget()->finishEditing();
 
         if (!mSimulation->isPaused()) {
             updateSimulationProperties();
@@ -1468,13 +1483,17 @@ void SimulationExperimentViewSimulationWidget::resetAllModelParameters()
 
 void SimulationExperimentViewSimulationWidget::clearSimulationResults()
 {
-    setUpdatesEnabled(false);
-        // Clear our simulation results
-        // Note: we temporarily disable updates to prevent the GUI from taking
-        //       too long to update itself (something that would happen if we
-        //       were to have several graph panels since they would try to
-        //       realign themselves)...
+    // Make sure that all editings are finished
 
+    mContentsWidget->informationWidget()->finishEditing();
+
+    // Clear our simulation results
+    // Note: we temporarily disable updates to prevent the GUI from taking too
+    //       long to update itself (something that would happen if we were to
+    //       have several graph panels since they would try to realign
+    //       themselves)...
+
+    setUpdatesEnabled(false);
         mSimulation->results()->reset();
     setUpdatesEnabled(true);
 }
@@ -1572,10 +1591,11 @@ void SimulationExperimentViewSimulationWidget::initializeTrackers(bool pInitialz
     mGraphsPropertiesModified.clear();
 
     GraphPanelWidget::GraphPanelsWidget *graphPanelsWidget = mContentsWidget->graphPanelsWidget();
+    GraphPanelWidget::GraphPanelWidgets graphPanels = graphPanelsWidget->graphPanels();
     SimulationExperimentViewInformationGraphPanelAndGraphsWidget *graphPanelAndGraphsWidget = informationWidget->graphPanelAndGraphsWidget();
 
-    for (int i = 0, iMax = graphPanelsWidget->graphPanels().count(); i < iMax; ++i) {
-        GraphPanelWidget::GraphPanelWidget *graphPanel = graphPanelsWidget->graphPanels()[i];
+    for (int i = 0, iMax = graphPanels.count(); i < iMax; ++i) {
+        GraphPanelWidget::GraphPanelWidget *graphPanel = graphPanels[i];
         Core::PropertyEditorWidget *graphPanelPropertyEditor = graphPanelAndGraphsWidget->graphPanelPropertyEditor(graphPanel);
         Core::PropertyEditorWidget *graphsPropertyEditor = graphPanelAndGraphsWidget->graphsPropertyEditor(graphPanel);
 
@@ -1633,7 +1653,7 @@ void SimulationExperimentViewSimulationWidget::addSedmlSimulationAlgorithm(libse
     // properties
 
     if (pSolverInterface != nullptr) {
-        QStringList solverPropertyKeys = pSolverProperties.keys();
+        const QStringList solverPropertyKeys = pSolverProperties.keys();
 
         for (const auto &solverProperty : solverPropertyKeys) {
             QString kisaoId = pSolverInterface->kisaoId(solverProperty);
@@ -1677,7 +1697,7 @@ void SimulationExperimentViewSimulationWidget::addSedmlSimulation(libsedml::SedD
 
     if ((runtime != nullptr) && runtime->needNlaSolver()) {
         Solver::Solver::Properties nlaSolverProperties = mSimulation->data()->nlaSolverProperties();
-        QStringList nlaSolverPropertyKeys = nlaSolverProperties.keys();
+        const QStringList nlaSolverPropertyKeys = nlaSolverProperties.keys();
         QString nlaSolverAnnotation;
 
         for (const auto &nlaSolverProperty : nlaSolverPropertyKeys) {
@@ -1868,12 +1888,13 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
 
     SimulationExperimentViewInformationGraphPanelAndGraphsWidget *graphPanelAndGraphsWidget = mContentsWidget->informationWidget()->graphPanelAndGraphsWidget();
     GraphPanelWidget::GraphPanelsWidget *graphPanelsWidget = mContentsWidget->graphPanelsWidget();
+    const GraphPanelWidget::GraphPanelWidgets graphPanels = graphPanelsWidget->graphPanels();
     QIntList graphPanelsWidgetSizes = graphPanelsWidget->sizes();
     QList<Core::Properties> graphsPropertiesList;
     QMap<Core::Properties, GraphsData> graphsData;
     int graphPlotCounter = 0;
 
-    for (auto graphPanel : graphPanelsWidget->graphPanels()) {
+    for (auto graphPanel : graphPanels) {
         // Create and customise the look and feel of our 2D plot
 
         Core::Properties graphPanelProperties = graphPanelAndGraphsWidget->graphPanelPropertyEditor(graphPanel)->properties();
@@ -2018,7 +2039,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
     // Create and customise 2D plot outputs and data generators for all the
     // graphs that are to be plotted, if any
 
-    for (const auto &graphsProperties : graphsPropertiesList) {
+    for (const auto &graphsProperties : qAsConst(graphsPropertiesList)) {
         // Create some graphs
 
         GraphsData data = graphsData.value(graphsProperties);
@@ -2255,6 +2276,7 @@ void SimulationExperimentViewSimulationWidget::sedmlExportCombineArchive(const Q
         static const QRegularExpression FileNameRegEx = QRegularExpression("/[^/]*$");
 
         CellMLSupport::CellmlFile *cellmlFile = mSimulation->cellmlFile();
+        const QStringList importedFileNames = cellmlFile->importedFileNames();
         QString localCellmlFileName = cellmlFile->fileName();
         bool remoteCellmlFile = fileManagerInstance->isRemote(localCellmlFileName);
         QString cellmlFileName = remoteCellmlFile?
@@ -2263,7 +2285,7 @@ void SimulationExperimentViewSimulationWidget::sedmlExportCombineArchive(const Q
         QString commonPath = QString(cellmlFileName).remove(FileNameRegEx)+"/";
         QMap<QString, QString> remoteImportedFileNames;
 
-        for (const auto &importedFileName : cellmlFile->importedFileNames()) {
+        for (const auto &importedFileName : importedFileNames) {
             // Check for the common path
 
             QString importedFilePath = remoteCellmlFile?
@@ -2329,7 +2351,9 @@ void SimulationExperimentViewSimulationWidget::sedmlExportCombineArchive(const Q
                                         (cellmlVersion == CellMLSupport::CellmlFile::Version::Cellml_1_0)?
                                             COMBINESupport::CombineArchiveFile::Format::Cellml_1_0:
                                             COMBINESupport::CombineArchiveFile::Format::Cellml_1_1)) {
-                for (const auto &importedFileName : cellmlFile->importedFileNames()) {
+                const QStringList subImportedFileNames = cellmlFile->importedFileNames();
+
+                for (const auto &importedFileName : subImportedFileNames) {
                     QString realImportedFileName = remoteCellmlFile?
                                                        remoteImportedFileNames.value(importedFileName):
                                                        importedFileName;
@@ -2600,8 +2624,12 @@ CellMLSupport::CellmlFileRuntimeParameter * SimulationExperimentViewSimulationWi
     pCellmlComponent = componentName;
     pCellmlVariable = variableName+QString(variableDegree, '\'');
 
-    for (auto parameter : mSimulation->runtime()->parameters()) {
-        if (   (componentName == parameter->componentHierarchy().last())
+    const CellMLSupport::CellmlFileRuntimeParameters parameters = mSimulation->runtime()->parameters();
+
+    for (auto parameter : parameters) {
+        QStringList components = parameter->componentHierarchy();
+
+        if (   (componentName == components.last())
             && (variableName == parameter->name())
             && (variableDegree == parameter->degree())) {
             return parameter;
@@ -2619,8 +2647,12 @@ bool SimulationExperimentViewSimulationWidget::isRuntimeDataParameter(const QStr
     // Go through the runtime data parameters to see if one of them corresponds
     // to the given component/variable
 
-    for (auto parameter : mSimulation->runtime()->dataParameters()) {
-        if (   (pComponent == parameter->componentHierarchy().last())
+    const CellMLSupport::CellmlFileRuntimeParameters parameters = mSimulation->runtime()->dataParameters();
+
+    for (auto parameter : parameters) {
+        QStringList components = parameter->componentHierarchy();
+
+        if (   (pComponent == components.last())
             && (pVariable == parameter->name())) {
             return true;
         }
@@ -2770,7 +2802,9 @@ bool SimulationExperimentViewSimulationWidget::import(const QString &pFileName,
     FileTypeInterface *fileTypeInterface = mFileTypeInterfaces.value(pFileName);
 
     if (fileTypeInterface == nullptr) {
-        for (auto dataStoreFileTypeInterface : Core::dataStoreFileTypeInterfaces()) {
+        const FileTypeInterfaces dataStoreFileTypeInterfaces = Core::dataStoreFileTypeInterfaces();
+
+        for (auto dataStoreFileTypeInterface : dataStoreFileTypeInterfaces) {
             if (dataStoreFileTypeInterface->isFile(pFileName)) {
                 fileTypeInterface = dataStoreFileTypeInterface;
 
@@ -2853,12 +2887,9 @@ bool SimulationExperimentViewSimulationWidget::import(const QString &pFileName,
                 this, &SimulationExperimentViewSimulationWidget::resetDataStoreImporterConnections);
 
         QEventLoop waitLoop;
-        auto connection = std::make_shared<QMetaObject::Connection>();
 
-        *connection = connect(this, &SimulationExperimentViewSimulationWidget::importDone, [&]() {
+        connect(this, &SimulationExperimentViewSimulationWidget::importDone, this, [&]() {
             waitLoop.quit();
-
-            disconnect(*connection);
         });
 
         dataStoreImporter->importData(dataStoreImportData);
@@ -3045,9 +3076,10 @@ void SimulationExperimentViewSimulationWidget::delayWheelValueChanged(double pVa
         }
     }
 
+    const QList<QLabel *> labels = mDelayLabelValueWidgetAction->labels();
     QString delayString = QLocale().toString(delay);
 
-    for (auto *label : mDelayLabelValueWidgetAction->labels()) {
+    for (auto *label : labels) {
         label->setText(delayString);
     }
 
@@ -3062,7 +3094,9 @@ void SimulationExperimentViewSimulationWidget::delayWheelReleased()
 {
     // Update the value of our various delay wheels
 
-    for (auto *wheel : mDelayWheelWidgetAction->wheels()) {
+    const QList<QwtWheel *> wheels = mDelayWheelWidgetAction->wheels();
+
+    for (auto *wheel : wheels) {
         wheel->setValue(mDelayWheelValue);
     }
 }
@@ -3212,11 +3246,11 @@ void SimulationExperimentViewSimulationWidget::simulationDataModified(bool pIsMo
 
 void SimulationExperimentViewSimulationWidget::simulationResultsReset()
 {
-    setUpdatesEnabled(false);
-        // Update our simulation mode and check for results
-        // Note: see clearSimulationResults() for the reason behind temporarily
-        //       disabling updates...
+    // Update our simulation mode and check for results
+    // Note: see clearSimulationResults() for the reason behind temporarily
+    //       disabling updates...
 
+    setUpdatesEnabled(false);
         updateSimulationMode();
 
         mViewWidget->checkSimulationResults(mSimulation->fileName(), Task::ResetRuns);
@@ -3244,7 +3278,7 @@ void SimulationExperimentViewSimulationWidget::simulationPropertyChanged(Core::P
     // Note: needProcessingEvents is used to ensure that our plots are all
     //       updated at once...
 
-    for (auto plot : mPlots) {
+    for (auto plot : qAsConst(mPlots)) {
         if (updatePlot(plot, true, false)) {
             needProcessingEvents = true;
         }
@@ -3451,7 +3485,7 @@ void SimulationExperimentViewSimulationWidget::graphsUpdated(const GraphPanelWid
     // Update and replot our various plots, if allowed
 
     if (mCanUpdatePlotsForUpdatedGraphs) {
-        for (auto plot : plots) {
+        for (auto plot : qAsConst(plots)) {
             updatePlot(plot, true, true);
             // Note: even if the axes' values of the plot haven't changed, we
             //       still want to replot the plot since at least one of its
@@ -3515,12 +3549,12 @@ bool SimulationExperimentViewSimulationWidget::updatePlot(GraphPanelWidget::Grap
     // plot to use the starting/ending points as the minimum/maximum values for
     // the X and/or Y axes
 
+    const GraphPanelWidget::GraphPanelPlotGraphs graphs = pPlot->graphs();
     bool hasData = pPlot->hasData();
-
     bool needInitialisationX = true;
     bool needInitialisationY = true;
 
-    for (auto graph : pPlot->graphs()) {
+    for (auto graph : graphs) {
         if (graph->isVisible()) {
             SimulationSupport::Simulation *simulation = mViewWidget->simulation(graph->fileName());
             double startingPoint = simulation->data()->startingPoint();
@@ -3708,7 +3742,7 @@ void SimulationExperimentViewSimulationWidget::updateGui(bool pCheckVisibility)
     if (mNeedUpdatePlots) {
         mNeedUpdatePlots = false;
 
-        for (auto plot : mPlots) {
+        for (auto plot : qAsConst(mPlots)) {
             updatePlot(plot, true, true);
         }
 
@@ -3743,16 +3777,17 @@ void SimulationExperimentViewSimulationWidget::updateSimulationResults(Simulatio
     bool visible = isVisible();
     bool needProcessingEvents = false;
 
-    for (auto plot : mPlots) {
+    for (auto plot : qAsConst(mPlots)) {
         // Now we are ready to actually update all the graphs of all our plots
 
+        const GraphPanelWidget::GraphPanelPlotGraphs graphs = plot->graphs();
         bool needFullUpdatePlot = !plot->isOptimizedAxes();
         double plotMinX = plot->minX();
         double plotMaxX = plot->maxX();
         double plotMinY = plot->minY();
         double plotMaxY = plot->maxY();
 
-        for (auto graph : plot->graphs()) {
+        for (auto graph : graphs) {
             if (graph->fileName() == pSimulationWidget->simulation()->fileName()) {
                 if (pTask != Task::None) {
                     mOldDataSizes.remove(graph);
@@ -4054,7 +4089,9 @@ void SimulationExperimentViewSimulationWidget::checkGraphPanelsAndGraphs()
     mGraphPanelPropertiesModified.clear();
     mGraphsPropertiesModified.clear();
 
-    for (auto graphPanel : graphPanelsWidget->graphPanels()) {
+    const GraphPanelWidget::GraphPanelWidgets graphPanels = graphPanelsWidget->graphPanels();
+
+    for (auto graphPanel : graphPanels) {
         Core::PropertyEditorWidget *propertyEditor = graphPanelAndGraphsWidget->graphPanelPropertyEditor(graphPanel);
 
         if (mGraphPanelProperties.contains(propertyEditor)) {
@@ -4090,8 +4127,9 @@ QVariantList SimulationExperimentViewSimulationWidget::allPropertyValues(Core::P
     // Return all the property values of the given property editor
 
     QVariantList res;
+    const Core::Properties properties = pPropertyEditor->allProperties();
 
-    for (auto property : pPropertyEditor->allProperties()) {
+    for (auto property : properties) {
         res << property->isChecked() << property->variantValue();
     }
 
@@ -4114,17 +4152,22 @@ void SimulationExperimentViewSimulationWidget::updateSedmlFileOrCombineArchiveMo
     // simulation, solvers, graph panel or graphs properties have changed, and
     // keeping in mind that we may have added/removed graph panels
 
-    bool graphPanelPropertiesModified = mGraphPanelProperties.keys() != mGraphPanelPropertiesModified.keys();
-    bool graphsPropertiesModified = mGraphsProperties.keys() != mGraphsPropertiesModified.keys();
+    auto graphPanelPropertiesKeys = mGraphPanelProperties.keys();
+    auto graphPanelPropertiesModifiedKeys = mGraphPanelPropertiesModified.keys();
+    bool graphPanelPropertiesModified = graphPanelPropertiesKeys != graphPanelPropertiesModifiedKeys;
 
     if (!graphPanelPropertiesModified) {
-        for (auto someGraphPanelPropertiesModified : mGraphPanelPropertiesModified) {
+        for (auto someGraphPanelPropertiesModified : qAsConst(mGraphPanelPropertiesModified)) {
             graphPanelPropertiesModified = graphPanelPropertiesModified || someGraphPanelPropertiesModified;
         }
     }
 
+    auto graphsPropertiesKeys = mGraphsProperties.keys();
+    auto graphsPropertiesModifiedKeys = mGraphsPropertiesModified.keys();
+    bool graphsPropertiesModified = graphsPropertiesKeys != graphsPropertiesModifiedKeys;
+
     if (!graphsPropertiesModified) {
-        for (auto someGraphsPropertiesModified : mGraphsPropertiesModified) {
+        for (auto someGraphsPropertiesModified : qAsConst(mGraphsPropertiesModified)) {
             graphsPropertiesModified = graphsPropertiesModified || someGraphsPropertiesModified;
         }
     }

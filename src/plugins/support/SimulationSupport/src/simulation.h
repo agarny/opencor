@@ -94,7 +94,8 @@ public:
         Information,
         Error,
         Warning,
-        Fatal
+        Fatal,
+        Unsupported
     };
 
     explicit SimulationIssue(Type pType, int pLine, int pColumn,
@@ -199,7 +200,7 @@ private:
     double *mInitialStates = nullptr;
     double *mDummyStates = nullptr;
 
-    QMap<DataStore::DataStore *, double *> mData;
+    QHash<DataStore::DataStore *, double *> mData;
 
     SimulationDataUpdatedFunction mSimulationDataUpdatedFunction;
 
@@ -297,8 +298,8 @@ private:
     DataStore::DataStoreVariables mStatesVariables;
     DataStore::DataStoreVariables mAlgebraicVariables;
 
-    QMap<double *, DataStore::DataStoreVariables> mData;
-    QMap<double *, DataStore::DataStore *> mDataDataStores;
+    QHash<double *, DataStore::DataStoreVariables> mData;
+    QHash<double *, DataStore::DataStore *> mDataDataStores;
 
     void createDataStore();
     void deleteDataStore();
@@ -397,7 +398,6 @@ private:
 
     bool mNeedCheckIssues = true;
     SimulationIssues mIssues;
-    bool mHasBlockingIssues = false;
 
     CellMLSupport::CellmlFileRuntime *mRuntime = nullptr;
 

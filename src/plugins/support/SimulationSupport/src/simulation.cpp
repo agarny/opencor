@@ -82,14 +82,16 @@ QString SimulationIssue::typeAsString() const
     // Return the issue's type as a string
 
     switch (mType) {
-    case SimulationSupport::SimulationIssue::Type::Information:
+    case Type::Information:
         return QObject::tr("Information");
-    case SimulationSupport::SimulationIssue::Type::Error:
+    case Type::Error:
         return QObject::tr("Error");
-    case SimulationSupport::SimulationIssue::Type::Warning:
+    case Type::Warning:
         return QObject::tr("Warning");
-    case SimulationSupport::SimulationIssue::Type::Fatal:
+    case Type::Fatal:
         return QObject::tr("Fatal");
+    case Type::Unsupported:
+        return QObject::tr("Information");
     }
 
     return "???";
@@ -167,7 +169,9 @@ double * SimulationData::constants() const
 {
     // Return our constants array
 
-    return mConstantsArray->data();
+    return (mConstantsArray != nullptr)?
+                mConstantsArray->data():
+                nullptr;
 }
 
 //==============================================================================
@@ -176,7 +180,9 @@ double * SimulationData::rates() const
 {
     // Return our rates array
 
-    return mRatesArray->data();
+    return (mRatesArray != nullptr)?
+                mRatesArray->data():
+                nullptr;
 }
 
 //==============================================================================
@@ -185,7 +191,9 @@ double * SimulationData::states() const
 {
     // Return our states array
 
-    return mStatesArray->data();
+    return (mStatesArray != nullptr)?
+                mStatesArray->data():
+                nullptr;
 }
 
 //==============================================================================
@@ -194,7 +202,9 @@ double * SimulationData::algebraic() const
 {
     // Return our algebraic array
 
-    return mAlgebraicArray->data();
+    return (mAlgebraicArray != nullptr)?
+                mAlgebraicArray->data():
+                nullptr;
 }
 
 //==============================================================================
@@ -348,7 +358,9 @@ SolverInterface * SimulationData::solverInterface(const QString &pSolverName) co
 {
     // Return the named solver interface, if any
 
-    for (auto solverInterface : Core::solverInterfaces()) {
+    const SolverInterfaces solverInterfaces = Core::solverInterfaces();
+
+    for (auto solverInterface : solverInterfaces) {
         if (solverInterface->solverName() == pSolverName) {
             return solverInterface;
         }
@@ -793,7 +805,7 @@ void SimulationData::deleteArrays()
         mAlgebraicArray->release();
     }
 
-    for (auto data : mData) {
+    for (auto data : qAsConst(mData)) {
         delete[] data;
     }
 
@@ -884,12 +896,13 @@ void SimulationResults::createDataStore()
     // Customise our VOI, as well as our constant, rate, state and algebraic
     // variables
 
+    const CellMLSupport::CellmlFileRuntimeParameters parameters = runtime->parameters();
     DataStore::DataStoreValues *constantsValues = simulationData->constantsValues();
     DataStore::DataStoreValues *ratesValues = simulationData->ratesValues();
     DataStore::DataStoreValues *statesValues = simulationData->statesValues();
     DataStore::DataStoreValues *algebraicValues = simulationData->algebraicValues();
 
-    for (auto parameter : runtime->parameters()) {
+    for (auto parameter : parameters) {
         CellMLSupport::CellmlFileRuntimeParameter::Type parameterType = parameter->type();
         DataStore::DataStoreVariable *variable = nullptr;
         DataStore::DataStoreValue *value = nullptr;
@@ -929,7 +942,7 @@ void SimulationResults::createDataStore()
     // Reimport our data, if any, and update their array so that it contains the
     // computed values for our start point
 
-    QList<double *> dataKeys = mDataDataStores.keys();
+    const QList<double *> dataKeys = mDataDataStores.keys();
 
     for (auto data : dataKeys) {
         DataStore::DataStore *importDataStore = mDataDataStores.value(data);
@@ -1025,7 +1038,9 @@ void SimulationResults::importData(DataStore::DataStoreImportData *pImportData)
 
     // Customise our imported data
 
-    for (auto parameter : runtime->dataParameters(resultsValues)) {
+    const CellMLSupport::CellmlFileRuntimeParameters parameters = runtime->dataParameters(resultsValues);
+
+    for (auto parameter : parameters) {
         DataStore::DataStoreVariable *variable = mData.value(parameter->data())[parameter->index()];
 
         variable->setType(int(parameter->type()));
@@ -1192,7 +1207,7 @@ void SimulationResults::addPoint(double pPoint)
     // Make sure that we have the correct imported data values for the given
     // point, keeping in mind that we may have several runs
 
-    QList<double *> dataKeys = mDataDataStores.keys();
+    const QList<double *> dataKeys = mDataDataStores.keys();
     double realPoint = SimulationResults::realPoint(pPoint);
 
     for (auto data : dataKeys) {
@@ -1356,7 +1371,7 @@ SimulationImportData::~SimulationImportData()
 {
     // Delete some internal objects
 
-    for (auto dataStore : mDataStores) {
+    for (auto dataStore : qAsConst(mDataStores)) {
         delete dataStore;
     }
 }
@@ -1447,7 +1462,9 @@ void Simulation::retrieveFileDetails(bool pRecreateRuntime)
                     FileType::CellmlFile:
                     (mSedmlFile != nullptr)?
                         FileType::SedmlFile:
-                        FileType::CombineArchive;
+                        (mCombineArchive != nullptr)?
+                            FileType::CombineArchive:
+                            FileType::Unknown;
 
     // We have a COMBINE archive, so we need to retrieve its corresponding
     // SED-ML file
@@ -1571,16 +1588,25 @@ void Simulation::checkIssues()
 
     mNeedCheckIssues = false;
     mIssues = SimulationIssues();
-    mHasBlockingIssues = false;
+
+    // Make sure that we are dealing with a CellML file, a SED-ML file or a
+    // COMBINE archive
+
+    if (mFileType == FileType::Unknown) {
+        Core::FileManager *fileManagerInstance = Core::FileManager::instance();
+
+        mIssues.append(SimulationIssue(SimulationIssue::Type::Error, tr("'%1' must be a CellML file, a SED-ML file or a COMBINE archive.").arg(fileManagerInstance->isRemote(mFileName)?
+                                                                                                                                                   fileManagerInstance->url(mFileName):
+                                                                                                                                                   mFileName)));
+
+        return;
+    }
 
     // Determine whether we have issues with our SED-ML and our COMBINE archive
 
-    SEDMLSupport::SedmlFileIssues sedmlFileIssues = (mSedmlFile != nullptr)?
-                                                        mSedmlFile->issues():
-                                                        SEDMLSupport::SedmlFileIssues();
-    COMBINESupport::CombineArchiveIssues combineArchiveIssues = (mCombineArchive != nullptr)?
-                                                                    mCombineArchive->issues():
-                                                                    COMBINESupport::CombineArchiveIssues();
+    const COMBINESupport::CombineArchiveIssues combineArchiveIssues = (mCombineArchive != nullptr)?
+                                                                          mCombineArchive->issues():
+                                                                          COMBINESupport::CombineArchiveIssues();
 
     if (!combineArchiveIssues.isEmpty()) {
         // There is one or several issues with our COMBINE archive, so list
@@ -1597,8 +1623,6 @@ void Simulation::checkIssues()
             case COMBINESupport::CombineArchiveIssue::Type::Error:
                 issueType = SimulationIssue::Type::Error;
 
-                mHasBlockingIssues = true;
-
                 break;
             case COMBINESupport::CombineArchiveIssue::Type::Warning:
                 issueType = SimulationIssue::Type::Warning;
@@ -1607,7 +1631,9 @@ void Simulation::checkIssues()
             case COMBINESupport::CombineArchiveIssue::Type::Fatal:
                 issueType = SimulationIssue::Type::Fatal;
 
-                mHasBlockingIssues = true;
+                break;
+            case COMBINESupport::CombineArchiveIssue::Type::Unsupported:
+                issueType = SimulationIssue::Type::Unsupported;
 
                 break;
             }
@@ -1615,6 +1641,10 @@ void Simulation::checkIssues()
             mIssues.append(SimulationIssue(issueType, combineArchiveIssue.message()));
         }
     }
+
+    const SEDMLSupport::SedmlFileIssues sedmlFileIssues = (mSedmlFile != nullptr)?
+                                                              mSedmlFile->issues():
+                                                              SEDMLSupport::SedmlFileIssues();
 
     if (!sedmlFileIssues.isEmpty()) {
         // There is one or several issues with our SED-ML file, so list it/them
@@ -1630,8 +1660,6 @@ void Simulation::checkIssues()
             case SEDMLSupport::SedmlFileIssue::Type::Error:
                 issueType = SimulationIssue::Type::Error;
 
-                mHasBlockingIssues = true;
-
                 break;
             case SEDMLSupport::SedmlFileIssue::Type::Warning:
                 issueType = SimulationIssue::Type::Warning;
@@ -1640,7 +1668,9 @@ void Simulation::checkIssues()
             case SEDMLSupport::SedmlFileIssue::Type::Fatal:
                 issueType = SimulationIssue::Type::Fatal;
 
-                mHasBlockingIssues = true;
+                break;
+            case SEDMLSupport::SedmlFileIssue::Type::Unsupported:
+                issueType = SimulationIssue::Type::Unsupported;
 
                 break;
             }
@@ -1652,7 +1682,7 @@ void Simulation::checkIssues()
         }
     }
 
-    if (!mHasBlockingIssues) {
+    if (!hasBlockingIssues()) {
         bool validRuntime = (mRuntime != nullptr) && mRuntime->isValid();
         CellMLSupport::CellmlFileRuntimeParameter *voi = validRuntime?
                                                              mRuntime->voi():
@@ -1681,11 +1711,13 @@ void Simulation::checkIssues()
                 //       cases...
 
                 if (sedmlFileIssues.isEmpty() && combineArchiveIssues.isEmpty()) {
-                    for (const auto &issue : (mRuntime != nullptr)?
-                                                 mRuntime->issues():
-                                                 (mCellmlFile != nullptr)?
-                                                     mCellmlFile->issues():
-                                                     CellMLSupport::CellmlFileIssues()) {
+                    const CellMLSupport::CellmlFileIssues issues = (mRuntime != nullptr)?
+                                                                       mRuntime->issues():
+                                                                       (mCellmlFile != nullptr)?
+                                                                           mCellmlFile->issues():
+                                                                           CellMLSupport::CellmlFileIssues();
+
+                    for (const auto &issue : issues) {
                         mIssues.append(SimulationIssue((issue.type() == CellMLSupport::CellmlFileIssue::Type::Error)?
                                                            SimulationIssue::Type::Error:
                                                            SimulationIssue::Type::Warning,
@@ -1714,9 +1746,17 @@ bool Simulation::hasBlockingIssues()
 {
     // Return whether we have blocking issues, after having checked for them
 
-    checkIssues();
+    const SimulationIssues issues = Simulation::issues();
 
-    return mHasBlockingIssues;
+    for (const auto &issue : issues) {
+        if (   (issue.type() == SimulationIssue::Type::Error)
+            || (issue.type() == SimulationIssue::Type::Fatal)
+            || (issue.type() == SimulationIssue::Type::Unsupported)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 //==============================================================================
