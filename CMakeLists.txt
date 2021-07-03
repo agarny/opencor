@@ -1513,6 +1513,8 @@ else()
 
         get_filename_component(REAL_FULL_LIBRARY /usr/local/lib64/${FULL_LIBRARY} REALPATH)
 
+        copy_file_to_build_dir(DIRECT /usr/local/gcc-9.3.0/lib64 lib ${FULL_LIBRARY})
+
         install(FILES ${REAL_FULL_LIBRARY}
                 DESTINATION lib
                 RENAME ${FULL_LIBRARY})
