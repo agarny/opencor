@@ -17,7 +17,7 @@ if [ -d "$appDir/build" ]; then
 
     $appDir/clean
 
-    echo "\033[44;37;1mBuilding and testing the release version of OpenCOR using $generator...\033[0m"
+    echo "[[[Building and testing the release version of OpenCOR using $generator...]]]"
 
     cd $appDir/build
 
@@ -58,14 +58,14 @@ if [ -d "$appDir/build" ]; then
     exitCode=$?
 
     if [ $exitCode -eq 0 ]; then
-        echo "\033[42;37;1mAll done!\033[0m"
+        echo "[[[All done!]]]"
     else
         exit $exitCode
     fi
 
     $appDir/clean
 
-    echo "\033[44;37;1mBuilding and testing the debug version of OpenCOR using $generator...\033[0m"
+    echo "[[[Building and testing the debug version of OpenCOR using $generator...]]]"
 
     cd $appDir/build
 
@@ -102,7 +102,7 @@ if [ -d "$appDir/build" ]; then
     cd $origDir
 
     if [ $exitCode -eq 0 ]; then
-        echo "\033[42;37;1mAll done!\033[0m"
+        echo "[[[All done!]]]"
     fi
 
     exit $exitCode
