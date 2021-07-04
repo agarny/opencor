@@ -1,0 +1,45 @@
+# Install CMake
+
+https://github.com/Kitware/CMake
+
+# Install Ninja
+
+git clone git://github.com/ninja-build/ninja.git && cd ninja
+git checkout release
+cat README.md
+
+# Install ccache
+
+https://github.com/ccache/ccache
+./contrib/download_prerequisites
+mkdir build
+cd build
+../configure --prefix=/usr/local/gcc-9.3.0/ --enable-checking=release --enable-languages=c,c++ --disable-multilib
+make -j 8
+sudo make install
+
+# Install OpenCOR prerequirements
+
+sudo yum group install "Development Tools"
+sudo yum install mesa-libGL-devel
+
+# Build and install gcc/g++ 9.3.0
+
+https://bigsearcher.com/mirrors/gcc/releases/gcc-9.3.0/
+
+# Install Qt 5.12.11
+
+sudo yum install python3
+sudo python3 -m pip install aqtinstall
+aqt install --outputdir ~/Qt 5.12.11 linux desktop
+sudo rm -fr /opt/Qt
+sudo mv Qt /opt
+rm -f aqtinstall.log
+
+# Install third-party dependencies to build Python
+
+sudo yum install bzip2-devel.x86_64 xz-devel.x86_64 sqlite-devel.x86_64 openssl-devel
+
+# "Fix" the OpenSSL issue when trying to pip install mpi4py
+
+export LD_LIBRARY_PATH=[OpenCOR]/lib
