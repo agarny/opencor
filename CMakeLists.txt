@@ -1511,7 +1511,7 @@ else()
     foreach(LIBRARY stdc++.so.6)
         set(FULL_LIBRARY ${CMAKE_SHARED_LIBRARY_PREFIX}${LIBRARY})
 
-        get_filename_component(REAL_FULL_LIBRARY /usr/local/lib64/${FULL_LIBRARY} REALPATH)
+        get_filename_component(REAL_FULL_LIBRARY /usr/local/gcc-9.3.0/lib64/${FULL_LIBRARY} REALPATH)
 
         copy_file_to_build_dir(DIRECT /usr/local/gcc-9.3.0/lib64 lib ${FULL_LIBRARY})
 
