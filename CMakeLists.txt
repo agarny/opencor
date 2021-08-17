@@ -990,6 +990,7 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
 
         if(ENABLE_TEST_PLUGINS)
             list(APPEND PLUGINS
+                test/DragAndDropView
                 test/ZincWindow
 
                 thirdParty/Zinc
