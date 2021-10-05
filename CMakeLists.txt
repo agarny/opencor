@@ -55,9 +55,10 @@ option(USE_PREBUILT_QWT_PACKAGE "Use the pre-built version of the Qwt package" O
 option(USE_PREBUILT_SUNDIALS_PACKAGE "Use the pre-built version of the SUNDIALS package" ON)
 option(USE_PREBUILT_ZLIB_PACKAGE "Use the pre-built version of the zlib package" ON)
 
-if(ENABLE_TEST_PLUGINS)
+# if(ENABLE_TEST_PLUGINS)
     option(USE_PREBUILT_ZINC_PACKAGE "Use the pre-built version of the Zinc package" ON)
-endif()
+# endif()
+set(USE_PREBUILT_ZINC_PACKAGE OFF)
 
 # Make sure that we are using the compiler we support
 
@@ -1016,6 +1017,9 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
     endif()
 
     # Include different directories needed by our various plugins
+set(PLUGINS
+    thirdParty/Zinc
+)
 
     foreach(PLUGIN ${PLUGINS})
         set(PLUGIN_DIR src/plugins/${PLUGIN})

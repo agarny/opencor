@@ -96,31 +96,77 @@ else()
         set(SHARED_lIBRARY_DIR lib)
     endif()
 
+    # Build OpenCMISS dependencies as an external project
+
+    set(OPENCMISS_DEPENDENCIES_DIR ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME}/dependencies)
+
+    execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${OPENCMISS_DEPENDENCIES_DIR})
+
+    ExternalProject_Add(OpenCMISSDependenciesBuild
+        SOURCE_DIR
+            ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME}/setup
+        BINARY_DIR
+            ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME}/setup-build
+        # INSTALL_DIR
+        #     ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
+        GIT_REPOSITORY
+            https://github.com/opencor/zinc
+        GIT_TAG
+            ${GIT_TAG}
+        # CMAKE_GENERATOR
+        #     ${CMAKE_GENERATOR}
+        # CMAKE_ARGS
+        #     ${CMAKE_ARGS}
+        #     -DOPENCMISS_LIBRARIES=zinc
+        #     -DOPENCMISS_DEPENDENCIES_ROOT=${OPENCMISS_DEPENDENCIES_DIR}
+        #     -DOPENCMISS_SETUP_TYPE=dependencies
+        CONFIGURE_COMMAND
+            ${CMAKE_COMMAND} ${DEFINE_CMAKE_GENERATOR} ${CMAKE_ARGS} -DOPENCMISS_LIBRARIES=zinc -DOPENCMISS_DEPENDENCIES_ROOT=${OPENCMISS_DEPENDENCIES_DIR} -DOPENCMISS_SETUP_TYPE=dependencies <SOURCE_DIR>
+        BUILD_COMMAND
+            ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE}
+        INSTALL_COMMAND
+            echo
+        # INSTALL_COMMAND
+        #        ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/../install/include/opencmiss <INSTALL_DIR>/include/opencmiss
+        #     && ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/../install/${SHARED_lIBRARY_DIR}/${SHARED_LIBRARY} <INSTALL_DIR>/lib
+        #     && ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/../install/lib/${IMPORT_LIBRARY} <INSTALL_DIR>/lib
+        # BUILD_BYPRODUCTS
+        #     <INSTALL_DIR>/lib/${IMPORT_LIBRARY}
+    )
+
     # Build Zinc as an external project
 
     set(PACKAGE_BUILD ${PACKAGE_NAME}Build)
 
     ExternalProject_Add(${PACKAGE_BUILD}
         SOURCE_DIR
-            ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME}/setup
+            ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME}/zinc
         BINARY_DIR
-            ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME}/setup-build
-        INSTALL_DIR
-            ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
+            ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME}/zinc-build
+        # INSTALL_DIR
+        #     ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
         GIT_REPOSITORY
-            https://github.com/opencor/zinc
+            https://github.com/opencmiss/zinc
         GIT_TAG
-            ${GIT_TAG}
+        #     v3.5.0
+            v3.4.0.dev0
+        # CMAKE_GENERATOR
+        #     ${CMAKE_GENERATOR}
+        # CMAKE_ARGS
+        #     ${CMAKE_ARGS}
+        #     -DOPENCMISSDEPENDENCIES_DIR=${OPENCMISS_DEPENDENCIES_DIR}/install
         CONFIGURE_COMMAND
-            ${CMAKE_COMMAND} ${DEFINE_CMAKE_GENERATOR} ${CMAKE_ARGS} -DOPENCMISS_ROOT=<BINARY_DIR>/.. -DOPENCMISS_LIBRARIES=zinc <SOURCE_DIR>
+            ${CMAKE_COMMAND} ${DEFINE_CMAKE_GENERATOR} ${CMAKE_ARGS} -DOPENCMISSDEPENDENCIES_DIR=${OPENCMISS_DEPENDENCIES_DIR}/install <SOURCE_DIR>
         BUILD_COMMAND
             ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE}
-        INSTALL_COMMAND
-               ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/../install/include/opencmiss <INSTALL_DIR>/include/opencmiss
-            && ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/../install/${SHARED_lIBRARY_DIR}/${SHARED_LIBRARY} <INSTALL_DIR>/lib
-            && ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/../install/lib/${IMPORT_LIBRARY} <INSTALL_DIR>/lib
-        BUILD_BYPRODUCTS
-            <INSTALL_DIR>/lib/${IMPORT_LIBRARY}
+        # INSTALL_COMMAND
+        #        ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/../install/include/opencmiss <INSTALL_DIR>/include/opencmiss
+        #     && ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/../install/${SHARED_lIBRARY_DIR}/${SHARED_LIBRARY} <INSTALL_DIR>/lib
+        #     && ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/../install/lib/${IMPORT_LIBRARY} <INSTALL_DIR>/lib
+        # BUILD_BYPRODUCTS
+        #     <INSTALL_DIR>/lib/${IMPORT_LIBRARY}
+        DEPENDS
+            OpenCMISSDependenciesBuild
     )
 
     # Package our external project
