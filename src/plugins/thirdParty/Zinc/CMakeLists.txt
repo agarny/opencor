@@ -3,16 +3,16 @@ project(ZincPlugin)
 # Name and version of our package
 
 set(PACKAGE_NAME Zinc)
-set(PACKAGE_VERSION 3.1.2)
+set(PACKAGE_VERSION 3.5.0)
 
 # Version of our library
 
 set(MAJOR_LIBRARY_VERSION 3)
-set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.1.2)
+set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.5.0)
 
 # Git tag for our library
 
-set(GIT_TAG v3.1.2)
+set(GIT_TAG v3.5.0)
 
 # Specify where our local package will be installed
 
@@ -89,9 +89,7 @@ else()
     # Set platform specific configuration options
 
     if(WIN32)
-        math(EXPR MSVC_VERSION "${CMAKE_CXX_COMPILER_VERSION_MAJOR}-4")
-
-        set(DEFINE_CMAKE_GENERATOR -G "Visual Studio 14 20${MSVC_VERSION} Win64")
+        set(DEFINE_CMAKE_GENERATOR -G "Visual Studio 15 2017" -A x64)
         set(SHARED_lIBRARY_DIR bin)
     else()
         set(DEFINE_CMAKE_GENERATOR)
