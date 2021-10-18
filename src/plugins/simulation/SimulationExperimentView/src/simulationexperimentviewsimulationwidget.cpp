@@ -53,7 +53,6 @@ along with this program. If not, see <https://gnu.org/licenses>.
 
 //==============================================================================
 
-#include <QApplication>
 #include <QDesktopServices>
 #include <QDir>
 #include <QDragEnterEvent>
@@ -62,7 +61,7 @@ along with this program. If not, see <https://gnu.org/licenses>.
 #include <QMainWindow>
 #include <QMenu>
 #include <QMimeData>
-#include <QScreen>
+#include <QPainter>
 #include <QScrollBar>
 #include <QTextEdit>
 #include <QTimer>
@@ -905,9 +904,8 @@ void SimulationExperimentViewSimulationWidget::initialize(bool pReloading)
 {
     // In the case of a SED-ML file and of a COMBINE archive, we will need
     // to further initialise ourselves, to customise graph panels, etc. (see
-    // SimulationExperimentViewSimulationWidget::furtherInitialize()), so we
-    // ask our central widget to show its busy widget (which will get hidden
-    // in CentralWidget::updateGui())
+    // furtherInitialize()), so we ask our central widget to show its busy
+    // widget (which will get hidden in CentralWidget::updateGui())
 
     bool isSedmlFile = mSimulation->fileType() == SimulationSupport::Simulation::FileType::SedmlFile;
     bool isCombineArchive = mSimulation->fileType() == SimulationSupport::Simulation::FileType::CombineArchive;
@@ -1521,6 +1519,8 @@ void SimulationExperimentViewSimulationWidget::addGraphPanel()
 {
     // Ask our graph panels widget to add a new graph panel
 
+    ++mNbOfGraphPanels;
+
     mContentsWidget->graphPanelsWidget()->addGraphPanel(defaultGraphPanelProperties());
 }
 
@@ -1539,6 +1539,8 @@ void SimulationExperimentViewSimulationWidget::removeGraphPanel()
 void SimulationExperimentViewSimulationWidget::removeCurrentGraphPanel()
 {
     // Ask our graph panels widget to remove the current graph panel
+
+    mNbOfGraphPanels = qMax(1, mNbOfGraphPanels-1);
 
     if (mContentsWidget->graphPanelsWidget()->removeCurrentGraphPanel(defaultGraphPanelProperties())) {
         processEvents();
@@ -1599,8 +1601,8 @@ void SimulationExperimentViewSimulationWidget::initializeTrackers(bool pInitialz
         Core::PropertyEditorWidget *graphPanelPropertyEditor = graphPanelAndGraphsWidget->graphPanelPropertyEditor(graphPanel);
         Core::PropertyEditorWidget *graphsPropertyEditor = graphPanelAndGraphsWidget->graphsPropertyEditor(graphPanel);
 
-        mGraphPanelProperties.insert(graphPanelPropertyEditor, allPropertyValues(graphPanelPropertyEditor));
-        mGraphsProperties.insert(graphsPropertyEditor, allPropertyValues(graphsPropertyEditor));
+        mGraphPanelProperties << allPropertyValues(graphPanelPropertyEditor);
+        mGraphsProperties << allPropertyValues(graphsPropertyEditor);
 
         connect(graphPanelPropertyEditor, &Core::PropertyEditorWidget::propertyChanged,
                 this, &SimulationExperimentViewSimulationWidget::checkGraphPanelsAndGraphs,
@@ -2888,19 +2890,15 @@ bool SimulationExperimentViewSimulationWidget::import(const QString &pFileName,
                 this, &SimulationExperimentViewSimulationWidget::dataStoreImportDone);
 
         connect(this, &SimulationExperimentViewSimulationWidget::importDone,
-                dataStoreImportData, &DataStore::DataStoreImportData::deleteLater);
+                dataStoreImportData, &DataStore::DataStoreImportData::deleteLater,
+                Qt::UniqueConnection);
         connect(this, &SimulationExperimentViewSimulationWidget::importDone,
-                this, &SimulationExperimentViewSimulationWidget::resetDataStoreImporterConnections);
-
-        QEventLoop waitLoop;
-
-        connect(this, &SimulationExperimentViewSimulationWidget::importDone, this, [&]() {
-            waitLoop.quit();
-        });
+                this, &SimulationExperimentViewSimulationWidget::dataStoreImportReallyDone,
+                Qt::UniqueConnection);
 
         dataStoreImporter->importData(dataStoreImportData);
 
-        waitLoop.exec();
+        mWaitLoop.exec();
 
         return true;
     }
@@ -2916,9 +2914,11 @@ bool SimulationExperimentViewSimulationWidget::import(const QString &pFileName,
 
 //==============================================================================
 
-void SimulationExperimentViewSimulationWidget::resetDataStoreImporterConnections(DataStore::DataStoreImporter *pDataStoreImporter)
+void SimulationExperimentViewSimulationWidget::dataStoreImportReallyDone(DataStore::DataStoreImporter *pDataStoreImporter)
 {
-    // Reset our connections for the given data store importer
+    // Reset our connections for the given data store importer and ask our wait
+    // loop to quit with a delay (so that mWaitLoop.exec() has time to be called
+    // in case the import was very quick)
     // Note: we reset our data store importer connections once the import is
     //       done otherwise if we were to import data from another file then
     //       our "local" dataStoreImportProgress() and dataStoreImportDone()
@@ -2932,6 +2932,17 @@ void SimulationExperimentViewSimulationWidget::resetDataStoreImporterConnections
 
     disconnect(pDataStoreImporter, &DataStore::DataStoreImporter::done,
                this, &SimulationExperimentViewSimulationWidget::dataStoreImportDone);
+
+    QTimer::singleShot(169, this, &SimulationExperimentViewSimulationWidget::quitWaitLoop);
+}
+
+//==============================================================================
+
+void SimulationExperimentViewSimulationWidget::quitWaitLoop()
+{
+    // Quit our wait loop
+
+    mWaitLoop.quit();
 }
 
 //==============================================================================
@@ -2996,9 +3007,11 @@ void SimulationExperimentViewSimulationWidget::simulationResultsExport()
                 this, &SimulationExperimentViewSimulationWidget::dataStoreExportDone);
 
         connect(this, &SimulationExperimentViewSimulationWidget::exportDone,
-                dataStoreExportData, &DataStore::DataStoreExportData::deleteLater);
+                dataStoreExportData, &DataStore::DataStoreExportData::deleteLater,
+                Qt::UniqueConnection);
         connect(this, &SimulationExperimentViewSimulationWidget::exportDone,
-                this, &SimulationExperimentViewSimulationWidget::resetDataStoreExporterConnections);
+                this, &SimulationExperimentViewSimulationWidget::dataStoreExportReallyDone,
+                Qt::UniqueConnection);
 
         dataStoreExporter->exportData(dataStoreExportData);
     }
@@ -3006,7 +3019,7 @@ void SimulationExperimentViewSimulationWidget::simulationResultsExport()
 
 //==============================================================================
 
-void SimulationExperimentViewSimulationWidget::resetDataStoreExporterConnections(DataStore::DataStoreExporter *pDataStoreExporter)
+void SimulationExperimentViewSimulationWidget::dataStoreExportReallyDone(DataStore::DataStoreExporter *pDataStoreExporter)
 {
     // Reset our connections for the given data store exporter
     // Note: we reset our data store exporter connections once the export is
@@ -3032,10 +3045,6 @@ void SimulationExperimentViewSimulationWidget::delayWheelCreated(QwtWheel *pWhee
         return;
     }
 
-    QRect availableGeometry = qApp->primaryScreen()->availableGeometry();
-
-    pWheel->setFixedSize(int(0.07*availableGeometry.width()),
-                         mToolBarWidget->height()/2);
     pWheel->setRange(0.0, 55.0);
     pWheel->setValue(mDelayWheelValue);
 
@@ -3198,7 +3207,7 @@ void SimulationExperimentViewSimulationWidget::resetSimulationProgress()
     //          widget would show a message rather than us...
     // Note #2: we want a short delay before resetting our progress bar or tab
     //          icon, so that the user can really see when our simulation has
-    //          completed, but this is only is we don't need to reload
+    //          completed, but this is only if we don't need to reload
     //          ourselves. Indeed, if we need to reload ourselves (see
     //          fileReloaded()), we want things to be done as quickly as
     //          possible. Not only that, but we don't want to risk problems with
@@ -3353,8 +3362,11 @@ void SimulationExperimentViewSimulationWidget::graphPanelRemoved(GraphPanelWidge
     mPlots.removeOne(plot);
 
     // Check our graph panels and their graphs
+    // Note: we use a single shot to give the GUI time to update, especially if
+    //       we removed the last graph panel in which case a new graph panel
+    //       will be added...
 
-    checkGraphPanelsAndGraphs();
+    QTimer::singleShot(0, this, &SimulationExperimentViewSimulationWidget::checkGraphPanelsAndGraphs);
 }
 
 //==============================================================================
@@ -4080,45 +4092,43 @@ void SimulationExperimentViewSimulationWidget::checkGraphPanelsAndGraphs()
         return;
     }
 
-    // Check whether any of our graph panels' height has changed
+    // Make sure that we have the expected number of graph panels
+    // Note: when adding/removing graph panels, we will come here when the graph
+    //       panel hasn't yet been added/removed. So, we want to make sure that
+    //       it has been. This is particularly important when the user deletes
+    //       the last graph panel (i.e. resets it) since
+    //       GraphPanelsWidget::removeCurrentGraphPanel() will first add a graph
+    //       panel and then delete the "last" one, which if we were not to test
+    //       things would result in the file to be considered modified for a
+    //       split second...
 
     GraphPanelWidget::GraphPanelsWidget *graphPanelsWidget = mContentsWidget->graphPanelsWidget();
+    const GraphPanelWidget::GraphPanelWidgets graphPanels = graphPanelsWidget->graphPanels();
+
+    if (mNbOfGraphPanels != graphPanels.count()) {
+        return;
+    }
+
+    // Check whether any of our graph panels' height has changed
 
     mGraphPanelsWidgetSizesModified = graphPanelsWidget->sizes() != mGraphPanelsWidgetSizes;
 
     // Check whether any of our graph panel / graphs properties has changed
-    // Note: we check that allPropertyValues is not empty since it may be when
-    //       reloading...
 
     SimulationExperimentViewInformationGraphPanelAndGraphsWidget *graphPanelAndGraphsWidget = mContentsWidget->informationWidget()->graphPanelAndGraphsWidget();
 
     mGraphPanelPropertiesModified.clear();
     mGraphsPropertiesModified.clear();
 
-    const GraphPanelWidget::GraphPanelWidgets graphPanels = graphPanelsWidget->graphPanels();
+    int i = -1;
 
     for (auto graphPanel : graphPanels) {
-        Core::PropertyEditorWidget *propertyEditor = graphPanelAndGraphsWidget->graphPanelPropertyEditor(graphPanel);
+        ++i;
 
-        if (mGraphPanelProperties.contains(propertyEditor)) {
-            QVariantList allPropertyValues = this->allPropertyValues(propertyEditor);
-
-            if (!allPropertyValues.isEmpty()) {
-                mGraphPanelPropertiesModified.insert(propertyEditor,
-                                                     allPropertyValues != mGraphPanelProperties.value(propertyEditor));
-            }
-        }
-
-        propertyEditor = graphPanelAndGraphsWidget->graphsPropertyEditor(graphPanel);
-
-        if (mGraphsProperties.contains(propertyEditor)) {
-            QVariantList allPropertyValues = this->allPropertyValues(propertyEditor);
-
-            if (!allPropertyValues.isEmpty()) {
-                mGraphsPropertiesModified.insert(propertyEditor,
-                                                 allPropertyValues != mGraphsProperties.value(propertyEditor));
-            }
-        }
+        mGraphPanelPropertiesModified << (   (i < mGraphPanelProperties.count())
+                                          && (allPropertyValues(graphPanelAndGraphsWidget->graphPanelPropertyEditor(graphPanel)) != mGraphPanelProperties[i]));
+        mGraphsPropertiesModified << (   (i < mGraphsProperties.count())
+                                      && (allPropertyValues(graphPanelAndGraphsWidget->graphsPropertyEditor(graphPanel)) != mGraphsProperties[i]));
     }
 
     // Update our file's modified status
@@ -4158,9 +4168,7 @@ void SimulationExperimentViewSimulationWidget::updateSedmlFileOrCombineArchiveMo
     // simulation, solvers, graph panel or graphs properties have changed, and
     // keeping in mind that we may have added/removed graph panels
 
-    auto graphPanelPropertiesKeys = mGraphPanelProperties.keys();
-    auto graphPanelPropertiesModifiedKeys = mGraphPanelPropertiesModified.keys();
-    bool graphPanelPropertiesModified = graphPanelPropertiesKeys != graphPanelPropertiesModifiedKeys;
+    bool graphPanelPropertiesModified = mGraphPanelProperties.count() != mGraphPanelProperties.count();
 
     if (!graphPanelPropertiesModified) {
         for (auto someGraphPanelPropertiesModified : qAsConst(mGraphPanelPropertiesModified)) {
@@ -4168,9 +4176,7 @@ void SimulationExperimentViewSimulationWidget::updateSedmlFileOrCombineArchiveMo
         }
     }
 
-    auto graphsPropertiesKeys = mGraphsProperties.keys();
-    auto graphsPropertiesModifiedKeys = mGraphsPropertiesModified.keys();
-    bool graphsPropertiesModified = graphsPropertiesKeys != graphsPropertiesModifiedKeys;
+    bool graphsPropertiesModified = mGraphsProperties.count() != mGraphsPropertiesModified.count();
 
     if (!graphsPropertiesModified) {
         for (auto someGraphsPropertiesModified : qAsConst(mGraphsPropertiesModified)) {

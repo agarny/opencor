@@ -49,7 +49,8 @@ int main(int pArgC, char *pArgV[])
     // The different groups of tests that are to be run
     // Note: -1 for iMax because tests ends with our separator...
 
-    QString tests = OpenCOR::fileContents(":/tests").first();
+    QStringList testsList = OpenCOR::fileContents(":/tests");
+    QString tests = testsList.first();
     QMap<QString, QStringList> testsGroups;
     QStringList testItems = tests.split('|');
     QString testGroup;
@@ -66,7 +67,7 @@ int main(int pArgC, char *pArgV[])
         } else {
             addTest = false;
 
-            for (const auto &requestedTest : requestedTests) {
+            for (const auto &requestedTest : qAsConst(requestedTests)) {
                 QStringList requestedTestItems = requestedTest.split("::");
                 QString requestedTestGroup = requestedTestItems[0];
                 QString requestedTestTest = (requestedTestItems.count() > 1)?requestedTestItems[1].toLower():QString();
@@ -91,7 +92,8 @@ int main(int pArgC, char *pArgV[])
     // On Windows, go to the directory that contains our plugins, so that we can
     // load them without any problem
 
-    QString buildDir = OpenCOR::fileContents(":/build_directory").first();
+    QStringList buildDirList = OpenCOR::fileContents(":/build_directory");
+    QString buildDir = buildDirList.first();
 
 #ifdef Q_OS_WIN
     QDir::setCurrent(buildDir+"/plugins/OpenCOR");
@@ -99,8 +101,11 @@ int main(int pArgC, char *pArgV[])
 
     // Run the different tests
 
-    QStringList failedTests;
     int res = 0;
+    QProcess process;
+    QStringList failedTests;
+
+    process.setProcessChannelMode(QProcess::MergedChannels);
 
     auto testBegin = testsGroups.constBegin();
     auto testEnd = testsGroups.constEnd();
@@ -119,16 +124,20 @@ int main(int pArgC, char *pArgV[])
             // Execute the test itself
 
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
-            int testRes = QProcess::execute(buildDir+"/bin/"+testsGroup.key()+"_"+testName, {});
+            process.start(buildDir+"/bin/"+testsGroup.key()+"_"+testName, QStringList());
 #else
-            int testRes = QProcess::execute(buildDir+"/OpenCOR.app/Contents/MacOS/"+testsGroup.key()+"_"+testName, {});
+            process.start(buildDir+"/OpenCOR.app/Contents/MacOS/"+testsGroup.key()+"_"+testName, QStringList());
 #endif
 
-            if (testRes != 0) {
+            process.waitForFinished(-1);
+
+            std::cout << qPrintable(process.readAll()) << std::endl;
+
+            if (process.exitCode() != 0) {
                 failedTests << testsGroup.key()+"::"+testName;
             }
 
-            res = (res != 0)?res:testRes;
+            res = (res != 0)?res:process.exitCode();
 
             std::cout << std::endl;
         }
@@ -162,7 +171,7 @@ int main(int pArgC, char *pArgV[])
             std::cout << "The following tests failed:" << std::endl;
         }
 
-        for (const auto &failedTest : failedTests) {
+        for (const auto &failedTest : qAsConst(failedTests)) {
             std::cout << " - " << failedTest.toStdString() << std::endl;
         }
     }

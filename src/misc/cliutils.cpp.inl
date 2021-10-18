@@ -28,7 +28,11 @@ QString locale()
     QString res = rawLocale();
 
     if (res.isEmpty()) {
-        return QLocale::system().name().left(2);
+        res = QLocale::system().name().left(2);
+
+        if (res == "C") {
+            res = "en";
+        }
     }
 
     return res;
@@ -173,8 +177,9 @@ QString pluginCategoryDescription(const PluginInfo::Category &pCategory)
 
 QString canonicalDirName(const QString &pDirName)
 {
-    // Return a canonical version of the given directory name or a native version, if the native and canonical version is empty (i.e. the
-    // directory doesn't exist (anymore?))
+    // Return a canonical version of the given directory name or a native
+    // version, if the native and canonical version is empty (i.e. the directory
+    // doesn't exist (anymore?))
 
     QString res = QDir(pDirName).canonicalPath();
 
@@ -496,6 +501,14 @@ void checkFileNameOrUrl(const QString &pInFileNameOrUrl, bool &pOutIsLocalFile,
 bool readFile(const QString &pFileNameOrUrl, QByteArray &pFileContents,
               QString *pErrorMessage)
 {
+    // Make sure that we have a file name or URL
+
+    pFileContents = QByteArray();
+
+    if (pFileNameOrUrl.isEmpty()) {
+        return false;
+    }
+
     // Determine whether we are dealing with a local or a remote file
 
     bool isLocalFile;
@@ -504,8 +517,6 @@ bool readFile(const QString &pFileNameOrUrl, QByteArray &pFileContents,
     checkFileNameOrUrl(pFileNameOrUrl, isLocalFile, fileNameOrUrl);
 
     // Read the contents of the file, which file name or URL is given
-
-    pFileContents = QByteArray();
 
     if (isLocalFile) {
         QFile file(fileNameOrUrl);

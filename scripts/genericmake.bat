@@ -1,3 +1,5 @@
+@ECHO OFF
+
 SETLOCAL ENABLEDELAYEDEXPANSION
 
 SET AppDir=%~dp0..\
@@ -35,7 +37,11 @@ IF EXIST !AppDir!build (
 
     TITLE Building OpenCOR!TitleTests! using !Generator!...
 
-    CALL "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+    IF EXIST "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat" (
+        CALL "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+    ) ELSE (
+        CALL "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+    )
 
     SET OrigDir=!CD!
 

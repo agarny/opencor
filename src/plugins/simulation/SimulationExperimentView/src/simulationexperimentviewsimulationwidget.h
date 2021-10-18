@@ -269,15 +269,17 @@ private:
 
     GraphPanelWidget::GraphPanelPlotWidgets mPlots;
 
+    int mNbOfGraphPanels = 0;
+
     QVariantList mSimulationProperties;
     QVariantList mSolversProperties;
-    QHash<Core::PropertyEditorWidget *, QVariantList> mGraphPanelProperties;
-    QHash<Core::PropertyEditorWidget *, QVariantList> mGraphsProperties;
+    QList<QVariantList> mGraphPanelProperties;
+    QList<QVariantList> mGraphsProperties;
 
     bool mSimulationPropertiesModified = false;
     bool mSolversPropertiesModified = false;
-    QHash<Core::PropertyEditorWidget *, bool>  mGraphPanelPropertiesModified;
-    QHash<Core::PropertyEditorWidget *, bool>  mGraphsPropertiesModified;
+    QBoolList mGraphPanelPropertiesModified;
+    QBoolList mGraphsPropertiesModified;
 
     QIntList mGraphPanelsWidgetSizes;
     bool mGraphPanelsWidgetSizesModified = false;
@@ -289,6 +291,8 @@ private:
     QHash<GraphPanelWidget::GraphPanelPlotGraph *, quint64> mOldDataSizes;
 
     QMap<QString, FileTypeInterface *> mFileTypeInterfaces;
+
+    QEventLoop mWaitLoop;
 
     QString styledOutput();
     void output(const QString &pMessage);
@@ -460,8 +464,10 @@ private slots:
 
     void finalFurtherInitialize();
 
-    void resetDataStoreImporterConnections(DataStore::DataStoreImporter *pDataStoreImporter);
-    void resetDataStoreExporterConnections(DataStore::DataStoreExporter *pDataStoreExporter);
+    void dataStoreImportReallyDone(DataStore::DataStoreImporter *pDataStoreImporter);
+    void dataStoreExportReallyDone(DataStore::DataStoreExporter *pDataStoreExporter);
+
+    void quitWaitLoop();
 };
 
 //==============================================================================

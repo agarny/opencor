@@ -127,18 +127,22 @@ private:
     QDomNode mDocumentationNode;
     QDomNode mTopMathmlNode;
 
-    QDomNamedNodeMap mAttributes;
     QDomDocument mRdfNodes;
 
     bool mAssignmentDone = false;
 
-    bool mOldPiecewiseStatementUsed = false;
-    bool mPiecewiseStatementUsed = false;
+    bool mOldTopPiecewiseStatementUsed = false;
+    bool mTopPiecewiseStatementUsed = false;
 
     QMap<QString, QString> mMappings;
     QMap<QString, MathmlNode> mMathmlNodes;
 
+    QMap<QPair<int, int>, QMap<QString, QString>> mNamespaces;
+
     void reset();
+
+    void trackNamespaceDefinitions(const QDomNode &pDomNode);
+    void trackNamespaceDefinitions(const QString &pRawCellml);
 
     void indent(bool pForceTracking = true);
     void unindent();
@@ -150,9 +154,12 @@ private:
     bool cellmlNode(const QDomNode &pDomNode, const QString &pName) const;
     bool mathmlNode(const QDomNode &pDomNode, const QString &pName) const;
 
-    QString cmetaId(const QDomNode &pDomNode) const;
+    QString id(const QDomNode &pDomNode) const;
 
     MathmlNode mathmlNode(const QDomNode &pDomNode) const;
+
+    bool defineNamespace(const QDomNode &pDomNode, const QString &pPrefix,
+                         const QString &pNamespace) const;
 
     QString attributeNodeValue(const QDomNode &pDomNode,
                                const QString &pNamespace,
@@ -186,6 +193,7 @@ private:
     int childNodesCount(const QDomNode &pDomNode) const;
     QDomNode childNode(const QDomNode &pDomNode, int pChildNodeIndex) const;
     QString processMathmlNode(const QDomNode &pDomNode, bool &pHasError);
+    bool topPiecewiseNode(const QDomNode &pDomNode);
     QString processPiecewiseNode(const QDomNode &pDomNode, bool &pHasError);
     QString processPieceNode(const QDomNode &pDomNode, bool &pHasError);
     QString processOtherwiseNode(const QDomNode &pDomNode, bool &pHasError);

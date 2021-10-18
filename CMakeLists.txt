@@ -158,14 +158,14 @@ endif()
 set(SILENTRUN ${PROJECT_BUILD_DIR}/silentrun)
 
 if(WIN32)
-    execute_process(COMMAND ${C_COMPILER} /O2 /Fe${SILENTRUN} ${PROJECT_SOURCE_DIR}/cmake/silentrun.c
+    execute_process(COMMAND ${C_COMPILER} /O2 /Fe${SILENTRUN} ${CMAKE_SOURCE_DIR}/cmake/silentrun.c
                     RESULT_VARIABLE RESULT OUTPUT_QUIET ERROR_QUIET)
 else()
     if(APPLE)
         set(INCLUDE_ARGUMENT -I ${CMAKE_OSX_SYSROOT}/usr/include)
     endif()
 
-    execute_process(COMMAND ${C_COMPILER} -std=c99 -O3 ${INCLUDE_ARGUMENT} -o ${SILENTRUN} ${PROJECT_SOURCE_DIR}/cmake/silentrun.c
+    execute_process(COMMAND ${C_COMPILER} -std=c99 -O3 ${INCLUDE_ARGUMENT} -o ${SILENTRUN} ${CMAKE_SOURCE_DIR}/cmake/silentrun.c
                     RESULT_VARIABLE RESULT OUTPUT_QUIET ERROR_QUIET)
 endif()
 
@@ -178,7 +178,7 @@ endif()
 if(NOT WIN32 AND NOT APPLE)
     set(RUNPATH2RPATH ${PROJECT_BUILD_DIR}/runpath2rpath)
 
-    execute_process(COMMAND ${C_COMPILER} -O3 -o ${RUNPATH2RPATH} ${PROJECT_SOURCE_DIR}/cmake/runpath2rpath.c
+    execute_process(COMMAND ${C_COMPILER} -O3 -o ${RUNPATH2RPATH} ${CMAKE_SOURCE_DIR}/cmake/runpath2rpath.c
                     RESULT_VARIABLE RESULT OUTPUT_QUIET ERROR_QUIET)
 
     if(NOT RESULT EQUAL 0)
@@ -211,28 +211,38 @@ Checks: >-
     endif()
 endif()
 
-# Make sure that clcache/ccache gets used, if available
+# Use buildcache as a launcher or clcache/ccache as a backup
 
-if(WIN32)
-    find_program(CLCACHE clcache)
+find_program(BUILDCACHE buildcache)
 
-    if(CLCACHE)
-        set(CLCACHEWRAPPER ${PROJECT_BUILD_DIR}/clcachewrapper)
-
-        execute_process(COMMAND ${C_COMPILER} /O2 /Fe${CLCACHEWRAPPER} ${PROJECT_SOURCE_DIR}/cmake/clcachewrapper.c
-                        RESULT_VARIABLE RESULT OUTPUT_QUIET ERROR_QUIET)
-
-        if(RESULT EQUAL 0)
-            set(CMAKE_C_COMPILER_LAUNCHER ${CLCACHEWRAPPER})
-            set(CMAKE_CXX_COMPILER_LAUNCHER ${CLCACHEWRAPPER})
-        endif()
-    endif()
+if(BUILDCACHE)
+    set(CMAKE_C_COMPILER_LAUNCHER ${BUILDCACHE})
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${BUILDCACHE})
+    set(COMPILER_LAUNCHER_NAME buildcache)
 else()
-    find_program(CCACHE ccache)
+    if(WIN32)
+        find_program(CLCACHE clcache)
 
-    if(CCACHE)
-        set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE})
-        set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+        if(CLCACHE)
+            set(CLCACHEWRAPPER ${PROJECT_BUILD_DIR}/clcachewrapper)
+
+            execute_process(COMMAND ${C_COMPILER} /O2 /Fe${CLCACHEWRAPPER} ${CMAKE_SOURCE_DIR}/cmake/clcachewrapper.c
+                            RESULT_VARIABLE RESULT OUTPUT_QUIET ERROR_QUIET)
+
+            if(RESULT EQUAL 0)
+                set(CMAKE_C_COMPILER_LAUNCHER ${CLCACHEWRAPPER})
+                set(CMAKE_CXX_COMPILER_LAUNCHER ${CLCACHEWRAPPER})
+                set(COMPILER_LAUNCHER_NAME clcache)
+            endif()
+        endif()
+    else()
+        find_program(CCACHE ccache)
+
+        if(CCACHE)
+            set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE})
+            set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+            set(COMPILER_LAUNCHER_NAME ccache)
+        endif()
     endif()
 endif()
 
@@ -324,16 +334,9 @@ endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/common.cmake)
 
-# Make sure that we can use the ExternalProject module, and let it know where we
-# want to build our external packages
-# Note: indeed, otherwise on Windows we may end up with path names that are too
-#       long...
+# Configure external projects
 
-include(ExternalProject)
-
-set(EXTERNAL_PROJECT_BUILD_DIR ${PROJECT_BUILD_DIR}/ext)
-
-set_property(DIRECTORY PROPERTY EP_BASE ${EXTERNAL_PROJECT_BUILD_DIR})
+configure_external_projects()
 
 # On macOS, make sure that we support version 10.14 and later, unless a specific
 # deployment target has been specified
@@ -357,10 +360,10 @@ set(CMAKE_ARGS
     -DCMAKE_CXX_COMPILER=${CXX_COMPILER}
 )
 
-if(CCACHE)
+if(CMAKE_C_COMPILER_LAUNCHER AND CMAKE_CXX_COMPILER_LAUNCHER)
     list(APPEND CMAKE_ARGS
-        -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE}
-        -DCMAKE_CXX_COMPILER_LAUNCHER=${CCACHE}
+        -DCMAKE_C_COMPILER_LAUNCHER=${CMAKE_C_COMPILER_LAUNCHER}
+        -DCMAKE_CXX_COMPILER_LAUNCHER=${CMAKE_CXX_COMPILER_LAUNCHER}
     )
 endif()
 
@@ -607,7 +610,11 @@ endif()
 
 # Show what we are about to build
 
-message("${BUILD_INFORMATION} using Qt ${QT_VERSION} LTS...")
+if(COMPILER_LAUNCHER_NAME)
+    set(LAUNCHER_INFORMATION " (and ${COMPILER_LAUNCHER_NAME})")
+endif()
+
+message("${BUILD_INFORMATION} using Qt ${QT_VERSION} LTS${LAUNCHER_INFORMATION}...")
 
 # Keep track of our source and build directories (needed to run our tests)
 
@@ -860,8 +867,8 @@ set(PROJECT_BUILD_TARGET ${PROJECT_NAME}Build)
 
 add_custom_target(${PROJECT_BUILD_TARGET} ALL)
 
-# Specify a target to help us take advantage of our documentation (e.g. by Help
-# window plugin)
+# Specify a target to help us take advantage of our documentation (e.g. by the
+# Help window plugin)
 
 set(DOCUMENTATION_BUILD_TARGET DocumentationBuild)
 
@@ -1041,18 +1048,11 @@ if(NOT "${PYTHON_SCRIPT_DIR}" STREQUAL "")
            RELATIVE_PYTHON_SCRIPT_DIR "${PYTHON_SCRIPT_DIR}")
 endif()
 
-# Fetch parts of our documentation and build it, if we are not building Python
-# Note: we need Python because we rely on Sphinx to build our documentation...
+# Generate our documentation, if we are not building Python
+# Note: we need Python because we rely on Sphinx to generate our documentation...
 
 if(USE_PREBUILT_PYTHON_PACKAGE)
-    execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/doc
-                                                               ${PROJECT_BUILD_DIR}/doc)
-
-    configure_file(${PROJECT_BUILD_DIR}/doc/${CMAKE_PROJECT_NAME}.qhcp.in
-                   ${PROJECT_BUILD_DIR}/doc/${CMAKE_PROJECT_NAME}.qhcp)
-
-    build_documentation(user)
-    build_documentation(developer)
+    generate_documentation(TRUE)
 endif()
 
 # Build the GUI version of OpenCOR
@@ -1220,11 +1220,17 @@ else()
         # Note #2: the second set of additional files is needed in case OpenCOR
         #          is to be run on a non-up-to-date copy of Windows 7...
 
+        if(EXISTS "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community")
+            set(MSVC_EDITION Community)
+        else()
+            set(MSVC_EDITION Enterprise)
+        endif()
+
         if(RELEASE_MODE)
-            set(MSVC_DIRNAME "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/14.16.27012/x64/Microsoft.VC141.CRT")
+            set(MSVC_DIRNAME "C:/Program Files (x86)/Microsoft Visual Studio/2017/${MSVC_EDITION}/VC/Redist/MSVC/14.16.27012/x64/Microsoft.VC141.CRT")
             set(DEBUG_TAG)
         else()
-            set(MSVC_DIRNAME "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/14.16.27012/debug_nonredist/x64/Microsoft.VC141.DebugCRT")
+            set(MSVC_DIRNAME "C:/Program Files (x86)/Microsoft Visual Studio/2017/${MSVC_EDITION}/VC/Redist/MSVC/14.16.27012/debug_nonredist/x64/Microsoft.VC141.DebugCRT")
             set(DEBUG_TAG d)
         endif()
 
@@ -1233,7 +1239,7 @@ else()
             ${MSVC_DIRNAME}/vcruntime140${DEBUG_TAG}.dll
         )
 
-        set(REMOTE_DEBUGGER_DIRNAME "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/Remote Debugger/x64")
+        set(REMOTE_DEBUGGER_DIRNAME "C:/Program Files (x86)/Microsoft Visual Studio/2017/${MSVC_EDITION}/Common7/IDE/Remote Debugger/x64")
 
         list(APPEND ADDITIONAL_FILES
             ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-core-file-l1-2-0.dll
@@ -1296,8 +1302,8 @@ endif()
 if(WIN32)
     # Select NSIS, if available, and ZIP as the packagers on Windows
 
-    if(   EXISTS "C:/Program\ Files/NSIS/makensis.exe"
-       OR EXISTS "C:/Program\ Files\ (x86)/NSIS/makensis.exe")
+    if(   EXISTS "C:/Program Files/NSIS/makensis.exe"
+       OR EXISTS "C:/Program Files (x86)/NSIS/makensis.exe")
         set(NSIS_FOUND TRUE)
         set(NSIS_GENERATOR NSIS)
     else()
@@ -1431,6 +1437,12 @@ if(WIN32)
         set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
             \\\${UnregisterExtension} \\\".cellml\\\" \\\"CellML File\\\"
             System::Call \\\"Shell32::SHChangeNotify(i 0x08000000, i 0, i 0, i 0)\\\"
+        ")
+
+        # Update Python scripts to refer to our installed Python
+
+        set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+            Exec '\\\"\\\$INSTDIR\\\\Python\\\\bin\\\\python.exe\\\" \\\"\\\$INSTDIR\\\\Python\\\\Scripts\\\\set_python_path.py\\\" \\\"\\\$INSTDIR\\\\Python\\\" -s'
         ")
     endif()
 elseif(APPLE)
@@ -1631,22 +1643,6 @@ set(MODEL_FILES
 foreach(MODEL_FILE ${MODEL_FILES})
     install(FILES ${CMAKE_SOURCE_DIR}/models/${MODEL_FILE}
             DESTINATION models
-            PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
-endforeach()
-
-# Some user-defined format files
-
-set(FORMAT_FILES
-    C.xml
-    F77.xml
-    MATLAB.xml
-    Python.xml
-    README.txt
-)
-
-foreach(FORMAT_FILE ${FORMAT_FILES})
-    install(FILES ${CMAKE_SOURCE_DIR}/formats/${FORMAT_FILE}
-            DESTINATION formats
             PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 endforeach()
 

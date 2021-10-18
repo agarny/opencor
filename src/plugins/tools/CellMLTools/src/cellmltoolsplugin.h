@@ -75,9 +75,10 @@ private:
     QAction *mExportToCellml10Action = nullptr;
     QAction *mExportToCellml20Action = nullptr;
 
-    QAction *mExportToUserDefinedFormatAction = nullptr;
-
-    void exportTo(CellMLSupport::CellmlFile::Version pVersion);
+    QAction *mExportToCAction = nullptr;
+    QAction *mExportToFortran77Action = nullptr;
+    QAction *mExportToMatlabAction = nullptr;
+    QAction *mExportToPythonAction = nullptr;
 
     void runHelpCommand();
     bool runExportCommand(const QStringList &pArguments);
@@ -86,10 +87,8 @@ private:
     bool runCommand(Command pCommand, const QStringList &pArguments);
 
 private slots:
-    void exportToCellml10();
-    void exportToCellml20();
-
-    void exportToUserDefinedFormat();
+    void exportToFormat();
+    void exportToLanguage();
 };
 
 //==============================================================================

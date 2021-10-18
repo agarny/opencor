@@ -36,6 +36,7 @@ along with this program. If not, see <https://gnu.org/licenses>.
 #include <QGestureEvent>
 #include <QImageWriter>
 #include <QMenu>
+#include <QPainter>
 #include <QPaintEvent>
 #include <QScreen>
 #include <QTimer>
@@ -59,8 +60,13 @@ along with this program. If not, see <https://gnu.org/licenses>.
     #include "qwt_plot_renderer.h"
     #include "qwt_point_mapper.h"
     #include "qwt_scale_engine.h"
+    #include "qwt_scale_map.h"
     #include "qwt_text_label.h"
 #include "qwtend.h"
+
+//==============================================================================
+
+#include <QtMath>
 
 //==============================================================================
 
@@ -700,6 +706,12 @@ QwtSeriesData<QPointF> * GraphPanelPlotGraph::data(int pRun) const
 void GraphPanelPlotGraph::setData(double *pDataX, double *pDataY, quint64 pSize,
                                   int pRun)
 {
+    // Make sure that we have some data to set
+
+    if ((pDataX == nullptr) || (pDataY == nullptr)) {
+        return;
+    }
+
     // Set our data, i.e. raw samples, to the given run, if it exists
 
     GraphPanelPlotGraphRun *run = nullptr;
@@ -1192,6 +1204,14 @@ void GraphPanelPlotScaleDraw::retranslateUi()
 
 QwtText GraphPanelPlotScaleDraw::label(double pValue) const
 {
+    // Check whether we can round off the given value
+
+    double roundedValue = round(pValue);
+
+    if (qFuzzyCompare(pValue, roundedValue)) {
+        pValue = roundedValue;
+    }
+
     // Return pValue as a string, keeping in mind the current locale
 
     QString label = QLocale().toString(pValue);

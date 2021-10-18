@@ -74,6 +74,13 @@ public:
         Cellml_2_0
     };
 
+    enum class Language {
+        C,
+        Fortran77,
+        Matlab,
+        Python
+    };
+
     explicit CellmlFile(const QString &pFileName);
     ~CellmlFile() override;
 
@@ -131,8 +138,7 @@ public:
     QString xmlBase();
 
     bool exportTo(const QString &pFileName, Version pVersion);
-    bool exportTo(const QString &pFileName,
-                  const QString &pUserDefinedFormatFileName);
+    bool exportTo(const QString &pFileName, Language pLanguage);
 
     Version version();
 
