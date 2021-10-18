@@ -418,6 +418,10 @@ bool CellMLToolsPlugin::runCommand(Command pCommand,
                                    && (cellmlVersion != CellMLSupport::CellmlFile::Version::Cellml_1_0)
                                    && (cellmlVersion != CellMLSupport::CellmlFile::Version::Cellml_1_1)) {
                             output = "The file must be a CellML 1.0/1.1 file.";
+                        } else if (   (formatOrLanguage != Cellml10)
+                                   && (formatOrLanguage != Cellml20)
+                                   && (cellmlVersion == CellMLSupport::CellmlFile::Version::Cellml_2_0)) {
+                            output = "The file must be a CellML 1.0/1.1 file.";
                         } else {
                             // Everything seems to be fine, so attempt the
                             // export itself
@@ -525,11 +529,13 @@ void CellMLToolsPlugin::exportToFormat()
 {
     // Ask for the name of the file that will contain the export
 
-    static const QString Cellml_1_0 = "CellML 1.0";
-
+    auto action = qobject_cast<QAction *>(sender());
+    QString formatString = (action == mExportToCellml10Action)?
+                               "CellML 1.0":
+                               "CellML 2.0";
     QStringList cellmlFilters = Core::filters(FileTypeInterfaces() << CellMLSupport::fileTypeInterface());
     QString firstCellmlFilter = cellmlFilters.first();
-    QString fileName = Core::getSaveFileName(tr("Export CellML File To %1").arg(Cellml_1_0),
+    QString fileName = Core::getSaveFileName(tr("Export CellML File To %1").arg(formatString),
                                              Core::newFileName(mFileName, tr("Exported"), false),
                                              cellmlFilters, &firstCellmlFilter);
 
@@ -541,7 +547,9 @@ void CellMLToolsPlugin::exportToFormat()
 
     CellMLSupport::CellmlFile *cellmlFile = CellMLSupport::CellmlFileManager::instance()->cellmlFile(mFileName);
 
-    if (!cellmlFile->exportTo(fileName, CellMLSupport::CellmlFile::Version::Cellml_1_0)) {
+    if (!cellmlFile->exportTo(fileName, (action == mExportToCellml10Action)?
+                                            CellMLSupport::CellmlFile::Version::Cellml_1_0:
+                                            CellMLSupport::CellmlFile::Version::Cellml_2_0)) {
         QString errorMessage;
 
         if (!cellmlFile->issues().isEmpty()) {
@@ -552,9 +560,9 @@ void CellMLToolsPlugin::exportToFormat()
             //       one of them following a CellML export...
         }
 
-        Core::warningMessageBox(tr("Export CellML File To %1").arg(Cellml_1_0),
+        Core::warningMessageBox(tr("Export CellML File To %1").arg(formatString),
                                 tr("<strong>%1</strong> could not be exported to <strong>%2</strong>%3.").arg(QDir::toNativeSeparators(fileName),
-                                                                                                              Cellml_1_0,
+                                                                                                              formatString,
                                                                                                               errorMessage));
     }
 }
