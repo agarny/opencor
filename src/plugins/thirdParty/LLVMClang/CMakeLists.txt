@@ -6,7 +6,7 @@ set(PACKAGE_NAME LLVMClang)
 set(PACKAGE_VERSION 12.0.1)
 set(PACKAGE_REPOSITORY llvmclang)
 set(GIT_TAG v12.0.1b)
-set(RELEASE_TAG v12.0.1b)
+set(RELEASE_TAG v12.0.1b-centos7)
 
 get_full_local_external_package_dir()
 
@@ -67,7 +67,7 @@ if(USE_PREBUILT_LLVMCLANG_PACKAGE)
     else()
         retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
                          ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
-                         30ec6376375b13032704a613c38d3c212381638a)
+                         7c717307d3ac2e61fa20ef05469bb71af583b653)
     endif()
 else()
     # Allow for big objects and ignore some warnings

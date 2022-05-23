@@ -255,6 +255,7 @@ macro(add_plugin PLUGIN_NAME)
         PLUGINS
         QT_MODULES
         EXTERNAL_BINARIES
+        SYMLINK_EXTERNAL_BINARIES
         SYSTEM_BINARIES
         DEPENDS_ON
         BYPRODUCTS
@@ -436,6 +437,22 @@ macro(add_plugin PLUGIN_NAME)
                 install(FILES ${FULL_EXTERNAL_BINARY}
                         DESTINATION lib)
             endif()
+        endforeach()
+    endif()
+
+    # Symbolic external binaries
+
+    if(NOT "${ARG_EXTERNAL_BINARIES_DIR}" STREQUAL "")
+        foreach(ARG_SYMLINK_EXTERNAL_BINARY ${ARG_SYMLINK_EXTERNAL_BINARIES})
+            set(FULL_SYMLINK_EXTERNAL_BINARY "${ARG_EXTERNAL_BINARIES_DIR}/${ARG_SYMLINK_EXTERNAL_BINARY}")
+
+            add_custom_command(TARGET ${COPY_EXTERNAL_BINARIES_TARGET} POST_BUILD
+                               COMMAND ${CMAKE_COMMAND} -E create_symlink ${FULL_SYMLINK_EXTERNAL_BINARY}
+                                                                          ${CMAKE_BINARY_DIR}/${DEST_EXTERNAL_LIBRARIES_DIR}/${ARG_SYMLINK_EXTERNAL_BINARY}
+                               BYPRODUCTS ${CMAKE_BINARY_DIR}/${DEST_EXTERNAL_LIBRARIES_DIR}/${ARG_SYMLINK_EXTERNAL_BINARY})
+
+            install(FILES ${FULL_SYMLINK_EXTERNAL_BINARY}
+                    DESTINATION lib)
         endforeach()
     endif()
 

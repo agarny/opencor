@@ -6,7 +6,7 @@ set(PACKAGE_NAME CellMLAPI)
 set(PACKAGE_VERSION 1.12)
 set(PACKAGE_REPOSITORY cellml-api)
 set(GIT_TAG 1.12)
-set(RELEASE_TAG 1.12)
+set(RELEASE_TAG 1.12-centos7)
 
 get_full_local_external_package_dir()
 
@@ -163,7 +163,7 @@ if(USE_PREBUILT_CELLMLAPI_PACKAGE)
     else()
         retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
                          ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
-                         62f4f9e61fe1c9dfadbfbeb324f81eb618d1e104)
+                         0ac645c7b14e9592446acace2ee7b4eeded5b181)
     endif()
 else()
     # Set some compilation flags and/or ignore some warnings
@@ -172,7 +172,7 @@ else()
         set(PACKAGE_C_FLAGS "${CMAKE_C_FLAGS} /wd4005 /wd4244 /wd4267 /wd4311 /wd4312")
         set(PACKAGE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244 /wd4267 /wd4309 /wd4477 /wd4530 /wd4577")
     elseif(NOT APPLE)
-        set(PACKAGE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wno-deprecated -Wno-misleading-indentation -Wno-reorder -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable")
+        set(PACKAGE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wno-catch-value -Wno-deprecated -Wno-misleading-indentation -Wno-pessimizing-move -Wno-reorder -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable")
     endif()
 
     # Build the CellML API as an external project

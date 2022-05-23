@@ -6,7 +6,7 @@ set(PACKAGE_NAME OpenSSL)
 set(PACKAGE_VERSION 3.0.3)
 set(PACKAGE_REPOSITORY openssl)
 set(GIT_TAG openssl-3.0.3-opencor)
-set(RELEASE_TAG openssl-3.0.3-opencor)
+set(RELEASE_TAG openssl-3.0.3-opencor-centos7)
 
 get_full_local_external_package_dir()
 
@@ -96,7 +96,7 @@ if(USE_PREBUILT_OPENSSL_PACKAGE)
     else()
         retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
                          ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
-                         0b04edb55c1afbba96732e6f8f0274b713a13731)
+                         fa64b8fcdf88f7aa171e378aba64835477c744c0)
     endif()
 else()
     # We require Perl to build OpenSSL

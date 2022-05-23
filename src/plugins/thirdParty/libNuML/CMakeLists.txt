@@ -6,7 +6,7 @@ set(PACKAGE_NAME libNuML)
 set(PACKAGE_VERSION 1.1.5)
 set(PACKAGE_REPOSITORY NuML)
 set(GIT_TAG v1.1.5-opencor)
-set(RELEASE_TAG v1.1.5-opencor)
+set(RELEASE_TAG v1.1.5-opencor-centos7)
 
 get_full_local_external_package_dir()
 
@@ -27,7 +27,13 @@ endif()
 
 # Retrieve our package's binaries
 
-set(EXTERNAL_BINARIES_DIR ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/lib)
+if(WIN32 OR APPLE)
+    set(LIBRARY_DIR lib)
+else()
+    set(LIBRARY_DIR lib64)
+endif()
+
+set(EXTERNAL_BINARIES_DIR ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${LIBRARY_DIR})
 
 set(EXTERNAL_BINARIES
     ${SHARED_LIBRARY}
@@ -36,12 +42,12 @@ set(EXTERNAL_BINARIES
 # Specify the files that can be stripped
 
 set(STRIPPABLE_FILES
-    lib/${SHARED_LIBRARY}
+    ${LIBRARY_DIR}/${SHARED_LIBRARY}
 )
 
 if(WIN32)
     list(APPEND STRIPPABLE_FILES
-        lib/${IMPORT_LIBRARY}
+        ${LIBRARY_DIR}/${IMPORT_LIBRARY}
     )
 endif()
 
@@ -67,7 +73,7 @@ if(USE_PREBUILT_LIBNUML_PACKAGE)
     else()
         retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
                          ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
-                         299f51f4485a6bbc436279b2190219e453644fc0)
+                         bae1fa02d4a0b250d0e4d8a4b75eddd6e59957c3)
     endif()
 else()
     # Build libNuML as an external project
@@ -98,7 +104,7 @@ else()
                              -DWITH_SWIG=OFF
                              <SOURCE_DIR>/libnuml
         BUILD_BYPRODUCTS
-            <INSTALL_DIR>/lib/${IMPORT_LIBRARY}
+            <INSTALL_DIR>/${LIBRARY_DIR}/${IMPORT_LIBRARY}
         DEPENDS
             libSBMLPlugin
     )
@@ -109,7 +115,7 @@ else()
         # We want both our shared and import libraries to be in the same place
 
         ExternalProject_Add_Step(${PACKAGE_BUILD} copyDll
-                                 COMMAND ${CMAKE_COMMAND} -E copy bin/${SHARED_LIBRARY} lib
+                                 COMMAND ${CMAKE_COMMAND} -E copy bin/${SHARED_LIBRARY} ${LIBRARY_DIR}
                                  WORKING_DIRECTORY ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
                                  DEPENDEES install)
     else()

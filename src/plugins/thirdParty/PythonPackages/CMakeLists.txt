@@ -6,7 +6,7 @@ set(PACKAGE_NAME PythonPackages)
 set(PACKAGE_VERSION 3.7.5)
 set(PACKAGE_REPOSITORY python)
 set(GIT_TAG opencor-3.7.5)
-set(RELEASE_TAG v3.7.5)
+set(RELEASE_TAG v3.7.5-centos7)
 
 get_full_local_external_package_dir()
 
@@ -17,7 +17,6 @@ set(SETUPTOOLS_GIT_TAG v41.2.0)
 
 # Version of our different Python packages
 
-set(IPYKERNEL_VERSION 5.1.2)
 set(IPYTHON_VERSION 7.8.0)
 set(IPYWIDGETS_VERSION 7.5.1)
 set(JUPYTER_CLIENT_VERSION 5.3.4)
@@ -36,7 +35,6 @@ set(TRAITLETS_VERSION 4.3.2)
 
 # Patched version of some packages to support PythonQt
 
-set(IPYKERNEL_PYTHONQT ${IPYKERNEL_VERSION}.0)
 set(IPYTHON_PYTHONQT ${IPYTHON_VERSION}.0)
 set(MATPLOTLIB_PYTHONQT ${MATPLOTLIB_VERSION}.1)
 set(QTCONSOLE_PYTHONQT ${QTCONSOLE_VERSION}.0)
@@ -92,7 +90,7 @@ if(USE_PREBUILT_PYTHON_PACKAGES_PACKAGE)
     else()
         retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
                          ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
-                         c1635192f1e69e60eb99e39763962a8410c5ed8a)
+                         73fc11c71c8fec417dc1dd37ac1f1fc99b68aba3)
     endif()
 else()
     # Install Python packages using pip
@@ -114,7 +112,7 @@ else()
 
     file(TO_NATIVE_PATH ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} FULL_LOCAL_EXTERNAL_PACKAGE_PREFIX)
 
-    set(PIP_INSTALL_COMMAND ${CMAKE_COMMAND} -E env "PYTHONPATH=${FULL_LOCAL_SITE_PACKAGES_DIR}"
+    set(PIP_INSTALL_COMMAND ${CMAKE_COMMAND} -E env "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/${DEST_EXTERNAL_LIBRARIES_DIR}:/usr/local/gcc-9.3.0/lib64" "PYTHONPATH=${FULL_LOCAL_SITE_PACKAGES_DIR}"
                                                 ${PYTHON_EXECUTABLE} -s -m pip install --prefix ${FULL_LOCAL_EXTERNAL_PACKAGE_PREFIX}
                                                                                        --upgrade
                                                                                        --upgrade-strategy only-if-needed
@@ -188,7 +186,7 @@ else()
             BUILD_COMMAND
                 ""
             INSTALL_COMMAND
-                ${CMAKE_COMMAND} -E env "PYTHONPATH=${FULL_LOCAL_SITE_PACKAGES_DIR}"
+                ${CMAKE_COMMAND} -E env "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/${DEST_EXTERNAL_LIBRARIES_DIR}:/usr/local/gcc-9.3.0/lib64" "PYTHONPATH=${FULL_LOCAL_SITE_PACKAGES_DIR}"
                                     ${PYTHON_EXECUTABLE} -s ${PIP_SOURCE_DIR}/get-pip.py --prefix ${FULL_LOCAL_EXTERNAL_PACKAGE_PREFIX}
                                                                                          --no-wheel
         )
@@ -294,7 +292,6 @@ else()
 
         add_custom_target(ipythonPackages
             COMMAND ${PIP_INSTALL_COMMAND} --only-binary all
-                                           ipykernel==${IPYKERNEL_VERSION}
                                            ipython==${IPYTHON_VERSION}
                                            ipywidgets==${IPYWIDGETS_VERSION}
                                            jupyter_client==${JUPYTER_CLIENT_VERSION}
@@ -350,7 +347,6 @@ else()
         add_custom_target(pythonQtUpdate
             COMMAND ${PIP_INSTALL_COMMAND} --no-deps
                                            --force-reinstall
-                                           ${GITHUB_OPENCOR}/ipykernel/${ARCHIVE_PYTHONQT}${IPYKERNEL_PYTHONQT}.zip
                                            ${GITHUB_OPENCOR}/ipython/${ARCHIVE_PYTHONQT}${IPYTHON_PYTHONQT}.zip
                                            ${GITHUB_OPENCOR}/qtconsole/${ARCHIVE_PYTHONQT}${QTCONSOLE_PYTHONQT}.zip
                                            ${GITHUB_OPENCOR}/traitlets/${ARCHIVE_PYTHONQT}${TRAITLETS_PYTHONQT}.zip

@@ -6,7 +6,7 @@ set(PACKAGE_NAME Python)
 set(PACKAGE_VERSION 3.7.5)
 set(PACKAGE_REPOSITORY python)
 set(GIT_TAG opencor-3.7.5)
-set(RELEASE_TAG v3.7.5)
+set(RELEASE_TAG v3.7.5-centos7)
 
 get_full_local_external_package_dir()
 
@@ -220,7 +220,7 @@ if(USE_PREBUILT_PYTHON_PACKAGE)
     else()
         retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
                          ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
-                         0982331f1719017596c28e010cc5b46825346d99)
+                         43ba9edd12ec68ebfa4a6283d4de2198c20a63a0)
     endif()
 else()
     # Set platform-specific configuration options

@@ -233,12 +233,6 @@ bool SynchronousFileDownloader::download(const QString &pUrl,
 
         QNetworkAccessManager networkAccessManager;
 
-        // Make sure that we get told if there are SSL errors (which would
-        // happen if a website's certificate is invalid, e.g. it has expired)
-
-        connect(&networkAccessManager, &QNetworkAccessManager::sslErrors,
-                this, &SynchronousFileDownloader::networkAccessManagerSslErrors);
-
         // Download the contents of the remote file
 
         QEventLoop waitLoop;
@@ -285,16 +279,6 @@ bool SynchronousFileDownloader::download(const QString &pUrl,
     }
 
     return false;
-}
-
-//==============================================================================
-
-void SynchronousFileDownloader::networkAccessManagerSslErrors(QNetworkReply *pNetworkReply,
-                                                              const QList<QSslError> &pSslErrors)
-{
-    // Ignore the SSL errors since we assume the user knows what s/he is doing
-
-    pNetworkReply->ignoreSslErrors(pSslErrors);
 }
 
 //==============================================================================

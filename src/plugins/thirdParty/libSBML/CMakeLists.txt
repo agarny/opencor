@@ -6,7 +6,7 @@ set(PACKAGE_NAME libSBML)
 set(PACKAGE_VERSION 5.19.0)
 set(PACKAGE_REPOSITORY libsbml)
 set(GIT_TAG v5.19.0)
-set(RELEASE_TAG v5.19.0)
+set(RELEASE_TAG v5.19.0-centos7)
 
 get_full_local_external_package_dir()
 
@@ -67,7 +67,7 @@ if(USE_PREBUILT_LIBSBML_PACKAGE)
     else()
         retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
                          ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
-                         e27ea428b40a2e5187264e4cd131af7b3b5c3346)
+                         78e3098ce3c46bdab73796f138928ee215d561a5)
     endif()
 else()
     # Download some dependencies for Windows, if needed

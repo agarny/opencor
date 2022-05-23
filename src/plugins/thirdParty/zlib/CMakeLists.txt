@@ -6,7 +6,7 @@ set(PACKAGE_NAME zlib)
 set(PACKAGE_VERSION 1.2.11)
 set(PACKAGE_REPOSITORY zlib)
 set(GIT_TAG v1.2.11)
-set(RELEASE_TAG v1.2.11)
+set(RELEASE_TAG v1.2.11-centos7)
 
 get_full_local_external_package_dir()
 
@@ -73,7 +73,7 @@ if(USE_PREBUILT_ZLIB_PACKAGE)
     else()
         retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
                          ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
-                         31a17a86ec78a19bae8df80a1a1a69dae990a710)
+                         865abbb3add5469c7174369100498d1fb32956c6)
     endif()
 else()
     # Ignore some warnings

@@ -62,10 +62,6 @@ class SynchronousFileDownloader : public QObject
 public:
     bool download(const QString &pUrl, QByteArray &pContents,
                   QString *pErrorMessage) const;
-
-private slots:
-    void networkAccessManagerSslErrors(QNetworkReply *pNetworkReply,
-                                       const QList<QSslError> &pSslErrors);
 };
 
 //==============================================================================

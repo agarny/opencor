@@ -6,7 +6,7 @@ set(PACKAGE_NAME QtWebKit)
 set(PACKAGE_VERSION 5.212.0)
 set(PACKAGE_REPOSITORY qtwebkit)
 set(GIT_TAG 0f85ce57ba143616099efb5337a56eb4450f5f4f)
-set(RELEASE_TAG v5.12.0)
+set(RELEASE_TAG v5.12.0-centos7)
 
 get_full_local_external_package_dir()
 
@@ -63,7 +63,7 @@ else()
     if(APPLE)
         set(SHARED_LIBRARIES_DIR lib)
     else()
-        set(SHARED_LIBRARIES_DIR lib/x86_64-linux-gnu)
+        set(SHARED_LIBRARIES_DIR lib64)
     endif()
 
     set(IMPORT_LIBRARIES_DIR ${SHARED_LIBRARIES_DIR})
@@ -107,7 +107,7 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
     else()
         retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
                          ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
-                         bba1e82441095e952716b247ce280dd51721bb22)
+                         fb630b70239c97eeceef0f98ee8103e2917ba54a)
     endif()
 else()
     # Build JPEG, PNG and ZLIB as external projects, if on Linux or macOS
@@ -117,7 +117,7 @@ else()
 
         # JPEG
 
-        set(LIBJPEG_STATIC_LIBRARY ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/lib/libturbojpeg${CMAKE_STATIC_LIBRARY_SUFFIX})
+        set(LIBJPEG_STATIC_LIBRARY ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/lib64/libturbojpeg${CMAKE_STATIC_LIBRARY_SUFFIX})
 
         ExternalProject_Add(libjpegBuild
             INSTALL_DIR
@@ -140,7 +140,7 @@ else()
 
         # PNG
 
-        set(LIBPNG_STATIC_LIBRARY ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/lib/libpng16${CMAKE_STATIC_LIBRARY_SUFFIX})
+        set(LIBPNG_STATIC_LIBRARY ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/lib64/libpng16${CMAKE_STATIC_LIBRARY_SUFFIX})
 
         ExternalProject_Add(libpngBuild
             INSTALL_DIR

@@ -419,7 +419,6 @@ if(WIN32)
     set(ICU_VERSION 57)
 elseif(NOT APPLE)
     add_subdirectory(src/3rdparty/linux/icu)
-    add_subdirectory(src/3rdparty/linux/mesa)
 endif()
 
 # Retrieve or build our copy of QtWebKit
@@ -460,7 +459,6 @@ set(QT_LIBRARIES
     Multimedia
     MultimediaWidgets
     Network
-    OpenGL
     Positioning
     PrintSupport
     Qml
@@ -525,11 +523,6 @@ else()
     if(APPLE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
         set(LINK_FLAGS_PROPERTIES "-stdlib=libc++")
-    else()
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -no-pie")
-        # Note: needed so that the OpenCOR binary doesn't get considered as a
-        #       shared library file on Ubuntu when using Nautilus (see
-        #       https://stackoverflow.com/a/45332687)...
     endif()
 endif()
 
@@ -935,33 +928,12 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
             thirdParty/PythonPackages
             thirdParty/PythonQt
 
-            dataStore/BioSignalMLDataStore
-            dataStore/CSVDataStore
             dataStore/DataStore
-
-            editing/CellMLAnnotationView
-            editing/CellMLEditingView
-            editing/CellMLTextView
-            editing/EditingView
-            editing/RawCellMLView
-            editing/RawSEDMLView
-            editing/RawTextView
-            editing/SEDMLEditingView
 
             miscellaneous/Compiler
             miscellaneous/Core
-            ${MISCELLANEOUS_HELPWINDOW}
             miscellaneous/JupyterKernel
-            ${MISCELLANEOUS_PYTHONCONSOLEWINDOW}
             miscellaneous/PythonShell
-            miscellaneous/WebBrowserWindow
-
-            organisation/FileBrowserWindow
-            organisation/FileOrganiserWindow
-            organisation/PMRWindow
-            organisation/PMRWorkspacesWindow
-
-            simulation/SimulationExperimentView
 
             solver/CVODESolver
             solver/ForwardEulerSolver
@@ -972,7 +944,6 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
 
             support/CellMLSupport
             support/COMBINESupport
-            support/PMRSupport
             support/PythonQtSupport
             support/PythonSupport
             support/SEDMLSupport
@@ -981,25 +952,12 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
             support/ZIPSupport
 
             thirdParty/CellMLAPI
-            thirdParty/libBioSignalML
-            thirdParty/libgit2
             thirdParty/libNuML
             thirdParty/libSEDML
-            thirdParty/LibXDiff
             thirdParty/LLVMClang
-            thirdParty/OAuth
-            thirdParty/QScintilla
-            thirdParty/Qwt
             thirdParty/SUNDIALS
 
             tools/CellMLTools
-
-            widget/EditorWidget
-            widget/GraphPanelWidget
-            widget/MathMLViewerWidget
-            widget/QScintillaWidget
-            widget/ToolBarWidget
-            widget/WebViewerWidget
         )
 
         # Build our sample plugins, if required
@@ -1538,17 +1496,14 @@ else()
     install(TARGETS ${CMAKE_PROJECT_NAME} RUNTIME
             DESTINATION bin)
 
-    # Mesa library
+    # Library needed on CentOS 7
 
-    install(FILES ${MESA_LIBRARY}
-            DESTINATION lib)
-
-    # Library needed by Qt, but not present on Ubuntu 20.04 LTS and later
-
-    foreach(LIBRARY tinfo.so.5)
+    foreach(LIBRARY gcc_s.so.1 stdc++.so.6)
         set(FULL_LIBRARY ${CMAKE_SHARED_LIBRARY_PREFIX}${LIBRARY})
 
-        get_filename_component(REAL_FULL_LIBRARY /lib/x86_64-linux-gnu/${FULL_LIBRARY} REALPATH)
+        get_filename_component(REAL_FULL_LIBRARY /usr/local/gcc-9.3.0/lib64/${FULL_LIBRARY} REALPATH)
+
+        copy_file_to_build_dir(DIRECT /usr/local/gcc-9.3.0/lib64 lib ${FULL_LIBRARY})
 
         install(FILES ${REAL_FULL_LIBRARY}
                 DESTINATION lib
@@ -1557,17 +1512,14 @@ else()
 
     # Qt libraries required by OpenCOR
 
-    foreach(QT_LIBRARY ${QT_LIBRARIES} DBus XcbQpa)
+    foreach(QT_LIBRARY ${QT_LIBRARIES} DBus)
         linux_deploy_qt_library(${QT_LIBRARY})
     endforeach()
 
     # Qt plugins required by OpenCOR
 
     linux_deploy_qt_plugins(imageformats qjpeg)
-    linux_deploy_qt_plugins(platforms qxcb)
-    linux_deploy_qt_plugins(printsupport cupsprintersupport)
     linux_deploy_qt_plugins(sqldrivers qsqlite)
-    linux_deploy_qt_plugins(xcbglintegrations qxcb-egl-integration qxcb-glx-integration)
 
     # Shell script to run OpenCOR
 

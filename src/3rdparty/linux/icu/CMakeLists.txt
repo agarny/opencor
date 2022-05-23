@@ -6,7 +6,7 @@ set(PACKAGE_NAME ICU)
 set(PACKAGE_VERSION 56.1)
 set(PACKAGE_REPOSITORY icu)
 set(GIT_TAG v56.1)
-set(RELEASE_TAG v56.1)
+set(RELEASE_TAG v56.1-centos7)
 
 get_full_local_external_package_dir()
 
@@ -36,7 +36,7 @@ if(USE_PREBUILT_ICU_PACKAGE)
 
     retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
                      ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
-                     37cf2e70a0e2aa3f3814360e182a45269c7001f6)
+                     76d881d6b30d3bb94be1349d92069fac031a6779)
 else()
     # Build ICU as an external project
 

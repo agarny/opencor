@@ -6,7 +6,7 @@ set(PACKAGE_NAME PythonQt)
 set(PACKAGE_VERSION 3.2.2)
 set(PACKAGE_REPOSITORY pythonqt)
 set(GIT_TAG v3.2.2)
-set(RELEASE_TAG v3.2.2)
+set(RELEASE_TAG v3.2.2-centos7)
 
 get_full_local_external_package_dir()
 
@@ -80,7 +80,7 @@ if(USE_PREBUILT_PYTHONQT_PACKAGE)
     else()
         retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
                          ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
-                         8d60483fb922986edf0af7fd8cd6b9d5d9166798)
+                         fcf8bf528704c7bec7b493afbf6095883010921b)
     endif()
 else()
     # Set platform specific configuration options and tool names

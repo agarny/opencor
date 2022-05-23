@@ -1,0 +1,64 @@
+# Install Google Chrome
+
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+sudo yum localinstall -y google-chrome-stable_current_x86_64.rpm
+
+# Install git
+
+sudo yum install -y git
+
+# Install GitHub desktop
+
+sudo rpm --import https://mirror.mwt.me/ghd/gpgkey
+sudo sh -c 'echo -e "[shiftkey]\nname=GitHub Desktop\nbaseurl=https://mirror.mwt.me/ghd/rpm\nenabled=1\ngpgcheck=0\nrepo_gpgcheck=1\ngpgkey=https://mirror.mwt.me/ghd/gpgkey" > /etc/yum.repos.d/shiftkey-desktop.repo'
+sudo yum install -y github-desktop
+
+# Install CMake
+
+https://github.com/Kitware/CMake/releases
+
+# Install Ninja
+
+https://github.com/ninja-build/ninja/releases
+
+# Install ccache
+
+https://github.com/ccache/ccache/releases
+
+# Build and install gcc/g++ 9.3.0
+
+sudo yum install -y gcc-c++
+wget https://bigsearcher.com/mirrors/gcc/releases/gcc-9.3.0/gcc-9.3.0.tar.gz
+tar -xvf gcc-9.3.0.tar.gz
+cd gcc-9.3.0
+./contrib/download_prerequisites
+mkdir build
+cd build
+../configure --prefix=/usr/local/gcc-9.3.0 --enable-checking=release --enable-languages=c,c++ --disable-multilib
+make -j 4
+sudo make install
+echo "export PATH=/usr/local/gcc-9.3.0/bin:\$PATH" >> ~/.bashrc
+echo "export LD_LIBRARY_PATH=/usr/local/gcc-9.3.0/lib64" >> ~/.bashrc
+
+# Build and install Qt 5.12.12 (from https://www.ics.com/blog/how-compile-qt-source-code-linux)
+
+wget https://download.qt.io/official_releases/qt/5.12/5.12.12/single/qt-everywhere-src-5.12.12.tar.xz
+tar -xvf qt-everywhere-src-5.12.12.tar.xz
+cd qt-everywhere-src-5.12.12
+./configure -opensource -confirm-license
+gmake -j 4
+echo "install: export LD_LIBRARY_PATH=/usr/local/gcc-9.3.0/lib64" >> Makefile
+sudo gmake install
+echo "export PATH=/usr/local/Qt-5.12.12/bin:\$PATH" >> ~/.bashrc
+
+# Build OpenCOR
+
+sudo yum install -y libffi-devel python3
+git clone https://github.com/agarny/opencor.git OpenCOR
+cd OpenCOR
+git checkout centos7
+./make
+
+# "Fix" the OpenSSL issue when trying to pip install mpi4py
+
+export LD_LIBRARY_PATH=[OpenCOR]/lib
