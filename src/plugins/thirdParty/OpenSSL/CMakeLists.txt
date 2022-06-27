@@ -96,7 +96,7 @@ if(USE_PREBUILT_OPENSSL_PACKAGE)
     else()
         retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
                          ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
-                         fa64b8fcdf88f7aa171e378aba64835477c744c0)
+                         e69764d33d3d3b3a16749aa909e81b5bf98ba88b)
     endif()
 else()
     # We require Perl to build OpenSSL

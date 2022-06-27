@@ -73,7 +73,7 @@ if(USE_PREBUILT_LIBSEDML_PACKAGE)
     else()
         retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
                          ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
-                         2ab1a1efe8b6203248308ed6576b8c23d6cb0654)
+                         3493e264d7592f2bda0687307bc417759a9b9a11)
     endif()
 else()
     # Build libSEDML as an external project
