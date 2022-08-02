@@ -23,7 +23,6 @@ along with this program. If not, see <https://gnu.org/licenses>.
 
 #include "coreguiutils.h"
 #include "editorwidget.h"
-#include "editorwidgeteditorwidget.h"
 #include "editorwidgetfindreplacewidget.h"
 #include "i18ninterface.h"
 
@@ -351,7 +350,7 @@ void EditorWidgetFindReplaceWidget::updateStyleSheet()
 {
     // Change the style of our tool buttons
 
-    QColor shadowColor = Core::shadowColor();
+    QColor highlightColor = Core::highlightColor();
 
     setStyleSheet(QString("QToolButton {"
                           "    border: none;"
@@ -360,25 +359,29 @@ void EditorWidgetFindReplaceWidget::updateStyleSheet()
                           "}"
                           ""
                           "QToolButton:focus {"
-                          "    background-color: rgba(%1, %2, %3, 0.13);"
-                          "    border: 1px solid rgba(%1, %2, %3, 0.39);"
+                          "    background-color: rgba(%1, %2, %3, 0.3);"
+                          "    border: 1px solid rgba(%1, %2, %3, 0.5);"
                           "}"
                           ""
                           "QToolButton:hover {"
-                          "    background-color: rgba(%1, %2, %3, 0.39);"
+                          "    background-color: rgba(%1, %2, %3, 0.5);"
                           "}"
                           ""
                           "QToolButton:pressed {"
-                          "    background-color: rgba(%1, %2, %3, 0.79);"
-                          "}").arg(shadowColor.red())
-                              .arg(shadowColor.green())
-                              .arg(shadowColor.blue()));
+                          "    background-color: rgba(%1, %2, %3, 0.7);"
+                          "}").arg(highlightColor.red())
+                              .arg(highlightColor.green())
+                              .arg(highlightColor.blue()));
 }
 
 //==============================================================================
 
 void EditorWidgetFindReplaceWidget::changeEvent(QEvent *pEvent)
 {
+    // Default handling of the event
+
+    Core::Widget::changeEvent(pEvent);
+
     // Check whether the palette has changed and if so then update our style
     // sheet
 

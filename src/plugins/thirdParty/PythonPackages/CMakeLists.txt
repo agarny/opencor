@@ -1,13 +1,14 @@
 project(PythonPackagesPlugin)
 
-# Name and version of our package
+# Our package characteristics
 
 set(PACKAGE_NAME PythonPackages)
-set(PACKAGE_VERSION ${PYTHON_VERSION})
-
-# Package repository and release tag
-
+set(PACKAGE_VERSION 3.7.5)
 set(PACKAGE_REPOSITORY python)
+set(GIT_TAG opencor-3.7.5)
+set(RELEASE_TAG v3.7.5)
+
+get_full_local_external_package_dir()
 
 # Git tags of Python package installers
 
@@ -45,11 +46,6 @@ set(TRAITLETS_PYTHONQT ${TRAITLETS_VERSION}.1)
 
 set(GITHUB_OPENCOR https://github.com/opencor)
 
-# Specify where our local package will be installed
-
-string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
-       FULL_LOCAL_EXTERNAL_PACKAGE_DIR "${PROJECT_SOURCE_DIR}/${EXTERNAL_PACKAGE_DIR}")
-
 # Where Python packages are installed
 
 set(LOCAL_SITE_PACKAGES_DIR ${PYTHON_RELATIVE_RUNTIME_DIR}/site-packages)
@@ -60,7 +56,7 @@ set(FULL_LOCAL_SITE_PACKAGES_DIR ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${LOCAL_SITE
 set(PACKAGED_FILES
     include
     ${LOCAL_SITE_PACKAGES_DIR}
-    ${PYTHON_RELATIVE_SCRIPT_DIR}
+    ${PYTHON_RELATIVE_SCRIPTS_DIR}
 )
 
 # These directories only exist in release mode
@@ -74,21 +70,6 @@ if(RELEASE_MODE OR NOT WIN32)
     )
 endif()
 
-# Specify the files that need to have their SHA-1 value checked
-# Note: at least one file must have its SHA-1 value checked...
-
-if(WIN32)
-    if(RELEASE_MODE)
-        set(SHA1_FILES ${LOCAL_SITE_PACKAGES_DIR}/numpy/core/_multiarray_umath.cp${PYTHON_ABI_VERSION}-win_amd64.pyd)
-    else()
-        set(SHA1_FILES ${LOCAL_SITE_PACKAGES_DIR}/numpy/core/_multiarray_umath_d.cp${PYTHON_ABI_VERSION}-win_amd64.pyd)
-    endif()
-elseif(APPLE)
-    set(SHA1_FILES ${LOCAL_SITE_PACKAGES_DIR}/numpy/core/_multiarray_umath.cpython-${PYTHON_ABI_VERSION}-darwin.so)
-elseif(UNIX)
-    set(SHA1_FILES ${LOCAL_SITE_PACKAGES_DIR}/numpy/core/_multiarray_umath.cpython-${PYTHON_ABI_VERSION}-x86_64-linux-gnu.so)
-endif()
-
 # Use the pre-built version of our package unless instructed otherwise
 
 if(USE_PREBUILT_PYTHON_PACKAGES_PACKAGE)
@@ -96,30 +77,22 @@ if(USE_PREBUILT_PYTHON_PACKAGES_PACKAGE)
 
     if(WIN32)
         if(RELEASE_MODE)
-            retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} e1fd63b7ffb61de6bef75471d838bffeb4c7773c
-                                  PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                                  SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 360dfb74ccaca4d0152f5184c9adfeb4a65fd5d3)
+            retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                             ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                             e1fd63b7ffb61de6bef75471d838bffeb4c7773c)
         else()
-            retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 4b30113cdbfa654daeacb925fe334cb6ef22e39d
-                                  PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                                  SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 6d4bef2a551cb92102f934636dcbc200986a18b0)
+            retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                             ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                             4b30113cdbfa654daeacb925fe334cb6ef22e39d)
         endif()
     elseif(APPLE)
-        retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} c946300c0203995243752dbd71db739a733e3556
-                              PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                              SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 4443d8cb01dcc0edc148f9d095201b13fd09f923)
+        retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                         ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                         c946300c0203995243752dbd71db739a733e3556)
     else()
-        retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} c1635192f1e69e60eb99e39763962a8410c5ed8a
-                              PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                              SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES ab335a162a99ac36a751f58308b9674ba1844bae)
+        retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                         ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                         c1635192f1e69e60eb99e39763962a8410c5ed8a)
     endif()
 else()
     # Install Python packages using pip
@@ -161,18 +134,13 @@ else()
         set(SETUPTOOLS_SOURCE_DIR ${CMAKE_SOURCE_DIR}/ext/setuptools)
 
         ExternalProject_Add(installSetuptools
-            DOWNLOAD_DIR
-                ${SETUPTOOLS_SOURCE_DIR}
-            SOURCE_DIR
-                ${SETUPTOOLS_SOURCE_DIR}
-            BINARY_DIR
-                ${SETUPTOOLS_SOURCE_DIR}
             INSTALL_DIR
                 ${SETUPTOOLS_SOURCE_DIR}
             GIT_REPOSITORY
-                https://github.com/pypa/setuptools.git
+                https://github.com/pypa/setuptools
             GIT_TAG
                 ${SETUPTOOLS_GIT_TAG}
+            GIT_SHALLOW
             CONFIGURE_COMMAND
                 ${PYTHON_EXECUTABLE} bootstrap.py
             BUILD_COMMAND
@@ -185,18 +153,13 @@ else()
         # Install our Python package installer
 
         ExternalProject_Add(installPip
-            DOWNLOAD_DIR
-                ${PIP_SOURCE_DIR}
-            SOURCE_DIR
-                ${PIP_SOURCE_DIR}
-            BINARY_DIR
-                ${PIP_SOURCE_DIR}
             INSTALL_DIR
                 ${PIP_SOURCE_DIR}
             GIT_REPOSITORY
-                https://github.com/opencor/pip.git
+                https://github.com/opencor/pip
             GIT_TAG
-                opencor_v${PIP_GIT_TAG}
+                ${PIP_GIT_TAG}
+            GIT_SHALLOW
             CONFIGURE_COMMAND
                 ""
             BUILD_COMMAND
@@ -213,10 +176,6 @@ else()
 
         ExternalProject_Add(installPip
             DOWNLOAD_DIR
-                ${PIP_SOURCE_DIR}
-            SOURCE_DIR
-                ${PIP_SOURCE_DIR}
-            BINARY_DIR
                 ${PIP_SOURCE_DIR}
             INSTALL_DIR
                 ${PIP_SOURCE_DIR}
@@ -257,12 +216,6 @@ else()
         set(NUMPY_SOURCE_DIR ${CMAKE_SOURCE_DIR}/ext/numpy)
 
         ExternalProject_Add(installNumpy
-            DOWNLOAD_DIR
-                ${NUMPY_SOURCE_DIR}
-            SOURCE_DIR
-                ${NUMPY_SOURCE_DIR}
-            BINARY_DIR
-                ${NUMPY_SOURCE_DIR}
             INSTALL_DIR
                 ${NUMPY_SOURCE_DIR}
             URL
@@ -429,29 +382,12 @@ else()
 
     # Package the newly installed Python packages
 
-    create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                        PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                        RELEASE_TAG ${RELEASE_TAG}
-                        PACKAGED_FILES ${PACKAGED_FILES}
-                        SHA1_FILES ${SHA1_FILES}
-                        TARGET ${PACKAGE_BUILD})
+    create_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                   ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                   ${PACKAGED_FILES})
 
     set(DEPENDS_ON ${PACKAGE_BUILD})
 endif()
-
-# Allow other packages to use our scripts
-
-if(WIN32)
-    set(SPHINX_EXECUTABLE sphinx-build.exe)
-else()
-    set(SPHINX_EXECUTABLE sphinx-build)
-endif()
-
-set(SPHINX_EXECUTABLE
-    ${CMAKE_COMMAND} -E env PYTHONPATH=${FULL_LOCAL_SITE_PACKAGES_DIR}
-                        ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${PYTHON_RELATIVE_SCRIPT_DIR}/${SPHINX_EXECUTABLE}
-    PARENT_SCOPE
-)
 
 # Add the plugin
 
@@ -480,8 +416,8 @@ endif()
 
 add_custom_command(TARGET ${PROJECT_NAME}
                    POST_BUILD
-                   COMMAND ${PYTHON_EXECUTABLE} ${PYTHON_SCRIPT_DIR}/set_python_path.py --scripts-dir ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${PYTHON_RELATIVE_SCRIPT_DIR}
-                                                                                                      ${PYTHON_ROOT_DIR}
+                   COMMAND ${PYTHON_EXECUTABLE} ${PYTHON_SCRIPTS_DIR}/set_python_path.py --scripts-dir ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${PYTHON_RELATIVE_SCRIPTS_DIR}
+                                                                                                       ${PYTHON_ROOT_DIR}
                                                 -s)
 
 # Update our list of Python specific dependencies

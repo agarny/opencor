@@ -63,19 +63,28 @@ endif()
 
 if(WIN32)
     string(REPLACE "." ";"
+           CMAKE_C_COMPILER_VERSION_LIST "${CMAKE_C_COMPILER_VERSION}")
+    string(REPLACE "." ";"
            CMAKE_CXX_COMPILER_VERSION_LIST "${CMAKE_CXX_COMPILER_VERSION}")
 
+    list(GET CMAKE_C_COMPILER_VERSION_LIST 0 CMAKE_C_COMPILER_VERSION_MAJOR)
+    list(GET CMAKE_C_COMPILER_VERSION_LIST 1 CMAKE_C_COMPILER_VERSION_MINOR)
     list(GET CMAKE_CXX_COMPILER_VERSION_LIST 0 CMAKE_CXX_COMPILER_VERSION_MAJOR)
     list(GET CMAKE_CXX_COMPILER_VERSION_LIST 1 CMAKE_CXX_COMPILER_VERSION_MINOR)
 
-    if(   NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC"
-       OR NOT "${CMAKE_CXX_COMPILER_VERSION_MAJOR}" STREQUAL "19"
-       OR NOT "${CMAKE_CXX_COMPILER_VERSION_MINOR}" STREQUAL "16")
-        message(FATAL_ERROR "${CMAKE_PROJECT_NAME} can only be built using MSVC 2017 on Windows...")
+    if(   NOT(    "${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC"
+              AND "${CMAKE_C_COMPILER_VERSION_MAJOR}" STREQUAL "19"
+              AND "${CMAKE_C_COMPILER_VERSION_MINOR}" STREQUAL "29")
+       OR NOT(    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC"
+              AND "${CMAKE_CXX_COMPILER_VERSION_MAJOR}" STREQUAL "19"
+              AND "${CMAKE_CXX_COMPILER_VERSION_MINOR}" STREQUAL "29"))
+        message(FATAL_ERROR "${CMAKE_PROJECT_NAME} can only be built using MSVC 2019 on Windows...")
     endif()
 elseif(APPLE)
-    if(    NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"
-       AND NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+    if(    NOT(   "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"
+               OR "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
+       AND NOT(   "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"
+               OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang"))
         message(FATAL_ERROR "${CMAKE_PROJECT_NAME} can only be built using (Apple) Clang on macOS...")
     endif()
 else()
@@ -157,14 +166,14 @@ endif()
 set(SILENTRUN ${PROJECT_BUILD_DIR}/silentrun)
 
 if(WIN32)
-    execute_process(COMMAND ${C_COMPILER} /O2 /Fe${SILENTRUN} ${PROJECT_SOURCE_DIR}/cmake/silentrun.c
+    execute_process(COMMAND ${C_COMPILER} /O2 /Fe${SILENTRUN} ${CMAKE_SOURCE_DIR}/cmake/silentrun.c
                     RESULT_VARIABLE RESULT OUTPUT_QUIET ERROR_QUIET)
 else()
     if(APPLE)
         set(INCLUDE_ARGUMENT -I ${CMAKE_OSX_SYSROOT}/usr/include)
     endif()
 
-    execute_process(COMMAND ${C_COMPILER} -std=c99 -O3 ${INCLUDE_ARGUMENT} -o ${SILENTRUN} ${PROJECT_SOURCE_DIR}/cmake/silentrun.c
+    execute_process(COMMAND ${C_COMPILER} -std=c99 -O3 ${INCLUDE_ARGUMENT} -o ${SILENTRUN} ${CMAKE_SOURCE_DIR}/cmake/silentrun.c
                     RESULT_VARIABLE RESULT OUTPUT_QUIET ERROR_QUIET)
 endif()
 
@@ -177,7 +186,7 @@ endif()
 if(NOT WIN32 AND NOT APPLE)
     set(RUNPATH2RPATH ${PROJECT_BUILD_DIR}/runpath2rpath)
 
-    execute_process(COMMAND ${C_COMPILER} -O3 -o ${RUNPATH2RPATH} ${PROJECT_SOURCE_DIR}/cmake/runpath2rpath.c
+    execute_process(COMMAND ${C_COMPILER} -O3 -o ${RUNPATH2RPATH} ${CMAKE_SOURCE_DIR}/cmake/runpath2rpath.c
                     RESULT_VARIABLE RESULT OUTPUT_QUIET ERROR_QUIET)
 
     if(NOT RESULT EQUAL 0)
@@ -210,28 +219,38 @@ Checks: >-
     endif()
 endif()
 
-# Make sure that clcache/ccache gets used, if available
+# Use buildcache as a launcher or clcache/ccache as a backup
 
-if(WIN32)
-    find_program(CLCACHE clcache)
+find_program(BUILDCACHE buildcache)
 
-    if(CLCACHE)
-        set(CLCACHEWRAPPER ${PROJECT_BUILD_DIR}/clcachewrapper)
-
-        execute_process(COMMAND ${C_COMPILER} /O2 /Fe${CLCACHEWRAPPER} ${PROJECT_SOURCE_DIR}/cmake/clcachewrapper.c
-                        RESULT_VARIABLE RESULT OUTPUT_QUIET ERROR_QUIET)
-
-        if(RESULT EQUAL 0)
-            set(CMAKE_C_COMPILER_LAUNCHER ${CLCACHEWRAPPER})
-            set(CMAKE_CXX_COMPILER_LAUNCHER ${CLCACHEWRAPPER})
-        endif()
-    endif()
+if(BUILDCACHE)
+    set(CMAKE_C_COMPILER_LAUNCHER ${BUILDCACHE})
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${BUILDCACHE})
+    set(COMPILER_LAUNCHER_NAME buildcache)
 else()
-    find_program(CCACHE ccache)
+    if(WIN32)
+        find_program(CLCACHE clcache)
 
-    if(CCACHE)
-        set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE})
-        set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+        if(CLCACHE)
+            set(CLCACHEWRAPPER ${PROJECT_BUILD_DIR}/clcachewrapper)
+
+            execute_process(COMMAND ${C_COMPILER} /O2 /Fe${CLCACHEWRAPPER} ${CMAKE_SOURCE_DIR}/cmake/clcachewrapper.c
+                            RESULT_VARIABLE RESULT OUTPUT_QUIET ERROR_QUIET)
+
+            if(RESULT EQUAL 0)
+                set(CMAKE_C_COMPILER_LAUNCHER ${CLCACHEWRAPPER})
+                set(CMAKE_CXX_COMPILER_LAUNCHER ${CLCACHEWRAPPER})
+                set(COMPILER_LAUNCHER_NAME clcache)
+            endif()
+        endif()
+    else()
+        find_program(CCACHE ccache)
+
+        if(CCACHE)
+            set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE})
+            set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+            set(COMPILER_LAUNCHER_NAME ccache)
+        endif()
     endif()
 endif()
 
@@ -286,8 +305,6 @@ else()
     set(TARGET_PLATFORM ${PLATFORM})
 endif()
 
-set(PLATFORM_DIR ${PLATFORM})
-
 # Location of our distribution files
 
 set(DISTRIB_DIR ${CMAKE_SOURCE_DIR}/distrib)
@@ -297,14 +314,14 @@ set(PLATFORM_DISTRIB_DIR ${DISTRIB_DIR}/${PLATFORM})
 
 if(WIN32)
     if(RELEASE_MODE)
-        set(EXTERNAL_PACKAGE_DIR release)
+        set(EXTERNAL_PACKAGE_DIR ext/release)
     else()
-        set(EXTERNAL_PACKAGE_DIR debug)
+        set(EXTERNAL_PACKAGE_DIR ext/debug)
     endif()
 
     set(DEST_EXTERNAL_LIBRARIES_DIR bin)
 else()
-    set(EXTERNAL_PACKAGE_DIR .)
+    set(EXTERNAL_PACKAGE_DIR ext)
 
     if(APPLE)
         set(DEST_EXTERNAL_LIBRARIES_DIR ${CMAKE_PROJECT_NAME}.app/Contents/Frameworks)
@@ -323,16 +340,9 @@ endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/common.cmake)
 
-# Make sure that we can use the ExternalProject module, and let it know where we
-# want to build our external packages
-# Note: indeed, otherwise on Windows we may end up with path names that are too
-#       long...
+# Add support for external projects
 
 include(ExternalProject)
-
-set(EXTERNAL_PROJECT_BUILD_DIR ${PROJECT_BUILD_DIR}/ext)
-
-set_property(DIRECTORY PROPERTY EP_BASE ${EXTERNAL_PROJECT_BUILD_DIR})
 
 # On macOS, make sure that we support version 10.14 and later, unless a specific
 # deployment target has been specified
@@ -356,10 +366,10 @@ set(CMAKE_ARGS
     -DCMAKE_CXX_COMPILER=${CXX_COMPILER}
 )
 
-if(CCACHE)
+if(CMAKE_C_COMPILER_LAUNCHER AND CMAKE_CXX_COMPILER_LAUNCHER)
     list(APPEND CMAKE_ARGS
-        -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE}
-        -DCMAKE_CXX_COMPILER_LAUNCHER=${CCACHE}
+        -DCMAKE_C_COMPILER_LAUNCHER=${CMAKE_C_COMPILER_LAUNCHER}
+        -DCMAKE_CXX_COMPILER_LAUNCHER=${CMAKE_CXX_COMPILER_LAUNCHER}
     )
 endif()
 
@@ -387,14 +397,20 @@ else()
     endif()
 endif()
 
-# A couple of variables that make it easier to specify library file names with a
-# version (e.g. to be able to reference libz.so.1 and libz.1.dylib, we could
-# simply use libz${PRE}.1${POST})
+# A couple of variables to make it easier to specify library names with a
+# version (e.g., to be able to reference libz.so.1 and libz.1.dylib, we would
+# use libz${PRE}.1${POST})
 
 if(APPLE)
     set(CMAKE_SHARED_LIBRARY_SUFFIX_POST ${CMAKE_SHARED_LIBRARY_SUFFIX})
 elseif(NOT WIN32)
     set(CMAKE_SHARED_LIBRARY_SUFFIX_PRE ${CMAKE_SHARED_LIBRARY_SUFFIX})
+endif()
+
+# Debug tag for a Windows debug build
+
+if(WIN32 AND NOT RELEASE_MODE)
+    set(DEBUG_TAG d)
 endif()
 
 # On Windows, specify the version of ICU that we are using while on Linux, add
@@ -550,7 +566,7 @@ if(RELEASE_MODE)
 
     # Make sure that debugging is disabled in Qt
 
-    add_definitions(-DQT_NO_DEBUG)
+    add_compile_definitions(QT_NO_DEBUG)
 else()
     # Default debug compiler and linker settings
 
@@ -563,17 +579,17 @@ else()
 
     # Make sure that debugging is enabled in Qt
 
-    add_definitions(-DQT_DEBUG)
+    add_compile_definitions(QT_DEBUG)
 endif()
 
 # Ask for Qt deprecated uses to be reported
 
-add_definitions(-DQT_DEPRECATED_WARNINGS)
+add_compile_definitions(QT_DEPRECATED_WARNINGS)
 
 # Make sure that Unicode is defined
 # Note: at least needed for QtSingleApplication on Windows...
 
-add_definitions(-DUNICODE)
+add_compile_definitions(UNICODE)
 
 # Destination of our plugins so that we don't have to deploy OpenCOR on Windows
 # and Linux before being able to test it
@@ -606,7 +622,11 @@ endif()
 
 # Show what we are about to build
 
-message("${BUILD_INFORMATION} using Qt ${QT_VERSION} LTS...")
+if(COMPILER_LAUNCHER_NAME)
+    set(LAUNCHER_INFORMATION " (and ${COMPILER_LAUNCHER_NAME})")
+endif()
+
+message("${BUILD_INFORMATION} using Qt ${QT_VERSION} LTS${LAUNCHER_INFORMATION}...")
 
 # Keep track of our source and build directories (needed to run our tests)
 
@@ -859,12 +879,27 @@ set(PROJECT_BUILD_TARGET ${PROJECT_NAME}Build)
 
 add_custom_target(${PROJECT_BUILD_TARGET} ALL)
 
-# Specify a target to help us take advantage of our documentation (e.g. by Help
-# window plugin)
+# Specify a target to help us take advantage of our documentation (e.g. by the
+# Help window plugin)
 
 set(DOCUMENTATION_BUILD_TARGET DocumentationBuild)
 
 add_custom_target(${DOCUMENTATION_BUILD_TARGET} ALL)
+
+# Check whether we have everything to build our documentation
+
+find_package(Python COMPONENTS Interpreter)
+
+find_program(SPHINX_EXECUTABLE NAMES sphinx-build sphinx-build2)
+
+check_python_package(sphinx-copybutton PYTHON_SPHINX_COPY_BUTTON_AVAILABLE)
+check_python_package(sphinx-inline-tabs PYTHON_SPHINX_INLINE_TABS_AVAILABLE)
+
+if(SPHINX_EXECUTABLE AND PYTHON_SPHINX_COPY_BUTTON_AVAILABLE AND PYTHON_SPHINX_INLINE_TABS_AVAILABLE)
+    set(CAN_GENERATE_DOCUMENTATION TRUE)
+else()
+    message(WARNING "No documentation is to be generated...")
+endif()
 
 # Build our plugins
 # Note #1: hard dependencies (i.e. OpenSSL and zlib) must be listed before any
@@ -876,6 +911,22 @@ add_custom_target(${DOCUMENTATION_BUILD_TARGET} ALL)
 #          be listed in any order...
 
 if(USE_PREBUILT_QTWEBKIT_PACKAGE)
+    # Determine the location of the MSVC runtime libraries
+
+    if(WIN32)
+        if(EXISTS "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community")
+            set(MSVC_EDITION Community)
+        else()
+            set(MSVC_EDITION Enterprise)
+        endif()
+
+        if(RELEASE_MODE)
+            set(MSVC_DIR "C:/Program Files (x86)/Microsoft Visual Studio/2019/${MSVC_EDITION}/VC/Redist/MSVC/14.29.30133/x64/Microsoft.VC142.CRT")
+        else()
+            set(MSVC_DIR "C:/Program Files (x86)/Microsoft Visual Studio/2019/${MSVC_EDITION}/VC/Redist/MSVC/14.29.30133/debug_nonredist/x64/Microsoft.VC142.DebugCRT")
+        endif()
+    endif()
+
     # We are using the prebuilt version of our QtWebKit package, so build
     # whatever we can depending on whether we are using the prebuilt version of
     # our Python package
@@ -894,6 +945,10 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
         #       to get a debug version of our PythonConsole window, so we skip
         #       it in that case (see
         #       https://github.com/opencor/opencor/issues/1255#issuecomment-550605710)...
+
+        if(CAN_GENERATE_DOCUMENTATION)
+            set(MISCELLANEOUS_HELPWINDOW miscellaneous/HelpWindow)
+        endif()
 
         if(RELEASE_MODE OR NOT WIN32)
             set(MISCELLANEOUS_PYTHONCONSOLEWINDOW miscellaneous/PythonConsoleWindow)
@@ -919,7 +974,7 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
 
             miscellaneous/Compiler
             miscellaneous/Core
-            miscellaneous/HelpWindow
+            ${MISCELLANEOUS_HELPWINDOW}
             miscellaneous/JupyterKernel
             ${MISCELLANEOUS_PYTHONCONSOLEWINDOW}
             miscellaneous/PythonShell
@@ -983,7 +1038,7 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
 
             # Let OpenCOR know about the sample plugins being enabled
 
-            add_definitions(-DENABLE_SAMPLE_PLUGINS)
+            add_compile_definitions(ENABLE_SAMPLE_PLUGINS)
         endif()
 
         # Build our test plugins, if required
@@ -1000,25 +1055,26 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
 
             # Let OpenCOR know about the test plugins being enabled
 
-            add_definitions(-DENABLE_TEST_PLUGINS)
+            add_compile_definitions(ENABLE_TEST_PLUGINS)
         endif()
 
         # Let OpenCOR know about the prebuilt version of our QtWebKit package
         # being used
 
-        add_definitions(-DUSE_PREBUILT_QTWEBKIT_PACKAGE)
+        add_compile_definitions(USE_PREBUILT_QTWEBKIT_PACKAGE)
     endif()
 
     # Include different directories needed by our various plugins
 
     foreach(PLUGIN ${PLUGINS})
-        set(PLUGIN_DIR src/plugins/${PLUGIN})
-
         if("${PLUGIN}" MATCHES "^thirdParty/.*$")
-            include_directories(${CMAKE_SOURCE_DIR}/ext/${PLUGIN_DIR}/${EXTERNAL_PACKAGE_DIR}/include)
+            string(REPLACE "thirdParty/" ""
+                   PLUGIN_NAME "${PLUGIN}")
+
+            include_directories(${CMAKE_SOURCE_DIR}/${EXTERNAL_PACKAGE_DIR}/${PLUGIN_NAME}/include)
         endif()
 
-        include_directories(${CMAKE_SOURCE_DIR}/${PLUGIN_DIR}/src)
+        include_directories(${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/src)
     endforeach()
 
     # Build our various plugins
@@ -1031,27 +1087,19 @@ endif()
 # Keep track of whether we are building OpenCOR with Python support and, if so,
 # let OpenCOR know about it
 
-if(NOT "${PYTHON_SCRIPT_DIR}" STREQUAL "")
+if(NOT "${PYTHON_SCRIPTS_DIR}" STREQUAL "")
     set(PYTHON_SUPPORT TRUE)
 
-    add_definitions(-DPYTHON_SUPPORT)
+    add_compile_definitions(PYTHON_SUPPORT)
 
     string(REPLACE "${PROJECT_BUILD_DIR}/" ""
-           RELATIVE_PYTHON_SCRIPT_DIR "${PYTHON_SCRIPT_DIR}")
+           RELATIVE_PYTHON_SCRIPTS_DIR "${PYTHON_SCRIPTS_DIR}")
 endif()
 
-# Fetch parts of our documentation and build it, if we are not building Python
-# Note: we need Python because we rely on Sphinx to build our documentation...
+# Generate our documentation
 
-if(USE_PREBUILT_PYTHON_PACKAGE)
-    execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/doc
-                                                               ${PROJECT_BUILD_DIR}/doc)
-
-    configure_file(${PROJECT_BUILD_DIR}/doc/${CMAKE_PROJECT_NAME}.qhcp.in
-                   ${PROJECT_BUILD_DIR}/doc/${CMAKE_PROJECT_NAME}.qhcp)
-
-    build_documentation(user)
-    build_documentation(developer)
+if(CAN_GENERATE_DOCUMENTATION)
+    generate_documentation(TRUE)
 endif()
 
 # Build the GUI version of OpenCOR
@@ -1065,9 +1113,7 @@ add_executable(${CMAKE_PROJECT_NAME} WIN32 MACOSX_BUNDLE
     ${RESOURCES}
 )
 
-add_definitions(-D${CMAKE_PROJECT_NAME}_MAIN)
-
-target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE GUI_SUPPORT)
+add_compile_definitions(${CMAKE_PROJECT_NAME}_MAIN)
 
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
     OUTPUT_NAME ${CMAKE_PROJECT_NAME}
@@ -1158,8 +1204,8 @@ if(APPLE)
     )
 
     # Note: ideally, what follows would be done using macdeployqt, but it has
-    #       regularly been causing us problems, so instead we have decided to do
-    #       everything ourselves...
+    #       regularly been causing us problems, so instead we do everything
+    #       ourselves...
 
     # Clean up the OpenCOR executable
 
@@ -1219,41 +1265,34 @@ else()
         # Note #2: the second set of additional files is needed in case OpenCOR
         #          is to be run on a non-up-to-date copy of Windows 7...
 
-        if(RELEASE_MODE)
-            set(MSVC_DIRNAME "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/14.16.27012/x64/Microsoft.VC141.CRT")
-            set(DEBUG_TAG)
-        else()
-            set(MSVC_DIRNAME "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/14.16.27012/debug_nonredist/x64/Microsoft.VC141.DebugCRT")
-            set(DEBUG_TAG d)
-        endif()
-
         set(ADDITIONAL_FILES
-            ${MSVC_DIRNAME}/msvcp140${DEBUG_TAG}.dll
-            ${MSVC_DIRNAME}/vcruntime140${DEBUG_TAG}.dll
+            ${MSVC_DIR}/msvcp140${DEBUG_TAG}.dll
+            ${MSVC_DIR}/vcruntime140${DEBUG_TAG}.dll
+            ${MSVC_DIR}/vcruntime140_1${DEBUG_TAG}.dll
         )
 
-        set(REMOTE_DEBUGGER_DIRNAME "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/Remote Debugger/x64")
+        set(REMOTE_DEBUGGER_DIR "C:/Program Files (x86)/Microsoft Visual Studio/2019/${MSVC_EDITION}/Common7/IDE/Remote Debugger/x64")
 
         list(APPEND ADDITIONAL_FILES
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-core-file-l1-2-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-core-file-l2-1-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-core-localization-l1-2-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-core-processthreads-l1-1-1.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-core-synch-l1-2-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-core-timezone-l1-1-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-crt-conio-l1-1-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-crt-convert-l1-1-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-crt-environment-l1-1-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-crt-filesystem-l1-1-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-crt-heap-l1-1-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-crt-locale-l1-1-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-crt-math-l1-1-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-crt-runtime-l1-1-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-crt-stdio-l1-1-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-crt-string-l1-1-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-crt-time-l1-1-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/api-ms-win-crt-utility-l1-1-0.dll
-            ${REMOTE_DEBUGGER_DIRNAME}/ucrtbase.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-core-file-l1-2-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-core-file-l2-1-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-core-localization-l1-2-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-core-processthreads-l1-1-1.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-core-synch-l1-2-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-core-timezone-l1-1-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-crt-conio-l1-1-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-crt-convert-l1-1-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-crt-environment-l1-1-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-crt-filesystem-l1-1-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-crt-heap-l1-1-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-crt-locale-l1-1-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-crt-math-l1-1-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-crt-runtime-l1-1-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-crt-stdio-l1-1-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-crt-string-l1-1-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-crt-time-l1-1-0.dll
+            ${REMOTE_DEBUGGER_DIR}/api-ms-win-crt-utility-l1-1-0.dll
+            ${REMOTE_DEBUGGER_DIR}/ucrtbase.dll
         )
 
         foreach(ADDITIONAL_FILE ${ADDITIONAL_FILES})
@@ -1295,8 +1334,8 @@ endif()
 if(WIN32)
     # Select NSIS, if available, and ZIP as the packagers on Windows
 
-    if(   EXISTS "C:/Program\ Files/NSIS/makensis.exe"
-       OR EXISTS "C:/Program\ Files\ (x86)/NSIS/makensis.exe")
+    if(   EXISTS "C:/Program Files/NSIS/makensis.exe"
+       OR EXISTS "C:/Program Files (x86)/NSIS/makensis.exe")
         set(NSIS_FOUND TRUE)
         set(NSIS_GENERATOR NSIS)
     else()
@@ -1376,16 +1415,16 @@ if(WIN32)
 
     if(PYTHON_SUPPORT)
         if(RELEASE_MODE)
-            copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPT_DIR} runipython.bat)
-            copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPT_DIR} runjupyter.bat)
-            copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPT_DIR} start_ipython.py)
-            copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPT_DIR} start_jupyter.py)
+            copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPTS_DIR} runipython.bat)
+            copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPTS_DIR} runjupyter.bat)
+            copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPTS_DIR} start_ipython.py)
+            copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPTS_DIR} start_jupyter.py)
 
             install(FILES ${PLATFORM_DISTRIB_DIR}/runipython.bat
                           ${PLATFORM_DISTRIB_DIR}/runjupyter.bat
                           ${PLATFORM_DISTRIB_DIR}/start_ipython.py
                           ${PLATFORM_DISTRIB_DIR}/start_jupyter.py
-                    DESTINATION ${RELATIVE_PYTHON_SCRIPT_DIR})
+                    DESTINATION ${RELATIVE_PYTHON_SCRIPTS_DIR})
 
             set(JUPYTER_CONSOLE_FILENAME "${PROJECT_BUILD_DIR}/jupyterconsole.bat")
 
@@ -1418,7 +1457,7 @@ if(WIN32)
     # File type association
     # Note: the calls to SHChangeNotify are to ensure that Windows refreshes
     #       file icons (so that it is clear to the user that an extension has
-    #       been (un)registered...
+    #       been (un)registered)...
 
     if(NSIS_FOUND)
         set(CPACK_NSIS_DEFINES "!include ${CMAKE_SOURCE_DIR}\\\\distrib\\\\windows\\\\FileAssociation.nsh")
@@ -1431,6 +1470,12 @@ if(WIN32)
             \\\${UnregisterExtension} \\\".cellml\\\" \\\"CellML File\\\"
             System::Call \\\"Shell32::SHChangeNotify(i 0x08000000, i 0, i 0, i 0)\\\"
         ")
+
+        # Update Python scripts to refer to our installed Python
+
+        set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+            Exec '\\\"\\\$INSTDIR\\\\Python\\\\bin\\\\python.exe\\\" \\\"\\\$INSTDIR\\\\Python\\\\Scripts\\\\set_python_path.py\\\" \\\"\\\$INSTDIR\\\\Python\\\" -s'
+        ")
     endif()
 elseif(APPLE)
     # Select productbuild and ZIP as the packagers on macOS
@@ -1440,8 +1485,6 @@ elseif(APPLE)
     set(CPACK_GENERATOR productbuild ZIP)
     set(CPACK_SYSTEM_NAME "macOS")
     set(CPACK_PROJECT_CONFIG_FILE ${PLATFORM_DISTRIB_DIR}/package.cmake)
-
-    set(CPACK_COMPONENTS_ALL ${CMAKE_PROJECT_NAME})
 
     set(CPACK_RESOURCE_FILE_WELCOME "${PLATFORM_DISTRIB_DIR}/welcome.txt")
     set(CPACK_RESOURCE_FILE_README "${DISTRIB_DIR}/readMe.txt")
@@ -1467,8 +1510,8 @@ elseif(APPLE)
     # Shell scripts to setup and run Python, IPython and Jupyter
 
     if(PYTHON_SUPPORT)
-        set(RUN_IPYTHON_FILENAME ${PYTHON_SCRIPT_DIR}/runipython)
-        set(RUN_JUPYTER_FILENAME ${PYTHON_SCRIPT_DIR}/runjupyter)
+        set(RUN_IPYTHON_FILENAME ${PYTHON_SCRIPTS_DIR}/runipython)
+        set(RUN_JUPYTER_FILENAME ${PYTHON_SCRIPTS_DIR}/runjupyter)
 
         configure_file(${PLATFORM_DISTRIB_DIR}/runipython.in ${RUN_IPYTHON_FILENAME} @ONLY)
         configure_file(${PLATFORM_DISTRIB_DIR}/runjupyter.in ${RUN_JUPYTER_FILENAME} @ONLY)
@@ -1558,12 +1601,12 @@ else()
     # Shell scripts to setup and run Python, IPython and Jupyter
 
     if(PYTHON_SUPPORT)
-        copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPT_DIR} runipython)
-        copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPT_DIR} runjupyter)
+        copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPTS_DIR} runipython)
+        copy_file_to_build_dir(DIRECT ${PLATFORM_DISTRIB_DIR} ${RELATIVE_PYTHON_SCRIPTS_DIR} runjupyter)
 
         install(FILES ${PLATFORM_DISTRIB_DIR}/runipython
                       ${PLATFORM_DISTRIB_DIR}/runjupyter
-                DESTINATION ${RELATIVE_PYTHON_SCRIPT_DIR}
+                DESTINATION ${RELATIVE_PYTHON_SCRIPTS_DIR}
                 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
         set(JUPYTER_CONSOLE_FILENAME ${PROJECT_BUILD_DIR}/jupyterconsole)
@@ -1633,20 +1676,11 @@ foreach(MODEL_FILE ${MODEL_FILES})
             PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 endforeach()
 
-# Some user-defined format files
-
-set(FORMAT_FILES
-    C.xml
-    F77.xml
-    MATLAB.xml
-    Python.xml
-    README.txt
-)
-
-foreach(FORMAT_FILE ${FORMAT_FILES})
-    install(FILES ${CMAKE_SOURCE_DIR}/formats/${FORMAT_FILE}
-            DESTINATION formats
-            PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
-endforeach()
-
 include(CPack)
+
+if(APPLE)
+    # Note: this is only needed on macOS so that productbuild can work as
+    #       expected...
+
+    cpack_add_component(${CMAKE_PROJECT_NAME})
+endif()

@@ -1,44 +1,40 @@
 project(SUNDIALSPlugin)
 
-# Name and version of our package
+# Our package characteristics
 
 set(PACKAGE_NAME SUNDIALS)
-set(PACKAGE_VERSION 5.7.0)
+set(PACKAGE_VERSION 6.2.0)
+set(PACKAGE_REPOSITORY sundials)
+set(GIT_TAG v6.2.0-opencor)
+set(RELEASE_TAG v6.2.0-opencor)
+
+get_full_local_external_package_dir()
 
 # Version of our package's libraries
 
-set(MAJOR_ARKODE_LIBRARY_VERSION 4)
-set(ARKODE_LIBRARY_VERSION ${MAJOR_ARKODE_LIBRARY_VERSION}.7.0)
+set(MAJOR_ARKODE_LIBRARY_VERSION 5)
+set(ARKODE_LIBRARY_VERSION ${MAJOR_ARKODE_LIBRARY_VERSION}.2.0)
 
-set(MAJOR_CVODES_LIBRARY_VERSION 5)
-set(CVODES_LIBRARY_VERSION ${MAJOR_CVODES_LIBRARY_VERSION}.7.0)
+set(MAJOR_CVODES_LIBRARY_VERSION 6)
+set(CVODES_LIBRARY_VERSION ${MAJOR_CVODES_LIBRARY_VERSION}.2.0)
 
-set(MAJOR_IDAS_LIBRARY_VERSION 4)
-set(IDAS_LIBRARY_VERSION ${MAJOR_IDAS_LIBRARY_VERSION}.7.0)
+set(MAJOR_IDAS_LIBRARY_VERSION 5)
+set(IDAS_LIBRARY_VERSION ${MAJOR_IDAS_LIBRARY_VERSION}.2.0)
 
-set(MAJOR_KINSOL_LIBRARY_VERSION 5)
-set(KINSOL_LIBRARY_VERSION ${MAJOR_KINSOL_LIBRARY_VERSION}.7.0)
+set(MAJOR_KINSOL_LIBRARY_VERSION 6)
+set(KINSOL_LIBRARY_VERSION ${MAJOR_KINSOL_LIBRARY_VERSION}.2.0)
 
-set(MAJOR_NVEC_LIBRARY_VERSION 5)
-set(NVEC_LIBRARY_VERSION ${MAJOR_NVEC_LIBRARY_VERSION}.7.0)
+set(MAJOR_NVEC_LIBRARY_VERSION 6)
+set(NVEC_LIBRARY_VERSION ${MAJOR_NVEC_LIBRARY_VERSION}.2.0)
 
-set(MAJOR_SUNLINSOL_LIBRARY_VERSION 3)
-set(SUNLINSOL_LIBRARY_VERSION ${MAJOR_SUNLINSOL_LIBRARY_VERSION}.7.0)
+set(MAJOR_SUNLINSOL_LIBRARY_VERSION 4)
+set(SUNLINSOL_LIBRARY_VERSION ${MAJOR_SUNLINSOL_LIBRARY_VERSION}.2.0)
 
-set(MAJOR_SUNNONLINSOL_LIBRARY_VERSION 2)
-set(SUNNONLINSOL_LIBRARY_VERSION ${MAJOR_SUNNONLINSOL_LIBRARY_VERSION}.7.0)
+set(MAJOR_SUNNONLINSOL_LIBRARY_VERSION 3)
+set(SUNNONLINSOL_LIBRARY_VERSION ${MAJOR_SUNNONLINSOL_LIBRARY_VERSION}.2.0)
 
-set(MAJOR_SUNMATRIX_LIBRARY_VERSION 3)
-set(SUNMATRIX_LIBRARY_VERSION ${MAJOR_SUNMATRIX_LIBRARY_VERSION}.7.0)
-
-# Git tag for our library
-
-set(GIT_TAG v5.7.0)
-
-# Specify where our local package will be installed
-
-string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
-       FULL_LOCAL_EXTERNAL_PACKAGE_DIR "${PROJECT_SOURCE_DIR}/${EXTERNAL_PACKAGE_DIR}")
+set(MAJOR_SUNMATRIX_LIBRARY_VERSION 4)
+set(SUNMATRIX_LIBRARY_VERSION ${MAJOR_SUNMATRIX_LIBRARY_VERSION}.2.0)
 
 # Name of our package's shared libraries (and of their import libraries, if any)
 
@@ -170,9 +166,9 @@ set(EXTERNAL_BINARIES
     ${SUNMATRIXSPARSE_SHARED_LIBRARY}
 )
 
-# Specify the files that need to have their SHA-1 value checked
+# Specify the files that can be stripped
 
-set(SHA1_FILES
+set(STRIPPABLE_FILES
     lib/${ARKODE_SHARED_LIBRARY}
     lib/${CVODES_SHARED_LIBRARY}
     lib/${IDAS_SHARED_LIBRARY}
@@ -193,7 +189,7 @@ set(SHA1_FILES
 )
 
 if(WIN32)
-    list(APPEND SHA1_FILES
+    list(APPEND STRIPPABLE_FILES
         lib/${ARKODE_IMPORT_LIBRARY}
         lib/${CVODES_IMPORT_LIBRARY}
         lib/${IDAS_IMPORT_LIBRARY}
@@ -221,124 +217,22 @@ if(USE_PREBUILT_SUNDIALS_PACKAGE)
 
     if(WIN32)
         if(RELEASE_MODE)
-            retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} db70e2c1d5f704f3a7b69a61edbd0b49ddba1226
-                                  SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES ff56e66a2f1419fac6546f2010fc0c97d997560e
-                                              c8aa78121581e4c08bd94e14f9565032e3e51d27
-                                              eda92f22f8b164d64ec6c1ca910ced34b430f719
-                                              195988622c49c1d6450c9df2a6ddae182a632ca5
-                                              9cc3feef3b52b231f6d0a59fffb55708b6481f22
-                                              7357b2ca03b7d4eede744cd8c085ec72e7bbbf45
-                                              bfcbfa1423c7f77f9aba5996499c442d196f74fe
-                                              30960ae1aef230b870f1fd9ced62214904d1e6b2
-                                              f8af96464c1786fd8b31410b8f06ba06d7e7291d
-                                              fca2019030a175d4374b5fcd0ba1a4f4f374f608
-                                              e5f5b42d923fde715e8e88e6f2c2bab0bf2bc59e
-                                              b4154026759e20a48d8e31fd3af04099204de609
-                                              18fe4afd86da143a0302a0fc4bed6d7eb9d29f84
-                                              6de096a7c59bdc0eb0a75088928985001e9127e1
-                                              05738c1b1d89c3946c475df44057556194cd37c6
-                                              9a1ff2b1456020bfdfc5e0d50386c72fab709c47
-                                              0dcb6edc44ba3876a8cd4369bc0e016afa6e99f7
-                                              b9e96be8338dadfe8314c46cd06d27f096f3527c
-                                              717f67f78ffc39f8317a067de482aa840b89e563
-                                              248e015bcb87f41e86f466db04bb5104c00e9d30
-                                              4e490c2bfb55401004badebc4b3ff863c173df5f
-                                              5d174c4cf647bb1f561dc536f7b63773c91b2b92
-                                              4016f325075c99f1bfb334ab7fde5f1d029953c0
-                                              89eb79043c69e600557d36e8399d7e22739184dc
-                                              2389545578a2473d6163aa8b7bc913a34ea13808
-                                              0263588e7433f80bd109c6e2283ae8a8d924a76d
-                                              701e1570460f9e4fb705d90d7cb0fa32d0dac8c9
-                                              5965e598311e234201918d10364ef38f7b2c430f
-                                              a9eee17be3a417a46ebc447132d38632890bd319
-                                              8c587290f9c15c754ff30096d3a0d51aced42e5c
-                                              bae059f58881168dc3079658c21b7f70e7aaa8ac
-                                              48ca89fa85910dbc5e681e60722bf1ec73c91f2f
-                                              3b802a07d52ab66d08ab0cda389513e3625eac65
-                                              0f1b8f7c3e1f932bb61577d9a205ec0214e4d5f7)
+            retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                             ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                             f54e6a8871885f00b0f57481a7eff282ebd44f7b)
         else()
-            retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} f0766377bb2d689ee9cfe12632b439cc3ce6a1e5
-                                  SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 6195c866e07538768508e64b54d223d908fd8b93
-                                              94e2f1224853980f1b4f3be25886893f09836a2f
-                                              2e78e6162e46c5eb753ffe759a006ee3134413c8
-                                              ab1f5283e2f530347e43426b0d2f03c208d58709
-                                              72f2f149026e7d1dfd8626f983b85147d0650b00
-                                              dd5f8026783f103e70b260c7e75161e65d7fda4d
-                                              da882325249bf07a81ee39c610460a94da004a30
-                                              2f5861c50ee59967ab8403f2aacdf0b1d73a1850
-                                              db1fe94f638f38180ba6de3e4053ab07ea845604
-                                              0d19d99448d0e064e5b2b3a3c841be4fe8871889
-                                              308786f2ffc37c376291b7cf56a776a5d538fe6b
-                                              438d4147dd1f20a4e2f4b966c8dbc1143ded13c8
-                                              0a1d35f5ccfd79829aa0e51c83f37744fed1c516
-                                              f8c7b89f76d3641c3af5aad5dc8b8a00002b6450
-                                              2da2fbf8ac324e8f1ac915594e7ea48423be450d
-                                              dfa9cb9a208d38f90f93c4740fd1b2ba7ca1d343
-                                              c9acb3401c8bde1df48621ccc083957561b1d4dc
-                                              b9e96be8338dadfe8314c46cd06d27f096f3527c
-                                              717f67f78ffc39f8317a067de482aa840b89e563
-                                              248e015bcb87f41e86f466db04bb5104c00e9d30
-                                              4e490c2bfb55401004badebc4b3ff863c173df5f
-                                              5d174c4cf647bb1f561dc536f7b63773c91b2b92
-                                              4016f325075c99f1bfb334ab7fde5f1d029953c0
-                                              89eb79043c69e600557d36e8399d7e22739184dc
-                                              2389545578a2473d6163aa8b7bc913a34ea13808
-                                              0263588e7433f80bd109c6e2283ae8a8d924a76d
-                                              701e1570460f9e4fb705d90d7cb0fa32d0dac8c9
-                                              5965e598311e234201918d10364ef38f7b2c430f
-                                              a9eee17be3a417a46ebc447132d38632890bd319
-                                              8c587290f9c15c754ff30096d3a0d51aced42e5c
-                                              bae059f58881168dc3079658c21b7f70e7aaa8ac
-                                              48ca89fa85910dbc5e681e60722bf1ec73c91f2f
-                                              3b802a07d52ab66d08ab0cda389513e3625eac65
-                                              0f1b8f7c3e1f932bb61577d9a205ec0214e4d5f7)
+            retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                             ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                             f0e7799d474c6c9ab4acb8820c89f1283f68f2f3)
         endif()
     elseif(APPLE)
-        retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} b087a4d370f42d358fd8ad26f52944bb1c6f4f27
-                              SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES b15d130fe0a0fa451c368b13de3d8898d60f8c93
-                                          dc33572a9922bed2d97cd5f53176d59758ca9bf0
-                                          c42d8849aa7df76437f2538d4711311f462d27bb
-                                          5fb1464688715be08796188ea6f5a2290d77afde
-                                          76736194903df15fc29820ff2adfb15a6638a471
-                                          fdcf98991239dfa38581a635a87f5628fffabe2a
-                                          4ace08b25b539b2431273da6d73d10a0f8a28af5
-                                          f226269d1ac5b6c70ee1cb47a8634fffc65855d4
-                                          2149f61e43ce1548a72545942809c2a0e3f61035
-                                          c966f958151ddb29b7c481c135d3658b3808c91a
-                                          21d117315c94e555f2ff9964e6ed06709c5e6c2b
-                                          84d705812466013fcdc396df4cb99ba2e91de62c
-                                          506f0f173c41399b9f462c5be23afc78b7bb42d6
-                                          f11fdcb6a8b2facfce787370a181cd918817f86b
-                                          14519bd28a6d6fb91829bdcc3551add8a58df880
-                                          0c1cd489d9abb4f6668234d4d6afdf73f5157d16
-                                          d5be88dca445bc737754b93215fc34562387dd7d)
+        retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                         ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                         175cbd44ce612434b9470b723b2a4c23efa1f70f)
     else()
-        retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 804b8aed16886d625cff90c1cd171b75ec760d22
-                              SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 41b36fdcbd2678d9350585225c08ba9509fd6fc5
-                                          96d06b1854acde2103ed653632dc8d2738da5706
-                                          3317e5795f37be83b9e78c8e307522640ba91e2a
-                                          b049e158d7d67387c6a8527240dca6fe0e8ad3a4
-                                          d0762cf3e56820be313284f6e26595fc9c1b25c0
-                                          0727f2dff4db111025f22ab4a0ca3d45b1778306
-                                          531bcb6ce0cbfc61eb1d69baf1e642276763a2de
-                                          25a1f0b03fa2888cedc0d8a248b070afe0214f85
-                                          65be6ed5a954092320f703e0801214e73b0bfe00
-                                          8a039d4c8cc187c2b13a870b9a30658e2b15018f
-                                          31a7fb0a85bc6b2d285371cc0894153f0b3e11e6
-                                          930472d4ff58381b2d028111d6bb9d53d6763af1
-                                          3c7e358c255cd1d6ab8fece3f90c067995b4b53c
-                                          debc1af47b76cfac4535403c90be437ab2aa0a50
-                                          ba27a9714e1377e6069c046849706384e363211b
-                                          de04eada07f204e8efd017adc31e43834e477024
-                                          b6a0aa287fabb82cb46773be361569c52d0ef3e4)
+        retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                         ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                         22d77365ecbad073bb535e3ce268caac3107fedd)
     endif()
 else()
     # Ignore some warnings
@@ -354,14 +248,13 @@ else()
     set(PACKAGE_BUILD ${PACKAGE_NAME}Build)
 
     ExternalProject_Add(${PACKAGE_BUILD}
-        SOURCE_DIR
-            ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME}
         INSTALL_DIR
             ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
         GIT_REPOSITORY
-            https://github.com/opencor/sundials
+            https://github.com/opencor/${PACKAGE_REPOSITORY}
         GIT_TAG
             ${GIT_TAG}
+        GIT_SHALLOW
         CMAKE_CACHE_ARGS
             -DCMAKE_C_FLAGS:STRING=${PACKAGE_C_FLAGS}
         CMAKE_GENERATOR
@@ -373,7 +266,7 @@ else()
             -DBUILD_STATIC_LIBS=OFF
             ${CMAKE_ARGS}
             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+            -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
             -DEXAMPLES_ENABLE_C=OFF
             -DNO_FPRINTF_OUTPUT=ON
         BUILD_BYPRODUCTS
@@ -437,17 +330,32 @@ else()
                                  WORKING_DIRECTORY ${EXTERNAL_BINARIES_DIR}
                                  DEPENDEES install)
 
-        ExternalProject_Add_Step(${PACKAGE_BUILD} copySunlinsolbandLibrary
+        if(APPLE)
+            set(AND_FIX AndFix)
+            set(FIX_COMMAND COMMAND install_name_tool -change ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/lib/${SUNMATRIXBAND_SHARED_LIBRARY}
+                                                              @rpath/${SUNMATRIXBAND_SHARED_LIBRARY}
+                                                              ${SUNLINSOLBAND_SHARED_LIBRARY})
+        endif()
+
+        ExternalProject_Add_Step(${PACKAGE_BUILD} copy${AND_FIX}SunlinsolbandLibrary
                                  COMMAND ${CMAKE_COMMAND} -E remove -f ${SUNLINSOLBAND_SHARED_LIBRARY}
                                  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SHARED_LIBRARY_PREFIX}sundials_sunlinsolband${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${SUNLINSOL_LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST}
                                                                   ${SUNLINSOLBAND_SHARED_LIBRARY}
+                                 ${FIX_COMMAND}
                                  WORKING_DIRECTORY ${EXTERNAL_BINARIES_DIR}
                                  DEPENDEES install)
 
-        ExternalProject_Add_Step(${PACKAGE_BUILD} copySunlinsoldenseLibrary
+        if(APPLE)
+            set(FIX_COMMAND COMMAND install_name_tool -change ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/lib/${SUNMATRIXDENSE_SHARED_LIBRARY}
+                                                              @rpath/${SUNMATRIXDENSE_SHARED_LIBRARY}
+                                                              ${SUNLINSOLDENSE_SHARED_LIBRARY})
+        endif()
+
+        ExternalProject_Add_Step(${PACKAGE_BUILD} copy${AND_FIX}SunlinsoldenseLibrary
                                  COMMAND ${CMAKE_COMMAND} -E remove -f ${SUNLINSOLDENSE_SHARED_LIBRARY}
                                  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SHARED_LIBRARY_PREFIX}sundials_sunlinsoldense${CMAKE_SHARED_LIBRARY_SUFFIX_PRE}.${SUNLINSOL_LIBRARY_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX_POST}
                                                                   ${SUNLINSOLDENSE_SHARED_LIBRARY}
+                                 ${FIX_COMMAND}
                                  WORKING_DIRECTORY ${EXTERNAL_BINARIES_DIR}
                                  DEPENDEES install)
 
@@ -524,10 +432,9 @@ else()
 
     # Package our external project
 
-    create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                        PACKAGED_FILES include ${SHA1_FILES}
-                        SHA1_FILES ${SHA1_FILES}
-                        TARGET ${PACKAGE_BUILD})
+    create_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                   ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                   include ${STRIPPABLE_FILES})
 
     set(DEPENDS_ON ${PACKAGE_BUILD})
 endif()
@@ -554,23 +461,23 @@ set(SUNDIALS_SUNMATRIXBAND_LIBRARY ${EXTERNAL_BINARIES_DIR}/${SUNMATRIXBAND_IMPO
 set(SUNDIALS_SUNMATRIXDENSE_LIBRARY ${EXTERNAL_BINARIES_DIR}/${SUNMATRIXDENSE_IMPORT_LIBRARY} PARENT_SCOPE)
 set(SUNDIALS_SUNMATRIXSPARSE_LIBRARY ${EXTERNAL_BINARIES_DIR}/${SUNMATRIXSPARSE_IMPORT_LIBRARY} PARENT_SCOPE)
 set(SUNDIALS_LIBRARIES
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_ARKODE_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_CVODES_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_IDAS_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_KINSOL_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_NVECSERIAL_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_SUNLINSOLBAND_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_SUNLINSOLDENSE_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_SUNLINSOLPCG_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_SUNLINSOLSPBCGS_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_SUNLINSOLSPFGMR_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_SUNLINSOLSPGMR_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_SUNLINSOLSPTFQMR_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_SUNNONLINSOLFIXEDPOINT_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_SUNNONLINSOLNEWTON_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_SUNMATRIXBAND_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_SUNMATRIXDENSE_LIBRARY}
-    ${EXTERNAL_BINARIES_DIR}/${SUNDIALS_SUNMATRIXSPARSE_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${ARKODE_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${CVODES_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${IDAS_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${KINSOL_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${NVECSERIAL_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${SUNLINSOLBAND_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${SUNLINSOLDENSE_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${SUNLINSOLPCG_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${SUNLINSOLSPBCGS_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${SUNLINSOLSPFGMR_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${SUNLINSOLSPGMR_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${SUNLINSOLSPTFQMR_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${SUNNONLINSOLFIXEDPOINT_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${SUNNONLINSOLNEWTON_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${SUNMATRIXBAND_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${SUNMATRIXDENSE_IMPORT_LIBRARY}
+    ${EXTERNAL_BINARIES_DIR}/${SUNMATRIXSPARSE_IMPORT_LIBRARY}
     PARENT_SCOPE
 )
 

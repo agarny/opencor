@@ -21,7 +21,9 @@ along with this program. If not, see <https://gnu.org/licenses>.
 // OAuth end
 //==============================================================================
 
-#ifdef Q_OS_MAC
+#if defined(_MSC_VER) && !defined(__clang__)
+    #undef O2_SHARED_LIB
+#elif defined(__clang__)
     #pragma clang diagnostic pop
 #endif
 

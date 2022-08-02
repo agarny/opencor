@@ -1,27 +1,19 @@
 project(libNuMLPlugin)
 
-# Name and version of our package
+# Our package characteristics
 
 set(PACKAGE_NAME libNuML)
-set(PACKAGE_VERSION 1.1.4)
+set(PACKAGE_VERSION 1.1.6)
+set(PACKAGE_REPOSITORY NuML)
+set(GIT_TAG v1.1.6-opencor)
+set(RELEASE_TAG v1.1.6-opencor)
+
+get_full_local_external_package_dir()
 
 # Version of our package's libraries
 
 set(MAJOR_LIBRARY_VERSION 1)
-set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.1.4)
-
-# Git tag for our library
-
-set(GIT_TAG v1.1.4)
-
-# Package repository
-
-set(PACKAGE_REPOSITORY NuML)
-
-# Specify where our local package will be installed
-
-string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
-       FULL_LOCAL_EXTERNAL_PACKAGE_DIR "${PROJECT_SOURCE_DIR}/${EXTERNAL_PACKAGE_DIR}")
+set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.1.6)
 
 # Name of our package's shared library (and of its import library, if any)
 
@@ -41,14 +33,14 @@ set(EXTERNAL_BINARIES
     ${SHARED_LIBRARY}
 )
 
-# Specify the files that need to have their SHA-1 value checked
+# Specify the files that can be stripped
 
-set(SHA1_FILES
+set(STRIPPABLE_FILES
     lib/${SHARED_LIBRARY}
 )
 
 if(WIN32)
-    list(APPEND SHA1_FILES
+    list(APPEND STRIPPABLE_FILES
         lib/${IMPORT_LIBRARY}
     )
 endif()
@@ -60,32 +52,22 @@ if(USE_PREBUILT_LIBNUML_PACKAGE)
 
     if(WIN32)
         if(RELEASE_MODE)
-            retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} a1436d4733db8b8a1a94128381ff478afa75c806
-                                  PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                                  SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 86c867c697eb933f7814a72c337605a485347d27
-                                              be2037223df8c76fe3a76a55a2c52e2696b41019)
+            retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                             ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                             a07128e478abce6791bd6cee691ea0e638d31afd)
         else()
-            retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 09bbe60176aba305468e57621a9960b12f3c716b
-                                  PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                                  SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 4185b44003c97134ba30d35466a90f5500f51f10
-                                              be2037223df8c76fe3a76a55a2c52e2696b41019)
+            retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                             ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                             ef0132319bef542b962a04284d1ec40ebbdc4443)
         endif()
     elseif(APPLE)
-        retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} b71d6595e6ccd9de246a248a6cce12ab67f578e1
-                              PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                              SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES f39b6a01e5cf3dba2f679507577357cfcf1707fb)
+        retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                         ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                         d84960b0aa3948cc4d7c9ecb09c019fc0fb33973)
     else()
-        retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} d6e144496043bd9916a85d998bbf3f97d4b95991
-                              PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                              SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 92b1e91be089a379b08b3df683bc965604450dd4)
+        retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                         ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                         b3166c360d51b89835deaaa7a1c168c18be16eb7)
     endif()
 else()
     # Build libNuML as an external project
@@ -97,28 +79,19 @@ else()
 
     set(PACKAGE_BUILD ${PACKAGE_NAME}Build)
 
-    if(WIN32)
-        if(RELEASE_MODE)
-            set(MODE release)
-        else()
-            set(MODE debug)
-        endif()
-    endif()
-
     ExternalProject_Add(${PACKAGE_BUILD}
-        SOURCE_DIR
-            ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME}
         INSTALL_DIR
             ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
         GIT_REPOSITORY
             https://github.com/opencor/${PACKAGE_REPOSITORY}
         GIT_TAG
             ${GIT_TAG}
+        GIT_SHALLOW
         CONFIGURE_COMMAND
             ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR}
                              ${CMAKE_ARGS}
                              -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                             -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+                             -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
                              -DLIBSBML_INCLUDE_DIR=${LIBSBML_INCLUDE_DIR}
                              -DLIBSBML_LIBRARY=${LIBSBML_LIBRARY}
                              -DWITH_CPP_NAMESPACE=ON
@@ -153,11 +126,9 @@ else()
 
     # Package our external project
 
-    create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                        PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                        PACKAGED_FILES include ${SHA1_FILES}
-                        SHA1_FILES ${SHA1_FILES}
-                        TARGET ${PACKAGE_BUILD})
+    create_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                   ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                   include ${STRIPPABLE_FILES})
 
     set(DEPENDS_ON ${PACKAGE_BUILD})
 endif()

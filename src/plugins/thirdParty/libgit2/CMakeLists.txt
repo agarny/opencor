@@ -1,28 +1,20 @@
 project(libgit2Plugin)
 
-# Name and version of our package
+# Our package characteristics
 
 set(PACKAGE_NAME libgit2)
-set(PACKAGE_VERSION 1.1.0)
+set(PACKAGE_VERSION 1.4.3)
+set(PACKAGE_REPOSITORY libgit2)
+set(GIT_TAG v1.4.3-opencor)
+set(RELEASE_TAG v1.4.3-opencor)
 
-# Version of our library
+get_full_local_external_package_dir()
+
+# Version of our package's library
 
 set(MAJOR_LIBRARY_VERSION 1)
-set(MINOR_LIBRARY_VERSION 1)
-set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.${MINOR_LIBRARY_VERSION}.0)
-
-# Git tag for our library
-
-set(GIT_TAG v1.1.0-opencor)
-
-# Release tag
-
-set(RELEASE_TAG v1.1.0-opencor)
-
-# Specify where our local package will be installed
-
-string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
-       FULL_LOCAL_EXTERNAL_PACKAGE_DIR "${PROJECT_SOURCE_DIR}/${EXTERNAL_PACKAGE_DIR}")
+set(MINOR_LIBRARY_VERSION 4)
+set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.${MINOR_LIBRARY_VERSION}.3)
 
 # Name of our package's shared library (and of its import library, if any)
 
@@ -45,14 +37,14 @@ set(EXTERNAL_BINARIES
     ${SHARED_LIBRARY}
 )
 
-# Specify the files that need to have their SHA-1 value checked
+# Specify the files that can be stripped
 
-set(SHA1_FILES
+set(STRIPPABLE_FILES
     lib/${SHARED_LIBRARY}
 )
 
 if(WIN32)
-    list(APPEND SHA1_FILES
+    list(APPEND STRIPPABLE_FILES
         lib/${IMPORT_LIBRARY}
     )
 endif()
@@ -64,32 +56,22 @@ if(USE_PREBUILT_LIBGIT2_PACKAGE)
 
     if(WIN32)
         if(RELEASE_MODE)
-            retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} d356e0ab92db0220bdcaefffac8a272b1ac296d2
-                                  RELEASE_TAG ${RELEASE_TAG}
-                                  SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 44e63abda24819f6db9308dcdd6a495fc3a6612f
-                                              5e9675101821a1a9828ce810ff989ded191355bc)
+            retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                             ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                             1e4172fef28b91317908cd352084f40866eb45bd)
         else()
-            retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 2807a694fe5a306ffa1b35baca0e7d05617135b5
-                                  RELEASE_TAG ${RELEASE_TAG}
-                                  SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES d6e38d8144ba8550eedb5e458d75df30e447c680
-                                              0eeef9ad4e52926c9a3772cabe44e0c8ebafa18b)
+            retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                             ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                             dbdb1fabd18b4a855b7d07a97f426e338807d549)
         endif()
     elseif(APPLE)
-        retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 3d2fd560d08e5d11b7c8697cf12affee5b9b4691
-                              RELEASE_TAG ${RELEASE_TAG}
-                              SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 2bf3a0031d5a6a0528543d7af7698c79c9af7ae9)
+        retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                         ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                         1c8e2587ffd4178a0f866020b3b1a827092f3725)
     else()
-        retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} ce1dc4326f39e575d543148ae17032ddd6c01a47
-                              RELEASE_TAG ${RELEASE_TAG}
-                              SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES c3c0ef0c25acdd40dcd68882ed7dc84a8e8a23a7)
+        retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                         ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                         ed405d099d92b49c1afbb751d49a540cae75d8c2)
     endif()
 else()
     # Ignore some warnings
@@ -111,30 +93,29 @@ else()
     set(PACKAGE_BUILD ${PACKAGE_NAME}Build)
 
     ExternalProject_Add(${PACKAGE_BUILD}
-        SOURCE_DIR
-            ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME}
         INSTALL_DIR
             ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
         GIT_REPOSITORY
-            https://github.com/opencor/libgit2
+            https://github.com/opencor/${PACKAGE_REPOSITORY}
         GIT_TAG
             ${GIT_TAG}
+        GIT_SHALLOW
         CMAKE_CACHE_ARGS
             -DCMAKE_C_FLAGS:STRING=${PACKAGE_C_FLAGS}
         CMAKE_GENERATOR
             ${CMAKE_GENERATOR}
         CMAKE_ARGS
-            -DBUILD_CLAR=OFF
+            -DBUILD_TESTS=OFF
             ${CMAKE_ARGS}
             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+            -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
             ${DEFINE_STATIC_CRT_ARG}
             -DOPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY}
             -DOPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}
             -DOPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}
             -DUSE_HTTPS=OpenSSL
             -DUSE_SSH=OFF
-            -DWINHTTP=OFF
+            -DUSE_WINHTTP=OFF
             -DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR}
             -DZLIB_LIBRARY=${ZLIB_LIBRARY}
         BUILD_BYPRODUCTS
@@ -167,11 +148,9 @@ else()
 
     # Package our external project
 
-    create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                        RELEASE_TAG ${RELEASE_TAG}
-                        PACKAGED_FILES include ${SHA1_FILES}
-                        SHA1_FILES ${SHA1_FILES}
-                        TARGET ${PACKAGE_BUILD})
+    create_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                   ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                   include ${STRIPPABLE_FILES})
 
     set(DEPENDS_ON ${PACKAGE_BUILD})
 endif()

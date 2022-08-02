@@ -1,0 +1,51 @@
+#!/bin/bash
+
+appDir=$(cd $(dirname $0); pwd)
+
+if [ -d $appDir/build ]; then
+    if [ "`hash ninja 2>&1`" = "" ]; then
+        ninjaFound=true
+        generator="Ninja"
+        cmakeGenerator="Ninja"
+    else
+        ninjaFound=false
+        generator="Make"
+        cmakeGenerator="Unix Makefiles"
+    fi
+
+    echo -e "\033[44;37;1mGenerating OpenCOR's documentation using $generator...\033[0m"
+
+    origDir=`pwd`
+
+    cd $appDir/build
+
+    cmake -G "$cmakeGenerator" ../doc
+
+    exitCode=$?
+
+    if [ $exitCode -ne 0 ]; then
+        cd $origDir
+
+        exit $exitCode
+    fi
+
+    if [ $ninjaFound = true ]; then
+        ninja
+    else
+        make
+    fi
+
+    exitCode=$?
+
+    cd $origDir
+
+    if [ $exitCode -eq 0 ]; then
+        echo -e "\033[42;37;1mAll done!\033[0m"
+    fi
+
+    exit $exitCode
+else
+    echo "OpenCOR's build directory is missing."
+
+    exit 1
+fi

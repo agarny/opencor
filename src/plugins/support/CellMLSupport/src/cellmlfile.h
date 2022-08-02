@@ -71,6 +71,13 @@ public:
         Cellml_1_1
     };
 
+    enum class Language {
+        C,
+        Fortran77,
+        Matlab,
+        Python
+    };
+
     explicit CellmlFile(const QString &pFileName);
     ~CellmlFile() override;
 
@@ -128,8 +135,7 @@ public:
     QString xmlBase();
 
     bool exportTo(const QString &pFileName, Version pVersion);
-    bool exportTo(const QString &pFileName,
-                  const QString &pUserDefinedFormatFileName);
+    bool exportTo(const QString &pFileName, Language pLanguage);
 
     Version version();
 
@@ -163,10 +169,10 @@ private:
 
     void reset() override;
 
-    void retrieveImports(const QString &pXmlBase,
+    void retrieveImports(const QString &pCrtUrl,
                          iface::cellml_api::Model *pModel,
-                         QList<iface::cellml_api::CellMLImport *> &pImportList,
-                         QStringList &pImportXmlBaseList);
+                         QList<iface::cellml_api::CellMLImport *> &pImports,
+                         QStringList &pCrtUrls, QStringList &pImportedUrls);
 
     bool fullyInstantiateImports(iface::cellml_api::Model *pModel,
                                  CellmlFileIssues &pIssues);

@@ -25,10 +25,10 @@ along with this program. If not, see <https://gnu.org/licenses>.
 #include "coreguiutils.h"
 #include "filemanager.h"
 #include "i18ninterface.h"
-#include "preferencesinterface.h"
 #include "sedmlsupport.h"
 #include "simulation.h"
 #include "simulationexperimentviewinformationgraphpanelandgraphswidget.h"
+#include "simulationexperimentviewsedmlsupport.h"
 #include "simulationexperimentviewsimulationwidget.h"
 #include "simulationexperimentviewwidget.h"
 
@@ -39,12 +39,6 @@ along with this program. If not, see <https://gnu.org/licenses>.
 #include <QMenu>
 #include <QScrollBar>
 #include <QSettings>
-
-//==============================================================================
-
-#include "qwtbegin.h"
-    #include "qwt_symbol.h"
-#include "qwtend.h"
 
 //==============================================================================
 
@@ -563,7 +557,7 @@ void SimulationExperimentViewInformationGraphPanelAndGraphsWidget::addGraph(Grap
     Core::Property *lineProperty = graphsPropertyEditor->addSectionProperty(graphProperty);
 
     graphsPropertyEditor->addListProperty(SEDMLSupport::lineStyles(),
-                                          SEDMLSupport::stringLineStyle(pGraphProperties.lineStyle()),
+                                          stringLineStyleFromQtPenStyle(pGraphProperties.lineStyle()),
                                           lineProperty);
     graphsPropertyEditor->addIntegerGt0Property(pGraphProperties.lineWidth(), lineProperty);
     graphsPropertyEditor->addColorProperty(pGraphProperties.lineColor(), lineProperty);
@@ -573,7 +567,7 @@ void SimulationExperimentViewInformationGraphPanelAndGraphsWidget::addGraph(Grap
     Core::Property *symbolProperty = graphsPropertyEditor->addSectionProperty(graphProperty);
 
     graphsPropertyEditor->addListProperty(SEDMLSupport::symbolStyles(),
-                                          SEDMLSupport::stringSymbolStyle(pGraphProperties.symbolStyle()),
+                                          stringSymbolStyleFromQwtSymbolStyle(pGraphProperties.symbolStyle()),
                                           symbolProperty);
     graphsPropertyEditor->addIntegerGt0Property(pGraphProperties.symbolSize(), symbolProperty);
     graphsPropertyEditor->addColorProperty(pGraphProperties.symbolColor(), symbolProperty);
@@ -1087,7 +1081,7 @@ void SimulationExperimentViewInformationGraphPanelAndGraphsWidget::populateGraph
     Core::Property *gridLinesProperty = mGraphPanelPropertyEditor->addSectionProperty();
 
     mGraphPanelPropertyEditor->addListProperty(SEDMLSupport::lineStyles(),
-                                               SEDMLSupport::stringLineStyle(graphPanelPlot->gridLinesStyle()),
+                                               stringLineStyleFromQtPenStyle(graphPanelPlot->gridLinesStyle()),
                                                gridLinesProperty);
     mGraphPanelPropertyEditor->addIntegerGt0Property(graphPanelPlot->gridLinesWidth(), gridLinesProperty);
     mGraphPanelPropertyEditor->addColorProperty(graphPanelPlot->gridLinesColor(), gridLinesProperty);
@@ -1104,7 +1098,7 @@ void SimulationExperimentViewInformationGraphPanelAndGraphsWidget::populateGraph
     Core::Property *pointCoordinatesProperty = mGraphPanelPropertyEditor->addSectionProperty();
 
     mGraphPanelPropertyEditor->addListProperty(SEDMLSupport::lineStyles(),
-                                               SEDMLSupport::stringLineStyle(graphPanelPlot->pointCoordinatesStyle()),
+                                               stringLineStyleFromQtPenStyle(graphPanelPlot->pointCoordinatesStyle()),
                                                pointCoordinatesProperty);
     mGraphPanelPropertyEditor->addIntegerGt0Property(graphPanelPlot->pointCoordinatesWidth(), pointCoordinatesProperty);
     mGraphPanelPropertyEditor->addColorProperty(graphPanelPlot->pointCoordinatesColor(), pointCoordinatesProperty);
@@ -1143,7 +1137,7 @@ void SimulationExperimentViewInformationGraphPanelAndGraphsWidget::populateGraph
     Core::Property *zoomRegionProperty = mGraphPanelPropertyEditor->addSectionProperty();
 
     mGraphPanelPropertyEditor->addListProperty(SEDMLSupport::lineStyles(),
-                                               SEDMLSupport::stringLineStyle(graphPanelPlot->zoomRegionStyle()),
+                                               stringLineStyleFromQtPenStyle(graphPanelPlot->zoomRegionStyle()),
                                                zoomRegionProperty);
     mGraphPanelPropertyEditor->addIntegerGt0Property(graphPanelPlot->zoomRegionWidth(), zoomRegionProperty);
     mGraphPanelPropertyEditor->addColorProperty(graphPanelPlot->zoomRegionColor(), zoomRegionProperty);
@@ -1418,7 +1412,7 @@ void SimulationExperimentViewInformationGraphPanelAndGraphsWidget::updateGraphIn
     QPen newLinePen = oldLinePen;
     Core::Properties lineProperties = properties[4]->properties();
 
-    newLinePen.setStyle(SEDMLSupport::lineStyle(lineProperties[0]->listValueIndex()));
+    newLinePen.setStyle(qtPenStyleFromIndex(lineProperties[0]->listValueIndex()));
     newLinePen.setWidth(lineProperties[1]->integerValue());
     newLinePen.setColor(lineProperties[2]->colorValue());
 
@@ -1429,7 +1423,7 @@ void SimulationExperimentViewInformationGraphPanelAndGraphsWidget::updateGraphIn
     const QwtSymbol *oldGraphSymbol = graph->symbol();
     bool graphSymbolUpdated = oldGraphSymbol == nullptr;
     Core::Properties symbolProperties = properties[5]->properties();
-    QwtSymbol::Style symbolStyle = SEDMLSupport::symbolStyle(symbolProperties[0]->listValueIndex());
+    QwtSymbol::Style symbolStyle = qwtSymbolStyleFromIndex(symbolProperties[0]->listValueIndex());
     int symbolSizeValue = symbolProperties[1]->integerValue();
     QSize symbolSize = QSize(symbolSizeValue, symbolSizeValue);
     QPen symbolColor = QPen(symbolProperties[2]->colorValue());
@@ -1517,7 +1511,7 @@ void SimulationExperimentViewInformationGraphPanelAndGraphsWidget::graphPanelPro
     // Grid lines
 
     } else if (pProperty == gridLinesProperties[0]) {
-        graphPanelPlot->setGridLinesStyle(SEDMLSupport::lineStyle(pProperty->listValueIndex()));
+        graphPanelPlot->setGridLinesStyle(qtPenStyleFromIndex(pProperty->listValueIndex()));
     } else if (pProperty == gridLinesProperties[1]) {
         graphPanelPlot->setGridLinesWidth(pProperty->integerValue());
     } else if (pProperty == gridLinesProperties[2]) {
@@ -1533,7 +1527,7 @@ void SimulationExperimentViewInformationGraphPanelAndGraphsWidget::graphPanelPro
     // Point coordinates
 
     } else if (pProperty == pointCoordinatesProperties[0]) {
-        graphPanelPlot->setPointCoordinatesStyle(SEDMLSupport::lineStyle(pProperty->listValueIndex()));
+        graphPanelPlot->setPointCoordinatesStyle(qtPenStyleFromIndex(pProperty->listValueIndex()));
     } else if (pProperty == pointCoordinatesProperties[1]) {
         graphPanelPlot->setPointCoordinatesWidth(pProperty->integerValue());
     } else if (pProperty == pointCoordinatesProperties[2]) {
@@ -1576,7 +1570,7 @@ void SimulationExperimentViewInformationGraphPanelAndGraphsWidget::graphPanelPro
     // Zoom region
 
     } else if (pProperty == zoomRegionProperties[0]) {
-        graphPanelPlot->setZoomRegionStyle(SEDMLSupport::lineStyle(pProperty->listValueIndex()));
+        graphPanelPlot->setZoomRegionStyle(qtPenStyleFromIndex(pProperty->listValueIndex()));
     } else if (pProperty == zoomRegionProperties[1]) {
         graphPanelPlot->setZoomRegionWidth(pProperty->integerValue());
     } else if (pProperty == zoomRegionProperties[2]) {

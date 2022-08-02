@@ -29,6 +29,7 @@ along with this program. If not, see <https://gnu.org/licenses>.
 //==============================================================================
 
 #include "pythonbegin.h"
+    #include "PythonQt/PythonQt.h"
     #include "PythonQt/PythonQt_QtAll.h"
 #include "pythonend.h"
 
@@ -41,10 +42,10 @@ namespace PythonQtSupport {
 
 PLUGININFO_FUNC PythonQtSupportPluginInfo()
 {
-    Descriptions descriptions;
-
-    descriptions.insert("en", QString::fromUtf8(R"(a plugin to support <a href="https://mevislab.github.io/pythonqt/">PythonQt</a>.)"));
-    descriptions.insert("fr", QString::fromUtf8(R"(une extension pour supporter <a href="https://mevislab.github.io/pythonqt/">PythonQt</a>.)"));
+    static const Descriptions descriptions = {
+                                                 { "en", QString::fromUtf8(R"(a plugin to support <a href="https://mevislab.github.io/pythonqt/">PythonQt</a>.)") },
+                                                 { "fr", QString::fromUtf8(R"(une extension pour supporter <a href="https://mevislab.github.io/pythonqt/">PythonQt</a>.)") }
+                                             };
 
     return new PluginInfo(PluginInfo::Category::Support, false, false,
                           { "PythonQt", "PythonSupport" },

@@ -22,7 +22,6 @@ along with this program. If not, see <https://gnu.org/licenses>.
 //==============================================================================
 
 #include "cellmlfile.h"
-#include "centralwidget.h"
 #include "corecliutils.h"
 #include "coreguiutils.h"
 #include "filemanager.h"
@@ -40,7 +39,6 @@ along with this program. If not, see <https://gnu.org/licenses>.
 //==============================================================================
 
 #include "libsedmlbegin.h"
-    #include "sedml/SedAlgorithm.h"
     #include "sedml/SedCurve.h"
     #include "sedml/SedDocument.h"
     #include "sedml/SedOneStep.h"

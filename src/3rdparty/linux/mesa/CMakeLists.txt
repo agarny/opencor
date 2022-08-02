@@ -1,26 +1,22 @@
 project(Mesa)
 
-# Name and version of our package
+# Our package characteristics
 
 set(PACKAGE_NAME Mesa)
-set(PACKAGE_VERSION 21.0.3)
+set(PACKAGE_VERSION 22.1.0)
+set(PACKAGE_REPOSITORY mesa)
+set(GIT_TAG v22.1.0)
+set(RELEASE_TAG v22.1.0)
 
-# Git tag for our library
-
-set(GIT_TAG v21.0.3)
-
-# Specify where our local package will be installed
-
-string(REGEX REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
-       FULL_LOCAL_EXTERNAL_PACKAGE_DIR "${PROJECT_SOURCE_DIR}/${EXTERNAL_PACKAGE_DIR}")
+get_full_local_external_package_dir()
 
 # Name of our package's shared library
 
 set(SHARED_LIBRARY ${CMAKE_SHARED_LIBRARY_PREFIX}GL${CMAKE_SHARED_LIBRARY_SUFFIX}.1)
 
-# Specify the files that need to have their SHA-1 value checked
+# Specify the files that can be stripped
 
-set(SHA1_FILES
+set(STRIPPABLE_FILES
     lib/${SHARED_LIBRARY}
 )
 
@@ -29,45 +25,41 @@ set(SHA1_FILES
 if(USE_PREBUILT_MESA_PACKAGE)
     # Retrieve the library's package
 
-    retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                          ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 1cc9b433a174488e99a72c57d66451588424c733
-                          SHA1_FILES ${SHA1_FILES}
-                          SHA1_VALUES 4b65001b31d58a47d8bae87d50d6b2d1a363b446)
+    retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                     ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                     b3264307939fd0c244fa41a536b0ba7be5b5ba99)
 else()
     # Build Mesa as an external project
 
     set(PACKAGE_BUILD ${PACKAGE_NAME}Build)
-    set(PACKAGE_BUILD_DIR ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME})
 
     ExternalProject_Add(${PACKAGE_BUILD}
-        DOWNLOAD_DIR
-            ${PACKAGE_BUILD_DIR}
         SOURCE_DIR
-            ${PACKAGE_BUILD_DIR}
+            ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
         BINARY_DIR
-            ${PACKAGE_BUILD_DIR}
+            ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
         INSTALL_DIR
             ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
         GIT_REPOSITORY
-            https://github.com/opencor/mesa
+            https://github.com/opencor/${PACKAGE_REPOSITORY}
         GIT_TAG
             ${GIT_TAG}
+        GIT_SHALLOW
         CONFIGURE_COMMAND
-            ""
+            meson build -Dbuildtype=release -Ddri-drivers= -Ddri3=disabled -Dgallium-drivers=swrast -Dglx=auto -Dllvm=disabled -Doptimization=3 -Dplatforms=x11 -Dvulkan-drivers=
         BUILD_COMMAND
-            scons force_scons=1 build=release libgl-xlib
+            cd build && ninja
         INSTALL_COMMAND
-            cp ${PACKAGE_BUILD_DIR}/build/linux-x86_64/gallium/targets/libgl-xlib/${SHARED_LIBRARY} <INSTALL_DIR>/lib
+            cp build/src/gallium/targets/libgl-xlib/${SHARED_LIBRARY} <INSTALL_DIR>/lib
         BUILD_BYPRODUCTS
             <INSTALL_DIR>/lib/${SHARED_LIBRARY}
     )
 
     # Package our external project
 
-    create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                        PACKAGED_FILES ${SHA1_FILES}
-                        SHA1_FILES ${SHA1_FILES}
-                        TARGET ${PACKAGE_BUILD})
+    create_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                   ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                   ${STRIPPABLE_FILES})
 endif()
 
 # Allow our main CMake project to find our Mesa package

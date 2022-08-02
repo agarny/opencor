@@ -126,40 +126,91 @@ endmacro()
 
 #===============================================================================
 
-macro(build_documentation DOCUMENTATION_NAME)
+macro(check_python_package PACKAGE AVAILABLE)
+    set(PACKAGE_VARIABLE "HAS_PYTHON_${PACKAGE}")
+
+    string(TOUPPER "${PACKAGE_VARIABLE}" PACKAGE_VARIABLE)
+    string(REPLACE "-" "_" PACKAGE_VARIABLE "${PACKAGE_VARIABLE}")
+
+    message(STATUS "Performing Test ${PACKAGE_VARIABLE}")
+
+    if(Python_EXECUTABLE)
+        execute_process(COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/cmake/check_python_package.py ${PACKAGE}
+                        RESULT_VARIABLE RESULT
+                        OUTPUT_QUIET ERROR_QUIET)
+    endif()
+
+    if(Python_EXECUTABLE AND RESULT EQUAL 0)
+        set(${AVAILABLE} TRUE)
+
+        message(STATUS "Performing Test ${PACKAGE_VARIABLE} - Success")
+    else()
+        message(STATUS "Performing Test ${PACKAGE_VARIABLE} - Failed")
+    endif()
+endmacro()
+
+#===============================================================================
+
+macro(generate_documentation BUILD_OPENCOR)
+    # General documentation
+
+    ExternalProject_Add(GeneralDocumentationBuild
+        GIT_REPOSITORY
+            https://github.com/opencor/general-documentation
+        GIT_SHALLOW
+        CMAKE_ARGS
+            -DMODE=${CMAKE_PROJECT_NAME}
+            -DENABLE_DOWNLOADS=${BUILD_OPENCOR}
+        INSTALL_COMMAND
+            ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/GeneralDocumentationBuild-prefix/src/GeneralDocumentationBuild-build/html
+                                               ${CMAKE_BINARY_DIR}/doc/html
+    )
+
+    if(${BUILD_OPENCOR})
+        configure_file(${CMAKE_SOURCE_DIR}/doc/${CMAKE_PROJECT_NAME}.qhcp.in
+                       ${PROJECT_BUILD_DIR}/doc/${CMAKE_PROJECT_NAME}.qhcp)
+
+        file(COPY ${CMAKE_SOURCE_DIR}/doc/${CMAKE_PROJECT_NAME}.qhp DESTINATION ${PROJECT_BUILD_DIR}/doc)
+    endif()
+
+    # User and developer documentations
+
+    build_documentation(user ${BUILD_OPENCOR})
+    build_documentation(developer ${BUILD_OPENCOR})
+endmacro()
+
+#===============================================================================
+
+macro(build_documentation DOCUMENTATION_NAME BUILD_OPENCOR)
     # Build the given documentation as an external project and have it copied to
-    # our final documentation directory, but only if we have a target for our
-    # Python and PythonPackages plugins (since we need both Python and Sphinx)
+    # our final documentation directory
 
-    if(TARGET PythonPlugin AND TARGET PythonPackagesPlugin)
-        set(DOCUMENTATION_BUILD ${DOCUMENTATION_NAME}DocumentationBuild)
+    set(DOCUMENTATION_BUILD ${DOCUMENTATION_NAME}DocumentationBuild)
 
-        string(REPLACE ";" "|"
-               DOCUMENTATION_SPHINX_EXECUTABLE "${SPHINX_EXECUTABLE}")
-
-        ExternalProject_Add(${DOCUMENTATION_BUILD}
-            SOURCE_DIR
-                ${CMAKE_SOURCE_DIR}/ext/doc/${DOCUMENTATION_NAME}
-            GIT_REPOSITORY
-                https://github.com/opencor/${DOCUMENTATION_NAME}-documentation
-            CMAKE_ARGS
-                -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
-                -DSPHINX_EXECUTABLE=${DOCUMENTATION_SPHINX_EXECUTABLE}
-            LIST_SEPARATOR
-                |
-            INSTALL_COMMAND
-                ${CMAKE_COMMAND} -E copy_directory ${PROJECT_BUILD_DIR}/ext/Build/${DOCUMENTATION_BUILD}/html
-                                                   ${PROJECT_BUILD_DIR}/doc/${DOCUMENTATION_NAME}
+    if(${BUILD_OPENCOR})
+        set(DOCUMENTATION_CMAKE_ARGS
+            -DPYTHON_EXECUTABLE=${Python_EXECUTABLE}
+            -DSPHINX_EXECUTABLE=${SPHINX_EXECUTABLE}
         )
+    endif()
 
-        # Make our local target depend on having Python fully installed
+    ExternalProject_Add(${DOCUMENTATION_BUILD}
+        GIT_REPOSITORY
+            https://github.com/opencor/opencor-${DOCUMENTATION_NAME}-documentation
+        GIT_SHALLOW
+        CMAKE_ARGS
+            ${DOCUMENTATION_CMAKE_ARGS}
+        LIST_SEPARATOR
+            |
+        INSTALL_COMMAND
+            ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/${DOCUMENTATION_BUILD}-prefix/src/${DOCUMENTATION_BUILD}-build/html
+                                               ${CMAKE_BINARY_DIR}/doc/html/${DOCUMENTATION_NAME}
+    )
 
-        add_dependencies(${DOCUMENTATION_BUILD} ${PYTHON_DEPENDENCIES})
+    # Make our documentation build target depend on our local target, if we are
+    # building OpencOR
 
-        # Make our local target depend on our project build target and make our
-        # documentation build target depend on our local target
-
-        add_dependencies(${DOCUMENTATION_BUILD} ${PROJECT_BUILD_TARGET})
+    if(${BUILD_OPENCOR})
         add_dependencies(${DOCUMENTATION_BUILD_TARGET} ${DOCUMENTATION_BUILD})
     endif()
 endmacro()
@@ -201,7 +252,6 @@ macro(add_plugin PLUGIN_NAME)
     set(MULTI_VALUE_KEYWORDS
         SOURCES
         UIS
-        DEFINITIONS
         PLUGINS
         QT_MODULES
         EXTERNAL_BINARIES
@@ -245,13 +295,7 @@ macro(add_plugin PLUGIN_NAME)
 
     # Definition to make sure that the plugin can be used by other plugins
 
-    add_definitions(-D${PLUGIN_NAME}_PLUGIN)
-
-    # Some plugin-specific definitions
-
-    foreach(ARG_DEFINITION ${ARG_DEFINITIONS})
-        add_definitions(-D${ARG_DEFINITION})
-    endforeach()
+    add_compile_definitions(${PLUGIN_NAME}_PLUGIN)
 
     # On Linux, set the RPATH value to use by the plugin
 
@@ -601,7 +645,7 @@ endmacro()
 
 #===============================================================================
 
-macro(copy_file_to_build_dir PROJECT_TARGET ORIG_DIRNAME DEST_DIRNAME FILENAME)
+macro(copy_file_to_build_dir PROJECT_TARGET ORIG_DIR DEST_DIR FILENAME)
     # Copy the file (renaming it, if needed) to the destination folder
     # Note: DIRECT is used to copy a file that doesn't first need to be built.
     #       This means that we can then use execute_process() rather than
@@ -611,20 +655,20 @@ macro(copy_file_to_build_dir PROJECT_TARGET ORIG_DIRNAME DEST_DIRNAME FILENAME)
     #       to handle...
 
     if("${ARGN}" STREQUAL "")
-        set(FULL_DEST_FILENAME ${PROJECT_BUILD_DIR}/${DEST_DIRNAME}/${FILENAME})
+        set(FULL_DEST_FILENAME ${PROJECT_BUILD_DIR}/${DEST_DIR}/${FILENAME})
     else()
         # An argument was passed so use it to rename the file, which is to be
         # copied
 
-        set(FULL_DEST_FILENAME ${PROJECT_BUILD_DIR}/${DEST_DIRNAME}/${ARGN})
+        set(FULL_DEST_FILENAME ${PROJECT_BUILD_DIR}/${DEST_DIR}/${ARGN})
     endif()
 
     if("${PROJECT_TARGET}" STREQUAL "DIRECT")
-        execute_process(COMMAND ${CMAKE_COMMAND} -E copy ${ORIG_DIRNAME}/${FILENAME}
+        execute_process(COMMAND ${CMAKE_COMMAND} -E copy ${ORIG_DIR}/${FILENAME}
                                                          ${FULL_DEST_FILENAME})
     else()
         add_custom_command(TARGET ${PROJECT_TARGET} POST_BUILD
-                           COMMAND ${CMAKE_COMMAND} -E copy ${ORIG_DIRNAME}/${FILENAME}
+                           COMMAND ${CMAKE_COMMAND} -E copy ${ORIG_DIR}/${FILENAME}
                                                             ${FULL_DEST_FILENAME}
                            BYPRODUCTS ${FULL_DEST_FILENAME})
     endif()
@@ -675,16 +719,16 @@ macro(windows_deploy_qt_plugins PLUGIN_CATEGORY)
     foreach(PLUGIN_NAME ${ARGN})
         # Copy the Qt plugin to the plugins folder
 
-        set(PLUGIN_ORIG_DIRNAME ${QT_PLUGINS_DIR}/${PLUGIN_CATEGORY})
-        set(PLUGIN_DEST_DIRNAME plugins/${PLUGIN_CATEGORY})
+        set(PLUGIN_ORIG_DIR ${QT_PLUGINS_DIR}/${PLUGIN_CATEGORY})
+        set(PLUGIN_DEST_DIR plugins/${PLUGIN_CATEGORY})
         set(PLUGIN_FILENAME ${PLUGIN_NAME}${DEBUG_TAG}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
-        copy_file_to_build_dir(DIRECT ${PLUGIN_ORIG_DIRNAME} ${PLUGIN_DEST_DIRNAME} ${PLUGIN_FILENAME})
+        copy_file_to_build_dir(DIRECT ${PLUGIN_ORIG_DIR} ${PLUGIN_DEST_DIR} ${PLUGIN_FILENAME})
 
         # Deploy the Qt plugin
 
-        install(FILES ${PLUGIN_ORIG_DIRNAME}/${PLUGIN_FILENAME}
-                DESTINATION ${PLUGIN_DEST_DIRNAME})
+        install(FILES ${PLUGIN_ORIG_DIR}/${PLUGIN_FILENAME}
+                DESTINATION ${PLUGIN_DEST_DIR})
     endforeach()
 endmacro()
 
@@ -708,26 +752,26 @@ endmacro()
 
 #===============================================================================
 
-macro(linux_deploy_binary_file PROJECT_TARGET ORIG_DIRNAME DEST_DIRNAME FILENAME)
+macro(linux_deploy_binary_file PROJECT_TARGET ORIG_DIR DEST_DIR FILENAME)
     # Copy the binary file to the build/lib folder, so we can test things
     # without first having to deploy OpenCOR
     # Note: this is particularly useful when the Linux machine has different
     #       versions of Qt...
 
-    copy_file_to_build_dir(${PROJECT_TARGET} ${ORIG_DIRNAME} ${DEST_DIRNAME} ${FILENAME})
+    copy_file_to_build_dir(${PROJECT_TARGET} ${ORIG_DIR} ${DEST_DIR} ${FILENAME})
 
     # Make sure that the RUNPATH value is converted to an RPATH value
 
-    runpath2rpath(${PROJECT_TARGET} ${PROJECT_BUILD_DIR}/${DEST_DIRNAME}/${FILENAME})
+    runpath2rpath(${PROJECT_TARGET} ${PROJECT_BUILD_DIR}/${DEST_DIR}/${FILENAME})
 
     # Strip the binary file of all its local symbols
 
-    strip_file(${PROJECT_TARGET} ${PROJECT_BUILD_DIR}/${DEST_DIRNAME}/${FILENAME})
+    strip_file(${PROJECT_TARGET} ${PROJECT_BUILD_DIR}/${DEST_DIR}/${FILENAME})
 
     # Deploy the binary file
 
-    install(FILES ${PROJECT_BUILD_DIR}/${DEST_DIRNAME}/${FILENAME}
-            DESTINATION ${DEST_DIRNAME}
+    install(FILES ${PROJECT_BUILD_DIR}/${DEST_DIR}/${FILENAME}
+            DESTINATION ${DEST_DIR}
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endmacro()
 
@@ -738,12 +782,12 @@ macro(linux_deploy_qt_library LIBRARY_NAME)
 
     if(   "${LIBRARY_NAME}" STREQUAL "${WEBKIT}"
        OR "${LIBRARY_NAME}" STREQUAL "${WEBKITWIDGETS}")
-        set(ORIG_DIRNAME ${QTWEBKIT_LIBRARIES_DIR})
+        set(ORIG_DIR ${QTWEBKIT_LIBRARIES_DIR})
     else()
-        set(ORIG_DIRNAME ${QT_LIBRARIES_DIR})
+        set(ORIG_DIR ${QT_LIBRARIES_DIR})
     endif()
 
-    linux_deploy_binary_file(DIRECT ${ORIG_DIRNAME} lib ${CMAKE_SHARED_LIBRARY_PREFIX}Qt${QT_VERSION_MAJOR}${LIBRARY_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.${QT_VERSION_MAJOR})
+    linux_deploy_binary_file(DIRECT ${ORIG_DIR} lib ${CMAKE_SHARED_LIBRARY_PREFIX}Qt${QT_VERSION_MAJOR}${LIBRARY_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.${QT_VERSION_MAJOR})
 endmacro()
 
 #===============================================================================
@@ -752,24 +796,24 @@ macro(linux_deploy_qt_plugins PLUGIN_CATEGORY)
     foreach(PLUGIN_NAME ${ARGN})
         # Copy the Qt plugin to the plugins folder
 
-        set(PLUGIN_ORIG_DIRNAME ${QT_PLUGINS_DIR}/${PLUGIN_CATEGORY})
-        set(PLUGIN_DEST_DIRNAME plugins/${PLUGIN_CATEGORY})
+        set(PLUGIN_ORIG_DIR ${QT_PLUGINS_DIR}/${PLUGIN_CATEGORY})
+        set(PLUGIN_DEST_DIR plugins/${PLUGIN_CATEGORY})
         set(PLUGIN_FILENAME ${CMAKE_SHARED_LIBRARY_PREFIX}${PLUGIN_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
-        copy_file_to_build_dir(DIRECT ${PLUGIN_ORIG_DIRNAME} ${PLUGIN_DEST_DIRNAME} ${PLUGIN_FILENAME})
+        copy_file_to_build_dir(DIRECT ${PLUGIN_ORIG_DIR} ${PLUGIN_DEST_DIR} ${PLUGIN_FILENAME})
 
         # Make sure that the RUNPATH value is converted to an RPATH value
 
-        runpath2rpath(DIRECT ${PROJECT_BUILD_DIR}/${PLUGIN_DEST_DIRNAME}/${PLUGIN_FILENAME})
+        runpath2rpath(DIRECT ${PROJECT_BUILD_DIR}/${PLUGIN_DEST_DIR}/${PLUGIN_FILENAME})
 
         # Strip the Qt plugin of all its local symbols
 
-        strip_file(DIRECT ${PROJECT_BUILD_DIR}/${PLUGIN_DEST_DIRNAME}/${PLUGIN_FILENAME})
+        strip_file(DIRECT ${PROJECT_BUILD_DIR}/${PLUGIN_DEST_DIR}/${PLUGIN_FILENAME})
 
         # Deploy the Qt plugin
 
-        install(FILES ${PROJECT_BUILD_DIR}/${PLUGIN_DEST_DIRNAME}/${PLUGIN_FILENAME}
-                DESTINATION ${PLUGIN_DEST_DIRNAME})
+        install(FILES ${PROJECT_BUILD_DIR}/${PLUGIN_DEST_DIR}/${PLUGIN_FILENAME}
+                DESTINATION ${PLUGIN_DEST_DIR})
     endforeach()
 endmacro()
 
@@ -780,10 +824,10 @@ macro(linux_deploy_system_library FILENAME NEW_FILENAME)
     # without first having to deploy OpenCOR
 
     get_filename_component(REAL_FULL_FILENAME ${FILENAME} REALPATH)
-    get_filename_component(REAL_DIRNAME ${REAL_FULL_FILENAME} DIRECTORY)
+    get_filename_component(REAL_DIR ${REAL_FULL_FILENAME} DIRECTORY)
     get_filename_component(REAL_FILENAME ${REAL_FULL_FILENAME} NAME)
 
-    copy_file_to_build_dir(DIRECT ${REAL_DIRNAME} lib ${REAL_FILENAME} ${NEW_FILENAME})
+    copy_file_to_build_dir(DIRECT ${REAL_DIR} lib ${REAL_FILENAME} ${NEW_FILENAME})
 
     # Deploy the system library
 
@@ -794,15 +838,15 @@ endmacro()
 
 #===============================================================================
 
-macro(macos_deploy_qt_file ORIG_DIRNAME DEST_DIRNAME FILENAME)
+macro(macos_deploy_qt_file ORIG_DIR DEST_DIR FILENAME)
     # Copy the Qt file
 
-    execute_process(COMMAND ${CMAKE_COMMAND} -E copy ${ORIG_DIRNAME}/${FILENAME}
-                                                     ${DEST_DIRNAME}/${FILENAME})
+    execute_process(COMMAND ${CMAKE_COMMAND} -E copy ${ORIG_DIR}/${FILENAME}
+                                                     ${DEST_DIR}/${FILENAME})
 
     # Clean up the Qt file
 
-    strip_file(DIRECT ${DEST_DIRNAME}/${FILENAME})
+    strip_file(DIRECT ${DEST_DIR}/${FILENAME})
 endmacro()
 
 #===============================================================================
@@ -839,342 +883,136 @@ endmacro()
 
 #===============================================================================
 
-macro(create_package_file PACKAGE_NAME PACKAGE_VERSION)
+macro(create_package PACKAGE_NAME PACKAGE_VERSION PACKAGE_REPOSITORY RELEASE_TAG)
     # Various initialisations
 
     set(OPTIONS
         NO_STRIP
     )
-    set(ONE_VALUE_KEYWORDS
-        PACKAGE_REPOSITORY
-        RELEASE_TAG
-        TARGET_PLATFORM
-        TARGET
-    )
-    set(MULTI_VALUE_KEYWORDS
-        PACKAGED_FILES
-        SHA1_FILES
-    )
 
-    cmake_parse_arguments(ARG "${OPTIONS}" "${ONE_VALUE_KEYWORDS}" "${MULTI_VALUE_KEYWORDS}" ${ARGN})
+    cmake_parse_arguments(ARG "${OPTIONS}" "" "" ${ARGN})
 
-    # Make sure that we have at least one file for which we want to check the
-    # SHA-1 value
-
-    list(LENGTH ARG_SHA1_FILES ARG_SHA1_FILES_COUNT)
-
-    if(ARG_SHA1_FILES_COUNT EQUAL 0)
-        message(FATAL_ERROR "At least one file must have its SHA-1 value calculated in order to create the '${PACKAGE_NAME}' package...")
-    endif()
-
-    # The full path to the package's files
-
-    string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
-           DIRNAME "${PROJECT_SOURCE_DIR}/${EXTERNAL_PACKAGE_DIR}")
-
-    # Remove any historical package archive
-
-    if(NOT "${ARG_TARGET_PLATFORM}" STREQUAL "")
-        set(REAL_TARGET_PLATFORM ${ARG_TARGET_PLATFORM})
-    else()
-        set(REAL_TARGET_PLATFORM ${TARGET_PLATFORM})
-    endif()
-
-    set(COMPRESSED_FILENAME ${PROJECT_BUILD_DIR}/${PACKAGE_NAME}.${PACKAGE_VERSION}.${REAL_TARGET_PLATFORM}.tar.gz)
-
-    file(REMOVE ${COMPRESSED_FILENAME})
+    set(PACKAGED_FILES ${ARGN})
+    list(REMOVE_ITEM PACKAGED_FILES NO_STRIP)
+    string(REPLACE ";" " "
+           PACKAGED_FILES "${PACKAGED_FILES}")
 
     # The actual packaging code goes into a separate CMake script file that is
     # run as a POST_BUILD step
 
-    set(CMAKE_CODE "cmake_minimum_required(VERSION 3.3)
-
-# Files and directories to package
-
-set(PACKAGED_FILES")
-
-    foreach(FILENAME IN LISTS ARG_PACKAGED_FILES)
-        set(CMAKE_CODE "${CMAKE_CODE}\n    ${FILENAME}")
-    endforeach()
-
-    set(CMAKE_CODE "${CMAKE_CODE}\n)
-
-# Files to have their SHA-1 value checked
-
-set(SHA1_FILES")
-
-    foreach(FILENAME IN LISTS ARG_SHA1_FILES)
-        set(CMAKE_CODE "${CMAKE_CODE}\n    ${FILENAME}")
-    endforeach()
-
-    set(CMAKE_CODE "${CMAKE_CODE}\n)
-
-# Calculate the SHA-1 value of our different files, after having stripped them,
-# if needed
-
-set(SHA1_VALUES)
-
-foreach(SHA1_FILE IN LISTS SHA1_FILES)
-    set(REAL_SHA1_FILENAME \"${DIRNAME}/\$\{SHA1_FILE\}\")
-
-    if(NOT EXISTS \$\{REAL_SHA1_FILENAME\})
-        message(FATAL_ERROR \"'\$\{REAL_SHA1_FILENAME\}' is missing from the '${PACKAGE_NAME}' package...\")
-    endif()
-")
+    set(PACKAGE_FILE ${PROJECT_BUILD_DIR}/${PACKAGE_NAME}.${PACKAGE_VERSION}.${TARGET_PLATFORM}.tar.gz)
+    set(PACKAGING_SCRIPT ${PROJECT_BINARY_DIR}/package${PACKAGE_NAME}.cmake)
+    set(CMAKE_CODE "cmake_minimum_required(VERSION 3.14)")
 
     if(NOT WIN32 AND RELEASE_MODE AND NOT ARG_NO_STRIP)
-        set(CMAKE_CODE "${CMAKE_CODE}\n    execute_process(COMMAND strip -x \$\{REAL_SHA1_FILENAME\})
-")
+        set(CMAKE_CODE "${CMAKE_CODE}\n
+# Strip our files
+
+foreach(PACKAGED_FILENAME ${PACKAGED_FILES})
+    execute_process(COMMAND strip -x \$\{PACKAGED_FILENAME\}
+                    WORKING_DIRECTORY ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
+                    OUTPUT_QUIET ERROR_QUIET)
+endforeach()")
     endif()
 
-    set(CMAKE_CODE "${CMAKE_CODE}\n    file(SHA1 \$\{REAL_SHA1_FILENAME\} SHA1_VALUE)
-
-    list(APPEND SHA1_VALUES \$\{SHA1_VALUE\})
-endforeach()
-
+    set(CMAKE_CODE "${CMAKE_CODE}\n
 # Compress our package
 
-execute_process(COMMAND ${CMAKE_COMMAND} -E tar -czf ${COMPRESSED_FILENAME} \$\{PACKAGED_FILES\}
-                WORKING_DIRECTORY ${DIRNAME}
+execute_process(COMMAND ${CMAKE_COMMAND} -E tar -czf ${PACKAGE_FILE} ${PACKAGED_FILES}
+                WORKING_DIRECTORY ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
                 RESULT_VARIABLE RESULT
                 OUTPUT_QUIET)
 
-# Make sure that the compressed version of our package exists
+# Make sure that the package file exists
 
-if(RESULT EQUAL 0 AND EXISTS ${COMPRESSED_FILENAME})
-    # The compressed version of our package exists, so calculate its SHA-1 value
-    # and let people know how we should call the retrieve_package_file() macro
+if(RESULT EQUAL 0 AND EXISTS ${PACKAGE_FILE})
+    # The package file, so calculate its SHA-1 value and let people know how we
+    # should call the retrieve_package() macro
 
-    file(SHA1 ${COMPRESSED_FILENAME} SHA1_VALUE)
-
-    string(REPLACE \"\;\" \"\\n                                  \"
-           SHA1_VALUES \"\$\{SHA1_VALUES\}\")
+    file(SHA1 ${PACKAGE_FILE} SHA1_VALUE)
 
     message(\"To retrieve the '${PACKAGE_NAME}' package, use:
-retrieve_package_file(\\$\\{PACKAGE_NAME\\} \\$\\{PACKAGE_VERSION\\}
-                      \\$\\{FULL_LOCAL_EXTERNAL_PACKAGE_DIR\\} \$\{SHA1_VALUE\}")
-
-    if(NOT "${ARG_PACKAGE_REPOSITORY}" STREQUAL "")
-        set(CMAKE_CODE "${CMAKE_CODE}\n                      PACKAGE_REPOSITORY \\$\\{PACKAGE_REPOSITORY\\}")
-    endif()
-
-    if(NOT "${ARG_RELEASE_TAG}" STREQUAL "")
-        set(CMAKE_CODE "${CMAKE_CODE}\n                      RELEASE_TAG \\$\\{RELEASE_TAG\\}")
-    endif()
-
-    if(NOT "${ARG_TARGET_PLATFORM}" STREQUAL "")
-        set(CMAKE_CODE "${CMAKE_CODE}\n                      TARGET_PLATFORM \\$\\{TARGET_PLATFORM\\}")
-    endif()
-
-    set(CMAKE_CODE "${CMAKE_CODE}\n                      SHA1_FILES \\$\\{SHA1_FILES\\}
-                      SHA1_VALUES \$\{SHA1_VALUES\})\")
+retrieve_package(\\$\\{PACKAGE_NAME\\} \\$\\{PACKAGE_VERSION\\}
+                 \\$\\{PACKAGE_REPOSITORY\\} \\$\\{RELEASE_TAG\\}
+                 \$\{SHA1_VALUE\})\")
 else()
-    if(EXISTS ${COMPRESSED_FILENAME})
-        file(REMOVE ${COMPRESSED_FILENAME})
+    if(EXISTS ${PACKAGE_FILE})
+        file(REMOVE ${PACKAGE_FILE})
     endif()
 
-    message(FATAL_ERROR \"The compressed version of the '${PACKAGE_NAME}' package could not be generated...\")
+    message(FATAL_ERROR \"The '${PACKAGE_NAME}' package could not be created...\")
 endif()
 ")
-
-    set(PACKAGING_SCRIPT ${PROJECT_BINARY_DIR}/package${PACKAGE_NAME}.cmake)
 
     file(WRITE ${PACKAGING_SCRIPT} ${CMAKE_CODE})
 
     # Run the packaging script once the dependency target has been satisfied
 
-    add_custom_command(TARGET ${ARG_TARGET} POST_BUILD
-                       COMMAND ${CMAKE_COMMAND} -D RELEASE_MODE=${RELEASE_MODE} -P ${PACKAGING_SCRIPT}
+    add_custom_command(TARGET ${PACKAGE_NAME}Build POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -P ${PACKAGING_SCRIPT}
                        VERBATIM)
 endmacro()
 
 #===============================================================================
 
-macro(check_files DIRNAME FILENAMES SHA1_VALUES)
-    # By default, everything is OK
+macro(get_full_local_external_package_dir)
+    set(FULL_LOCAL_EXTERNAL_PACKAGE_DIR ${CMAKE_SOURCE_DIR}/${EXTERNAL_PACKAGE_DIR}/${PROJECT_NAME})
 
-    set(CHECK_FILES_OK TRUE)
-    set(INVALID_SHA1_FILES)
-    set(MISSING_FILES)
-
-    # See our parameters as lists
-
-    set(FILENAMES_LIST ${FILENAMES})
-    set(SHA1_VALUES_LIST ${SHA1_VALUES})
-
-    # Retrieve the number of SHA-1 files and values we have
-
-    list(LENGTH FILENAMES_LIST FILENAMES_COUNT)
-
-    # Make sure that we have some files
-
-    if(FILENAMES_COUNT)
-        # Determine our range
-
-        math(EXPR RANGE "${FILENAMES_COUNT}-1")
-
-        # Make sure that our files, if they exist, have the expected SHA-1 value
-
-        foreach(I RANGE ${RANGE})
-            list(GET FILENAMES_LIST ${I} FILENAME)
-            list(GET SHA1_VALUES_LIST ${I} SHA1_VALUE)
-
-            set(REAL_FILENAME ${DIRNAME}/${FILENAME})
-
-            if(EXISTS ${REAL_FILENAME})
-                file(SHA1 ${REAL_FILENAME} REAL_SHA1_VALUE)
-
-                if(NOT "${REAL_SHA1_VALUE}" STREQUAL "${SHA1_VALUE}")
-                    # The file doesn't have the expected SHA-1 value, so remove
-                    # it and fail the checks
-
-                    file(REMOVE ${REAL_FILENAME})
-
-                    set(CHECK_FILES_OK FALSE)
-
-                    list(APPEND INVALID_SHA1_FILES ${FILENAME})
-                endif()
-            else()
-                # The file is missing, so fail the checks
-
-                set(CHECK_FILES_OK FALSE)
-
-                list(APPEND MISSING_FILES ${FILENAME})
-            endif()
-        endforeach()
+    if("${PLUGIN}" MATCHES "^thirdParty/.*$")
+        string(REPLACE "Plugin" ""
+               FULL_LOCAL_EXTERNAL_PACKAGE_DIR "${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}")
     endif()
 endmacro()
 
 #===============================================================================
 
-macro(check_file DIRNAME FILENAME SHA1_VALUE)
-    # Convenience macro
+macro(retrieve_package PACKAGE_NAME PACKAGE_VERSION PACKAGE_REPOSITORY RELEASE_TAG SHA1_VALUE)
+    # Check whether the package has already been retrieved by simply checking
+    # whether its installation directory exists
 
-    check_files(${DIRNAME} ${FILENAME} ${SHA1_VALUE})
+    get_full_local_external_package_dir()
 
-    set(CHECK_FILE_OK ${CHECK_FILES_OK})
-    set(INVALID_SHA1_FILE ${INVALID_SHA1_FILES})
-    set(MISSING_FILE ${MISSING_FILES})
-endmacro()
+    message("Retrieving the '${PACKAGE_NAME}' package...")
 
-#===============================================================================
+    if(NOT EXISTS ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR})
+        # Retrieve the package
 
-macro(retrieve_package_file PACKAGE_NAME PACKAGE_VERSION DIRNAME SHA1_VALUE)
-    # Various initialisations
+        set(PACKAGE_FILE ${PACKAGE_NAME}.${PACKAGE_VERSION}.${TARGET_PLATFORM}.tar.gz)
+        set(REAL_PACKAGE_FILE ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${PACKAGE_FILE})
+        set(PACKAGE_URL "https://github.com/opencor/${PACKAGE_REPOSITORY}/releases/download/${RELEASE_TAG}/${PACKAGE_FILE}")
 
-    set(OPTIONS)
-    set(ONE_VALUE_KEYWORDS
-        PACKAGE_REPOSITORY
-        RELEASE_TAG
-        TARGET_PLATFORM
-    )
-    set(MULTI_VALUE_KEYWORDS
-        SHA1_FILES
-        SHA1_VALUES
-    )
-
-    cmake_parse_arguments(ARG "${OPTIONS}" "${ONE_VALUE_KEYWORDS}" "${MULTI_VALUE_KEYWORDS}" ${ARGN})
-
-    # Make sure that we have at least one file for which we need to check the
-    # SHA-1 value
-
-    list(LENGTH ARG_SHA1_FILES ARG_SHA1_FILES_COUNT)
-    list(LENGTH ARG_SHA1_VALUES ARG_SHA1_VALUES_COUNT)
-
-    if(       ARG_SHA1_FILES_COUNT EQUAL 0
-       OR NOT ARG_SHA1_FILES_COUNT EQUAL ARG_SHA1_VALUES_COUNT)
-        message(FATAL_ERROR "At least one file must have its SHA-1 value checked in order to retrieve the '${PACKAGE_NAME}' package...")
-    endif()
-
-    # Create our destination folder, if needed
-
-    if(NOT EXISTS ${DIRNAME})
-        file(MAKE_DIRECTORY ${DIRNAME})
-    endif()
-
-    # Make sure that we have the expected package's files
-
-    check_files(${DIRNAME} "${ARG_SHA1_FILES}" "${ARG_SHA1_VALUES}")
-
-    if(NOT CHECK_FILES_OK)
-        # Something went wrong with the package's files, so retrieve the package
-
-        message("Retrieving the '${PACKAGE_NAME}' package...")
-
-        if(NOT "${ARG_TARGET_PLATFORM}" STREQUAL "")
-            set(REAL_TARGET_PLATFORM ${ARG_TARGET_PLATFORM})
-        else()
-            set(REAL_TARGET_PLATFORM ${TARGET_PLATFORM})
-        endif()
-
-        set(COMPRESSED_FILENAME ${PACKAGE_NAME}.${PACKAGE_VERSION}.${REAL_TARGET_PLATFORM}.tar.gz)
-        set(FULL_COMPRESSED_FILENAME ${DIRNAME}/${COMPRESSED_FILENAME})
-
-        if("${ARG_PACKAGE_REPOSITORY}" STREQUAL "")
-            string(TOLOWER ${PACKAGE_NAME} PACKAGE_REPOSITORY)
-        else()
-            set(PACKAGE_REPOSITORY ${ARG_PACKAGE_REPOSITORY})
-        endif()
-
-        if("${ARG_RELEASE_TAG}" STREQUAL "")
-            set(RELEASE_TAG v${PACKAGE_VERSION})
-        else()
-            set(RELEASE_TAG ${ARG_RELEASE_TAG})
-        endif()
-
-        set (PACKAGE_URL "https://github.com/opencor/${PACKAGE_REPOSITORY}/releases/download/${RELEASE_TAG}/${COMPRESSED_FILENAME}")
-
-        file(DOWNLOAD ${PACKAGE_URL} ${FULL_COMPRESSED_FILENAME}
+        file(DOWNLOAD ${PACKAGE_URL} ${REAL_PACKAGE_FILE}
              SHOW_PROGRESS STATUS STATUS)
 
-        # Uncompress the compressed version of the package, should we have
-        # managed to retrieve it
+        # Uncompress the package, should we have managed to retrieve it
 
         list(GET STATUS 0 STATUS_CODE)
 
         if(${STATUS_CODE} EQUAL 0)
-            check_file(${DIRNAME} ${COMPRESSED_FILENAME} ${SHA1_VALUE})
+            file(SHA1 ${REAL_PACKAGE_FILE} REAL_SHA1_VALUE)
 
-            if(NOT CHECK_FILE_OK)
-                message(FATAL_ERROR "The compressed version of the '${PACKAGE_NAME}' package (downloaded from '${PACKAGE_URL}') does not have the expected SHA-1 value...")
+            if(NOT "${REAL_SHA1_VALUE}" STREQUAL "${SHA1_VALUE}")
+                file(REMOVE_RECURSE ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR})
+
+                message(FATAL_ERROR "The '${PACKAGE_NAME}' package (downloaded from '${PACKAGE_URL}') does not have the expected SHA-1 value...")
             endif()
 
-            execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${FULL_COMPRESSED_FILENAME}
-                            WORKING_DIRECTORY ${DIRNAME}
-                            OUTPUT_QUIET)
+            execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${REAL_PACKAGE_FILE}
+                            WORKING_DIRECTORY ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
+                            RESULT_VARIABLE RESULT
+                            OUTPUT_QUIET ERROR_QUIET)
 
-            file(REMOVE ${FULL_COMPRESSED_FILENAME})
-        else()
-            file(REMOVE ${FULL_COMPRESSED_FILENAME})
-            # Note: this is in case we had an HTTP/S error of sorts, in which
-            #       case we would end up with an empty file...
+            if(NOT RESULT EQUAL 0)
+                file(REMOVE_RECURSE ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR})
 
-            message(FATAL_ERROR "The compressed version of the '${PACKAGE_NAME}' package could not be retrieved from '${PACKAGE_URL}'...")
-        endif()
-
-        # Check that the package's files, if we managed to uncompress the
-        # package, have the expected SHA-1 values
-
-        list(GET STATUS 0 STATUS_CODE)
-
-        if(${STATUS_CODE} EQUAL 0)
-            check_files(${DIRNAME} "${ARG_SHA1_FILES}" "${ARG_SHA1_VALUES}")
-
-            if(NOT CHECK_FILES_OK)
-                message("The '${PACKAGE_NAME}' package (downloaded from '${PACKAGE_URL}') is invalid:")
-
-                foreach(SHA1_FILE ${ARG_SHA1_FILES})
-                    if("${SHA1_FILE}" IN_LIST INVALID_SHA1_FILES)
-                        message(" - '${SHA1_FILE}' does not have the expected SHA-1 value...")
-                    elseif("${SHA1_FILE}" IN_LIST MISSING_FILES)
-                        message(" - '${SHA1_FILE}' is missing...")
-                    endif()
-                endforeach()
-
-                message(FATAL_ERROR)
+                message(FATAL_ERROR "The '${PACKAGE_NAME}' package (downloaded from '${PACKAGE_URL}') could not be uncompressed...")
             endif()
+
+            file(REMOVE ${REAL_PACKAGE_FILE})
         else()
-            message(FATAL_ERROR "The '${PACKAGE_NAME}' package (downloaded from '${PACKAGE_URL}') could not be uncompressed...")
+            file(REMOVE_RECURSE ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR})
+
+            message(FATAL_ERROR "The '${PACKAGE_NAME}' package could not be retrieved from '${PACKAGE_URL}'...")
         endif()
     endif()
 endmacro()

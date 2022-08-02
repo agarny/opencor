@@ -30,7 +30,6 @@ along with this program. If not, see <https://gnu.org/licenses>.
 #include "cellmlfile.h"
 #include "cellmlfileruntime.h"
 #include "compilerengine.h"
-#include "compilermath.h"
 #include "corecliutils.h"
 #include "solverinterface.h"
 
@@ -44,13 +43,6 @@ along with this program. If not, see <https://gnu.org/licenses>.
 #include "cellmlapibegin.h"
     #include "CCGSBootstrap.hpp"
 #include "cellmlapiend.h"
-
-//==============================================================================
-
-#include "llvmclangbegin.h"
-    #include "llvm/ADT/StringRef.h"
-    #include "llvm/Support/DynamicLibrary.h"
-#include "llvmclangend.h"
 
 //==============================================================================
 
@@ -318,9 +310,10 @@ void CellmlFileRuntime::update(CellmlFile *pCellmlFile, bool pAll)
         bool hasImports = model->imports()->length() != 0;
         QHash<iface::cellml_api::CellMLVariable *, iface::cellml_api::CellMLVariable *> mainVariables;
         QList<iface::cellml_api::CellMLVariable *> realMainVariables;
-        ObjRef<iface::cellml_api::CellMLComponentIterator> localComponentsIter = model->localComponents()->iterateComponents();
 
         if (hasImports) {
+            ObjRef<iface::cellml_api::CellMLComponentIterator> localComponentsIter = model->localComponents()->iterateComponents();
+
             for (ObjRef<iface::cellml_api::CellMLComponent> component = localComponentsIter->nextComponent();
                  component != nullptr; component = localComponentsIter->nextComponent()) {
                 ObjRef<iface::cellml_api::CellMLVariableIterator> variablesIter = component->variables()->iterateVariables();
@@ -561,16 +554,15 @@ void CellmlFileRuntime::update(CellmlFile *pCellmlFile, bool pAll)
         // Add the symbol of any required external function, if any
 
         if (mAtLeastOneNlaSystem) {
-            llvm::sys::DynamicLibrary::AddSymbol("doNonLinearSolve",
-                                                 reinterpret_cast<void *>(doNonLinearSolve));
+            mCompilerEngine->addFunction("doNonLinearSolve", reinterpret_cast<void *>(doNonLinearSolve));
         }
 
         // Retrieve the ODE functions
 
-        mInitializeConstants = reinterpret_cast<InitializeConstantsFunction>(mCompilerEngine->getFunction("initializeConstants"));
-        mComputeComputedConstants = reinterpret_cast<ComputeComputedConstantsFunction>(mCompilerEngine->getFunction("computeComputedConstants"));
-        mComputeVariables = reinterpret_cast<ComputeVariablesFunction>(mCompilerEngine->getFunction("computeVariables"));
-        mComputeRates = reinterpret_cast<ComputeRatesFunction>(mCompilerEngine->getFunction("computeRates"));
+        mInitializeConstants = reinterpret_cast<InitializeConstantsFunction>(mCompilerEngine->function("initializeConstants"));
+        mComputeComputedConstants = reinterpret_cast<ComputeComputedConstantsFunction>(mCompilerEngine->function("computeComputedConstants"));
+        mComputeVariables = reinterpret_cast<ComputeVariablesFunction>(mCompilerEngine->function("computeVariables"));
+        mComputeRates = reinterpret_cast<ComputeRatesFunction>(mCompilerEngine->function("computeRates"));
 
         // Make sure that we managed to retrieve all the ODE functions
 

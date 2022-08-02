@@ -158,14 +158,15 @@ QString Simulation::furtherInitialize() const
 
     GraphPanelWidget::GraphPanelsWidget *graphPanelsWidget = mContentsWidget->graphPanelsWidget();
     int oldNbOfGraphPanels = graphPanelsWidget->graphPanels().count();
-    int newNbOfGraphPanels = int(sedmlDocument->getNumOutputs());
 
-    if (oldNbOfGraphPanels < newNbOfGraphPanels) {
-        for (int i = 0, iMax = newNbOfGraphPanels-oldNbOfGraphPanels; i < iMax; ++i) {
+    mNbOfGraphPanels = int(sedmlDocument->getNumOutputs());
+
+    if (oldNbOfGraphPanels < mNbOfGraphPanels) {
+        for (int i = 0, iMax = mNbOfGraphPanels-oldNbOfGraphPanels; i < iMax; ++i) {
             graphPanelsWidget->addGraphPanel();
         }
-    } else if (oldNbOfGraphPanels > newNbOfGraphPanels) {
-        for (int i = 0, iMax = oldNbOfGraphPanels-newNbOfGraphPanels; i < iMax; ++i) {
+    } else if (oldNbOfGraphPanels > mNbOfGraphPanels) {
+        for (int i = 0, iMax = oldNbOfGraphPanels-mNbOfGraphPanels; i < iMax; ++i) {
             graphPanelsWidget->removeCurrentGraphPanel();
         }
     }
@@ -174,7 +175,7 @@ QString Simulation::furtherInitialize() const
 
     QIntList graphPanelsWidgetSizes;
 
-    for (int i = 0; i < newNbOfGraphPanels; ++i) {
+    for (int i = 0; i < mNbOfGraphPanels; ++i) {
         // Customise our graph panel
 
         auto sedmlPlot2d = static_cast<libsedml::SedPlot2D *>(sedmlDocument->getOutput(uint(i)));
@@ -410,7 +411,7 @@ QString Simulation::furtherInitialize() const
         graphPanel->removeAllGraphs();
 
         for (uint j = 0, jMax = sedmlPlot2d->getNumCurves(); j < jMax; ++j) {
-            libsedml::SedCurve *sedmlCurve = sedmlPlot2d->getCurve(j);
+            libsedml::SedCurve *sedmlCurve = static_cast<libsedml::SedCurve *>(sedmlPlot2d->getCurve(j));
 
             libsedml::SedVariable *xVariable = sedmlDocument->getDataGenerator(sedmlCurve->getXDataReference())->getVariable(0);
             libsedml::SedVariable *yVariable = sedmlDocument->getDataGenerator(sedmlCurve->getYDataReference())->getVariable(0);
@@ -495,7 +496,7 @@ QString Simulation::furtherInitialize() const
                                         QString linePropertyNodeValue = QString::fromStdString(linePropertyNode.getChild(0).getCharacters());
 
                                         if (linePropertyNodeName == SEDMLSupport::Style) {
-                                            lineStyle = SEDMLSupport::lineStyle(linePropertyNodeValue);
+                                            lineStyle = qtPenStyleFromString(linePropertyNodeValue);
                                         } else if (linePropertyNodeName == SEDMLSupport::Width) {
                                             lineWidth = linePropertyNodeValue.toInt();
                                         } else if (linePropertyNodeName == SEDMLSupport::Color) {
@@ -512,7 +513,7 @@ QString Simulation::furtherInitialize() const
                                         QString symbolPropertyNodeValue = QString::fromStdString(symbolPropertyNode.getChild(0).getCharacters());
 
                                         if (symbolPropertyNodeName == SEDMLSupport::Style) {
-                                            symbolStyle = SEDMLSupport::symbolStyle(symbolPropertyNodeValue);
+                                            symbolStyle = qwtSymbolStyleFromString(symbolPropertyNodeValue);
                                         } else if (symbolPropertyNodeName == SEDMLSupport::Size) {
                                             symbolSize = symbolPropertyNodeValue.toInt();
                                         } else if (symbolPropertyNodeName == SEDMLSupport::Color) {

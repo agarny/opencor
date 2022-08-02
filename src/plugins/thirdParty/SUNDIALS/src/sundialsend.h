@@ -21,7 +21,9 @@ along with this program. If not, see <https://gnu.org/licenses>.
 // SUNDIALS end
 //==============================================================================
 
-#ifdef Q_OS_MAC
+#if defined(_MSC_VER)
+    #pragma warning(pop)
+#elif defined(__clang__)
     #pragma clang diagnostic pop
 #endif
 

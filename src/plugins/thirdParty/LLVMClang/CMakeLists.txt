@@ -1,23 +1,19 @@
 project(LLVMClangPlugin)
 
-# Name and version of our package
+# Our package characteristics
 
 set(PACKAGE_NAME LLVMClang)
-set(PACKAGE_VERSION 12.0.1)
+set(PACKAGE_VERSION 14.0.3)
+set(PACKAGE_REPOSITORY llvmclang)
+set(GIT_TAG v14.0.3-opencor)
+set(RELEASE_TAG v14.0.3-opencor)
 
-# Version of our library
+get_full_local_external_package_dir()
 
-set(MAJOR_LIBRARY_VERSION 12)
-set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.0.1)
+# Version of our package's library
 
-# Git tag for our library
-
-set(GIT_TAG v12.0.1)
-
-# Specify where our local package will be installed
-
-string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
-       FULL_LOCAL_EXTERNAL_PACKAGE_DIR "${PROJECT_SOURCE_DIR}/${EXTERNAL_PACKAGE_DIR}")
+set(MAJOR_LIBRARY_VERSION 14)
+set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.0.3)
 
 # Name of our package's shared libraries (and of their import libraries, if any)
 
@@ -37,14 +33,14 @@ set(EXTERNAL_BINARIES
     ${SHARED_LIBRARY}
 )
 
-# Specify the files that need to have their SHA-1 value checked
+# Specify the files that can be stripped
 
-set(SHA1_FILES
+set(STRIPPABLE_FILES
     lib/${SHARED_LIBRARY}
 )
 
 if(WIN32)
-    list(APPEND SHA1_FILES
+    list(APPEND STRIPPABLE_FILES
         lib/${IMPORT_LIBRARY}
     )
 endif()
@@ -56,28 +52,22 @@ if(USE_PREBUILT_LLVMCLANG_PACKAGE)
 
     if(WIN32)
         if(RELEASE_MODE)
-            retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 78ffae4e53feb7550d999162bfb81f22d20dfd4d
-                                  SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 9b95f14242d788b7e81b43e7629db0c82f0c303e
-                                              dfa4b0a235a9ba07d28a8f84a7a5e165d6c6b805)
+            retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                             ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                             7bedd536e8c1c9f2f77da7be5eb49734ce21abbc)
         else()
-            retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} f1101cffff78483c5e8fd7c7d9f1685115f399f9
-                                  SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES e3051b7403498580df1479dcd04cc42671767388
-                                              4543f852f1f8e6ab73b4557e79a081ca836209a8)
+            retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                             ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                             ac0e93c75dcd8d32a944ad8cc579042dde976be4)
         endif()
     elseif(APPLE)
-        retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 341d0a3095e1385cf242cfd3e947c130cc408a9b
-                              SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 2247d68416c0dd6d036769e330924eb9ad54082d)
+        retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                         ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                         ff1e626de9764e6fbea519d6ae226ebbb29c3ca7)
     else()
-        retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} cefee41de15625372d8fc162ab3e3713b7770fad
-                              SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 6f1ab4f763d6c41ea3c6a107cb5e4763aff19f16)
+        retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                         ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                         2851a9340bdc2f0e4c146976c5b1c1115e66b498)
     endif()
 else()
     # Allow for big objects and ignore some warnings
@@ -91,14 +81,13 @@ else()
     set(PACKAGE_BUILD ${PACKAGE_NAME}Build)
 
     ExternalProject_Add(${PACKAGE_BUILD}
-        SOURCE_DIR
-            ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME}
         INSTALL_DIR
             ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
         GIT_REPOSITORY
-            https://github.com/opencor/llvmclang
+            https://github.com/opencor/${PACKAGE_REPOSITORY}
         GIT_TAG
             ${GIT_TAG}
+        GIT_SHALLOW
         CMAKE_CACHE_ARGS
             -DCMAKE_CXX_FLAGS:STRING=${PACKAGE_CXX_FLAGS}
         CMAKE_GENERATOR
@@ -111,7 +100,7 @@ else()
             -DCLANG_INCLUDE_TESTS=OFF
             ${CMAKE_ARGS}
             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+            -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
             -DLLVMCLANG_BUILD_SHARED_LIB=ON
             -DLLVM_BUILD_RUNTIME=OFF
             -DLLVM_BUILD_RUNTIMES=OFF
@@ -146,10 +135,9 @@ else()
 
     # Package our external project
 
-    create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                        PACKAGED_FILES include ${SHA1_FILES}
-                        SHA1_FILES ${SHA1_FILES}
-                        TARGET ${PACKAGE_BUILD})
+    create_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                   ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                   include ${STRIPPABLE_FILES})
 
     set(DEPENDS_ON ${PACKAGE_BUILD})
 endif()

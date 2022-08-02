@@ -22,16 +22,8 @@ along with this program. If not, see <https://gnu.org/licenses>.
 //==============================================================================
 
 #include "corecliutils.h"
-#include "filemanager.h"
+#include "sedmlfile.h"
 #include "sedmlfilemanager.h"
-#include "sedmlsupportplugin.h"
-
-//==============================================================================
-
-#include "libsedmlbegin.h"
-    #include "sedml/SedDocument.h"
-    #include "sedml/SedReader.h"
-#include "libsedmlend.h"
 
 //==============================================================================
 

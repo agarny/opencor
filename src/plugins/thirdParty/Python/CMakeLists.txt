@@ -1,28 +1,20 @@
 project(PythonPlugin)
 
-# Name and version of our package
+# Our package characteristics
 
 set(PACKAGE_NAME Python)
 set(PACKAGE_VERSION 3.7.5)
-
-# Git tag for our library
-
-set(GIT_TAG opencor-3.7.5)
-
-# Package repository
-
 set(PACKAGE_REPOSITORY python)
+set(GIT_TAG opencor-3.7.5)
+set(RELEASE_TAG v3.7.5)
 
-# Version of our library
+get_full_local_external_package_dir()
+
+# Version of our package's library
 
 set(MAJOR_MINOR_LIBRARY_VERSION 3.7)
 set(LIBRARY_VERSION ${MAJOR_MINOR_LIBRARY_VERSION}.5)
 set(NUMERIC_LIBRARY_VERSION 37)
-
-# Specify where our local package will be installed
-
-string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
-       FULL_LOCAL_EXTERNAL_PACKAGE_DIR "${PROJECT_SOURCE_DIR}/${EXTERNAL_PACKAGE_DIR}")
 
 # Set the ABI flag and version identifier
 
@@ -39,7 +31,7 @@ endif()
 # Name of our Python executable and shared library (and import library, if any)
 
 if(WIN32)
-    set(PYTHON_EXECUTABLE bin/python.exe)
+    set(PYTHON_EXECUTABLE python.exe)
 
     if(RELEASE_MODE)
         set(SHARED_LIBRARY python${PYTHON_BUILT_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -49,7 +41,7 @@ if(WIN32)
         set(IMPORT_LIBRARY python${PYTHON_BUILT_VERSION}_d${CMAKE_IMPORT_LIBRARY_SUFFIX})
     endif()
 else()
-    set(PYTHON_EXECUTABLE bin/python3)
+    set(PYTHON_EXECUTABLE python3)
 
     set(SHARED_LIBRARY ${CMAKE_SHARED_LIBRARY_PREFIX}python${PYTHON_BUILT_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX})
     set(IMPORT_LIBRARY ${SHARED_LIBRARY})
@@ -60,9 +52,10 @@ endif()
 if(WIN32)
     set(ROOT_DIR ${FULL_DEST_EXTERNAL_LIBRARIES_DIR}/../Python)
 
+    set(BINARY_DIR bin)
     set(LIBRARY_DIR Libs)
     set(RUNTIME_DIR lib)
-    set(SCRIPT_DIR Scripts)
+    set(SCRIPTS_DIR Scripts)
 else()
     if (APPLE)
         set(ROOT_DIR ${FULL_DEST_EXTERNAL_LIBRARIES_DIR}/Python)
@@ -70,9 +63,10 @@ else()
         set(ROOT_DIR ${FULL_DEST_EXTERNAL_LIBRARIES_DIR}/../python)
     endif()
 
+    set(BINARY_DIR bin)
     set(LIBRARY_DIR lib)
     set(RUNTIME_DIR lib/python${MAJOR_MINOR_LIBRARY_VERSION})
-    set(SCRIPT_DIR bin)
+    set(SCRIPTS_DIR bin)
 endif()
 
 # Retrieve our package's binaries
@@ -83,7 +77,9 @@ set(EXTERNAL_BINARIES_DIR ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${LIBRARY_DIR})
 # Note: indeed, this is needed to prevent issues when building Python on
 #       Windows...
 
-file(MAKE_DIRECTORY ${EXTERNAL_BINARIES_DIR})
+if(NOT USE_PREBUILT_PYTHON_PACKAGE)
+    file(MAKE_DIRECTORY ${EXTERNAL_BINARIES_DIR})
+endif()
 
 # Specify the package's files
 
@@ -91,15 +87,15 @@ set(EXTERNAL_BINARIES
     ${SHARED_LIBRARY}
 )
 
-# Specify the files that need to have their SHA-1 value checked
+# Specify the files that can be stripped
 
-set(SHA1_FILES
-    ${PYTHON_EXECUTABLE}
+set(STRIPPABLE_FILES
+    ${BINARY_DIR}/${PYTHON_EXECUTABLE}
     ${LIBRARY_DIR}/${SHARED_LIBRARY}
 )
 
 if(WIN32)
-    list(APPEND SHA1_FILES
+    list(APPEND STRIPPABLE_FILES
         ${LIBRARY_DIR}/${IMPORT_LIBRARY}
     )
 endif()
@@ -123,7 +119,7 @@ if(NOT APPLE)
             ${BZIP2_SHARED_LIBRARY}
         )
 
-        list(APPEND SHA1_FILES
+        list(APPEND STRIPPABLE_FILES
             ${LIBRARY_DIR}/${BZIP2_SHARED_LIBRARY}
         )
 
@@ -143,7 +139,7 @@ if(NOT APPLE)
         ${LZMA_SHARED_LIBRARY}
     )
 
-    list(APPEND SHA1_FILES
+    list(APPEND STRIPPABLE_FILES
         ${LIBRARY_DIR}/${LZMA_SHARED_LIBRARY}
     )
 
@@ -156,7 +152,7 @@ if(NOT APPLE)
         ${SQLITE3_SHARED_LIBRARY}
     )
 
-    list(APPEND SHA1_FILES
+    list(APPEND STRIPPABLE_FILES
         ${LIBRARY_DIR}/${SQLITE3_SHARED_LIBRARY}
     )
 
@@ -169,7 +165,7 @@ if(NOT APPLE)
             ${LZMA_IMPORT_LIBRARY}
         )
 
-        list(APPEND SHA1_FILES
+        list(APPEND STRIPPABLE_FILES
             ${LIBRARY_DIR}/${LZMA_IMPORT_LIBRARY}
         )
 
@@ -179,7 +175,7 @@ if(NOT APPLE)
             ${SQLITE3_IMPORT_LIBRARY}
         )
 
-        list(APPEND SHA1_FILES
+        list(APPEND STRIPPABLE_FILES
             ${LIBRARY_DIR}/${SQLITE3_IMPORT_LIBRARY}
         )
     endif()
@@ -191,12 +187,12 @@ set(PACKAGED_FILES
     bin
     include
     ${RUNTIME_DIR}
-    ${SHA1_FILES}
+    ${STRIPPABLE_FILES}
 )
 
 if(WIN32)
     list(APPEND PACKAGED_FILES
-        ${SCRIPT_DIR}
+        ${SCRIPTS_DIR}
     )
 elseif()
     list(APPEND PACKAGED_FILES
@@ -211,47 +207,22 @@ if(USE_PREBUILT_PYTHON_PACKAGE)
 
     if(WIN32)
         if(RELEASE_MODE)
-            retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 10d28302ba9a75544c0c65704ab9dd192ba6fb8d
-                                  PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                                  SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES 7b48002df4a74dee491edc654295769f6a3965c6
-                                              51e8b112ec4429be34a6585b810768ceaa33150b
-                                              40357926b13a9c18b849c4ce875579ea5f9ee5e7
-                                              0b14ddd87cbe6a7c186ee55737eca4cee363dc47
-                                              3970ffe8aefe0c30daaec65b85fb103c0fc0f2a7
-                                              aed440552b24a5971891533938feff48a74bc2e0
-                                              f0f8aac6a1ebd6111129bdc3287cf6834a790f06)
+            retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                             ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                             66e870b2892d5854ca65e1bb794321b087f1b3e0)
         else()
-            retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 31cedabe85a1f28e435f64bc5842e52b1055b3d6
-                                  PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                                  SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES ae8ace1ba76098ed84fbb1aa10d9a07ac17a9379
-                                              352113e80e2136ef0374c437c7cc4be5c0987403
-                                              323c7afb3139adb71c098079dfc029ac2ea698d1
-                                              0b14ddd87cbe6a7c186ee55737eca4cee363dc47
-                                              3970ffe8aefe0c30daaec65b85fb103c0fc0f2a7
-                                              d7074d2f2662088a6eef3b8438321bb1236a75d8
-                                              16e6b4d74e222f1f3339fa655d8bd90741135c2f)
+            retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                             ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                             3291133813343f958c0f527688e7bfb368c5f9ef)
         endif()
     elseif(APPLE)
-        retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 76a9567f0e9b6ab0284047dda301add5704b04a9
-                              PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                              SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES abb51c13f494869383d6fb5f4546e29da328c926
-                                          0984ed1d0834eb67b3a2f2b39589663dd020d19a)
+        retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                         ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                         a04fc155b424621f5776eb98db76f8d19d380290)
     else()
-        retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 0982331f1719017596c28e010cc5b46825346d99
-                              PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                              SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 50b47e10df44209b3e78f145350a2e1e35b960f7
-                                          920daa60a973fbc24cc05f7ad12ee90dd9e69a56
-                                          ee42ca256c6feb7412c37313e1935d2e31a0a1de
-                                          d850f87b53d12db9434476fa84977e69c8ceb243
-                                          38161dee3a32f4b3a70ffa997aa42c9c8a8b2aa3)
+        retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                         ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                         0982331f1719017596c28e010cc5b46825346d99)
     endif()
 else()
     # Set platform-specific configuration options
@@ -428,20 +399,18 @@ else()
     # Build Python as an external project
 
     set(PACKAGE_BUILD ${PACKAGE_NAME}Build)
-    set(PACKAGE_BUILD_DIR ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME})
 
     string(REPLACE ";" "|"
            PYTHON_OPENSSL_LIBRARIES "${OPENSSL_LIBRARIES}")
 
     ExternalProject_Add(${PACKAGE_BUILD}
-        SOURCE_DIR
-            ${PACKAGE_BUILD_DIR}
         INSTALL_DIR
             ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
         GIT_REPOSITORY
-            https://github.com/opencor/python-cmake-buildsystem.git
+            https://github.com/opencor/${PACKAGE_REPOSITORY}-cmake-buildsystem
         GIT_TAG
             ${GIT_TAG}
+        GIT_SHALLOW
         CMAKE_GENERATOR
             ${CMAKE_GENERATOR}
         LIST_SEPARATOR
@@ -450,7 +419,7 @@ else()
             ${CMAKE_ARGS}
             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
             -DCMAKE_C_FLAGS:STRING=${PACKAGE_C_FLAGS}
-            -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+            -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
             ${CMAKE_INSTALL_RPATH_OPTION}
 
             # Options for macOS builds
@@ -546,6 +515,14 @@ else()
     endif()
 
     if(WIN32)
+        # We need to ship the VC runtime with our copy of Python
+
+        set(VCRUNTIME_DLL vcruntime140${DEBUG_TAG}.dll)
+
+        ExternalProject_Add_Step(${PACKAGE_BUILD} copyVCRuntime
+                                 COMMAND ${CMAKE_COMMAND} -E copy ${MSVC_DIR}/${VCRUNTIME_DLL} <BINARY_DIR>/${VCRUNTIME_DLL}
+                                 DEPENDEES install)
+
         # _freeze_importlib.exe, which is run as part of the Python build, needs
         # our zlib DLL
 
@@ -567,7 +544,7 @@ else()
                OPENSSL_SSL_DLL "${OPENSSL_SSL_LIBRARY}")
 
         ExternalProject_Add_Step(${PACKAGE_BUILD} copyDlls
-                                 COMMAND ${CMAKE_COMMAND} -E copy bin/${SHARED_LIBRARY} Libs
+                                 COMMAND ${CMAKE_COMMAND} -E copy ${BINARY_DIR}/${SHARED_LIBRARY} Libs
                                  COMMAND ${CMAKE_COMMAND} -E copy ${ZLIB_DLL} bin
                                  COMMAND ${CMAKE_COMMAND} -E copy ${OPENSSL_CRYPTO_DLL} bin
                                  COMMAND ${CMAKE_COMMAND} -E copy ${OPENSSL_SSL_DLL} bin
@@ -588,25 +565,23 @@ else()
         #    location.
 
         ExternalProject_Add_Step(${PACKAGE_BUILD} setRpath
-                                 COMMAND install_name_tool -add_rpath ${FULL_DEST_EXTERNAL_LIBRARIES_DIR} ${PYTHON_EXECUTABLE}
-                                 COMMAND install_name_tool -add_rpath @executable_path/.. ${PYTHON_EXECUTABLE}
-                                 COMMAND install_name_tool -add_rpath @executable_path/../.. ${PYTHON_EXECUTABLE}
-                                 COMMAND install_name_tool -change ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/lib/${SHARED_LIBRARY}
-                                                                   @rpath/lib/${SHARED_LIBRARY}
-                                                                   ${PYTHON_EXECUTABLE}
-                                 COMMAND chmod 755 lib/${SHARED_LIBRARY}
-                                 COMMAND install_name_tool -id @rpath/${SHARED_LIBRARY} lib/${SHARED_LIBRARY}
+                                 COMMAND install_name_tool -add_rpath ${FULL_DEST_EXTERNAL_LIBRARIES_DIR} ${BINARY_DIR}/${PYTHON_EXECUTABLE}
+                                 COMMAND install_name_tool -add_rpath @executable_path/.. ${BINARY_DIR}/${PYTHON_EXECUTABLE}
+                                 COMMAND install_name_tool -add_rpath @executable_path/../.. ${BINARY_DIR}/${PYTHON_EXECUTABLE}
+                                 COMMAND install_name_tool -change ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${LIBRARY_DIR}/${SHARED_LIBRARY}
+                                                                   @rpath/${LIBRARY_DIR}/${SHARED_LIBRARY}
+                                                                   ${BINARY_DIR}/${PYTHON_EXECUTABLE}
+                                 COMMAND chmod 755 ${LIBRARY_DIR}/${SHARED_LIBRARY}
+                                 COMMAND install_name_tool -id @rpath/${SHARED_LIBRARY} ${LIBRARY_DIR}/${SHARED_LIBRARY}
                                  WORKING_DIRECTORY ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
                                  DEPENDEES install)
     endif()
 
     # Package Python's include files and libraries
 
-    create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                        PACKAGE_REPOSITORY ${PACKAGE_REPOSITORY}
-                        PACKAGED_FILES ${PACKAGED_FILES}
-                        SHA1_FILES ${SHA1_FILES}
-                        TARGET ${PACKAGE_BUILD})
+    create_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                   ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                   ${PACKAGED_FILES})
 
     set(DEPENDS_ON ${PACKAGE_BUILD})
 endif()
@@ -618,10 +593,10 @@ set(PYTHON_ROOT_DIR ${ROOT_DIR} PARENT_SCOPE)
 set(PYTHON_INCLUDE_DIR ${ROOT_DIR}/include PARENT_SCOPE)
 set(PYTHON_LIBRARY ${ROOT_DIR}/${LIBRARY_DIR}/${IMPORT_LIBRARY} PARENT_SCOPE)
 
-set(PYTHON_EXECUTABLE ${ROOT_DIR}/${PYTHON_EXECUTABLE} PARENT_SCOPE)
+set(PYTHON_EXECUTABLE ${ROOT_DIR}/${BINARY_DIR}/${PYTHON_EXECUTABLE} PARENT_SCOPE)
 
-set(PYTHON_RELATIVE_SCRIPT_DIR ${SCRIPT_DIR} PARENT_SCOPE)
-set(PYTHON_SCRIPT_DIR ${ROOT_DIR}/${SCRIPT_DIR} PARENT_SCOPE)
+set(PYTHON_RELATIVE_SCRIPTS_DIR ${SCRIPTS_DIR} PARENT_SCOPE)
+set(PYTHON_SCRIPTS_DIR ${ROOT_DIR}/${SCRIPTS_DIR} PARENT_SCOPE)
 
 set(PYTHON_RELATIVE_RUNTIME_DIR ${RUNTIME_DIR} PARENT_SCOPE)
 
@@ -661,15 +636,15 @@ endif()
 # Copy a script to update the Python path in copied scripts
 
 file(COPY ${PROJECT_SOURCE_DIR}/scripts/set_python_path.py
-     DESTINATION ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${SCRIPT_DIR}
+     DESTINATION ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${SCRIPTS_DIR}
      FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 # And run it
 
 add_custom_command(TARGET ${PROJECT_NAME}
                    POST_BUILD
-                   COMMAND ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${PYTHON_EXECUTABLE}
-                           ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${SCRIPT_DIR}/set_python_path.py
+                   COMMAND ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${BINARY_DIR}/${PYTHON_EXECUTABLE}
+                           ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${SCRIPTS_DIR}/set_python_path.py
                            ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} -s)
 
 # Keep a list of Python specific dependencies

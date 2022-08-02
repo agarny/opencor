@@ -29,8 +29,7 @@ along with this program. If not, see <https://gnu.org/licenses>.
     #include "cvodes/cvodes.h"
     #include "cvodes/cvodes_bandpre.h"
     #include "cvodes/cvodes_diag.h"
-    #include "cvodes/cvodes_direct.h"
-    #include "cvodes/cvodes_spils.h"
+    #include "nvector/nvector_serial.h"
     #include "sunlinsol/sunlinsol_band.h"
     #include "sunlinsol/sunlinsol_dense.h"
     #include "sunlinsol/sunlinsol_spbcgs.h"
@@ -289,15 +288,21 @@ void CvodeSolver::initialize(double pVoi, int pRatesStatesCount,
     OdeSolver::initialize(pVoi, pRatesStatesCount, pConstants, pRates, pStates,
                           pAlgebraic, pComputeRates);
 
+    // Create our SUNDIALS context
+
+    SUNContext context;
+
+    SUNContext_Create(nullptr, &context);
+
     // Create our states vector
 
-    mStatesVector = N_VMake_Serial(pRatesStatesCount, pStates);
+    mStatesVector = N_VMake_Serial(pRatesStatesCount, pStates, context);
 
     // Create our CVODES solver
 
     bool newtonIteration = iterationType == NewtonIteration;
 
-    mSolver = CVodeCreate((integrationMethod == BdfMethod)?CV_BDF:CV_ADAMS);
+    mSolver = CVodeCreate((integrationMethod == BdfMethod)?CV_BDF:CV_ADAMS, context);
 
     // Use our own error handler
 
@@ -325,14 +330,14 @@ void CvodeSolver::initialize(double pVoi, int pRatesStatesCount,
 
     if (newtonIteration) {
         if (linearSolver == DenseLinearSolver) {
-            mMatrix = SUNDenseMatrix(pRatesStatesCount, pRatesStatesCount);
-            mLinearSolver = SUNLinSol_Dense(mStatesVector, mMatrix);
+            mMatrix = SUNDenseMatrix(pRatesStatesCount, pRatesStatesCount, context);
+            mLinearSolver = SUNLinSol_Dense(mStatesVector, mMatrix, context);
 
             CVodeSetLinearSolver(mSolver, mLinearSolver, mMatrix);
         } else if (linearSolver == BandedLinearSolver) {
             mMatrix = SUNBandMatrix(pRatesStatesCount, upperHalfBandwidth,
-                                                       lowerHalfBandwidth);
-            mLinearSolver = SUNLinSol_Band(mStatesVector, mMatrix);
+                                                       lowerHalfBandwidth, context);
+            mLinearSolver = SUNLinSol_Band(mStatesVector, mMatrix, context);
 
             CVodeSetLinearSolver(mSolver, mLinearSolver, mMatrix);
         } else if (linearSolver == DiagonalLinearSolver) {
@@ -342,11 +347,11 @@ void CvodeSolver::initialize(double pVoi, int pRatesStatesCount,
 
             if (preconditioner == BandedPreconditioner) {
                 if (linearSolver == GmresLinearSolver) {
-                    mLinearSolver = SUNLinSol_SPGMR(mStatesVector, PREC_LEFT, 0);
+                    mLinearSolver = SUNLinSol_SPGMR(mStatesVector, PREC_LEFT, 0, context);
                 } else if (linearSolver == BiCgStabLinearSolver) {
-                    mLinearSolver = SUNLinSol_SPBCGS(mStatesVector, PREC_LEFT, 0);
+                    mLinearSolver = SUNLinSol_SPBCGS(mStatesVector, PREC_LEFT, 0, context);
                 } else {
-                    mLinearSolver = SUNLinSol_SPTFQMR(mStatesVector, PREC_LEFT, 0);
+                    mLinearSolver = SUNLinSol_SPTFQMR(mStatesVector, PREC_LEFT, 0, context);
                 }
 
                 CVodeSetLinearSolver(mSolver, mLinearSolver, mMatrix);
@@ -354,18 +359,18 @@ void CvodeSolver::initialize(double pVoi, int pRatesStatesCount,
                                                            lowerHalfBandwidth);
             } else {
                 if (linearSolver == GmresLinearSolver) {
-                    mLinearSolver = SUNLinSol_SPGMR(mStatesVector, PREC_NONE, 0);
+                    mLinearSolver = SUNLinSol_SPGMR(mStatesVector, PREC_NONE, 0, context);
                 } else if (linearSolver == BiCgStabLinearSolver) {
-                    mLinearSolver = SUNLinSol_SPBCGS(mStatesVector, PREC_NONE, 0);
+                    mLinearSolver = SUNLinSol_SPBCGS(mStatesVector, PREC_NONE, 0, context);
                 } else {
-                    mLinearSolver = SUNLinSol_SPTFQMR(mStatesVector, PREC_NONE, 0);
+                    mLinearSolver = SUNLinSol_SPTFQMR(mStatesVector, PREC_NONE, 0, context);
                 }
 
                 CVodeSetLinearSolver(mSolver, mLinearSolver, mMatrix);
             }
         }
     } else {
-        mNonLinearSolver = SUNNonlinSol_FixedPoint(mStatesVector, 0);
+        mNonLinearSolver = SUNNonlinSol_FixedPoint(mStatesVector, 0, context);
 
         CVodeSetNonlinearSolver(mSolver, mNonLinearSolver);
     }

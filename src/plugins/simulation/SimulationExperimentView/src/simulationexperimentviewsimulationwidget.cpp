@@ -21,7 +21,8 @@ along with this program. If not, see <https://gnu.org/licenses>.
 // Simulation Experiment view simulation widget
 //==============================================================================
 
-#include "centralwidget.h"
+#include "cellmlfile.h"
+#include "combinearchive.h"
 #include "combineinterface.h"
 #include "combinesupportplugin.h"
 #include "coreguiutils.h"
@@ -30,6 +31,7 @@ along with this program. If not, see <https://gnu.org/licenses>.
 #include "interfaces.h"
 #include "progressbarwidget.h"
 #include "remotefiledialog.h"
+#include "sedmlfile.h"
 #include "sedmlinterface.h"
 #include "sedmlsupport.h"
 #include "sedmlsupportplugin.h"
@@ -42,6 +44,7 @@ along with this program. If not, see <https://gnu.org/licenses>.
 #include "simulationexperimentviewinformationwidget.h"
 #include "simulationexperimentviewplugin.h"
 #include "simulationexperimentviewpreferenceswidget.h"
+#include "simulationexperimentviewsedmlsupport.h"
 #include "simulationexperimentviewsimulationwidget.h"
 #include "simulationexperimentviewwidget.h"
 #include "simulationmanager.h"
@@ -53,7 +56,6 @@ along with this program. If not, see <https://gnu.org/licenses>.
 
 //==============================================================================
 
-#include <QApplication>
 #include <QDesktopServices>
 #include <QDir>
 #include <QDragEnterEvent>
@@ -63,7 +65,6 @@ along with this program. If not, see <https://gnu.org/licenses>.
 #include <QMenu>
 #include <QMimeData>
 #include <QPainter>
-#include <QScreen>
 #include <QScrollBar>
 #include <QTextEdit>
 #include <QTimer>
@@ -81,19 +82,14 @@ along with this program. If not, see <https://gnu.org/licenses>.
 
 //==============================================================================
 
-#include "libsbmlbegin.h"
-    #include "sbml/math/FormulaParser.h"
-#include "libsbmlend.h"
-
-//==============================================================================
-
 #include "libsedmlbegin.h"
     #include "sedml/SedAlgorithm.h"
+    #include "sedml/SedCurve.h"
     #include "sedml/SedDocument.h"
     #include "sedml/SedOneStep.h"
     #include "sedml/SedPlot2D.h"
     #include "sedml/SedRepeatedTask.h"
-    #include "sedml/SedSimulation.h"
+    #include "sedml/SedTask.h"
     #include "sedml/SedUniformTimeCourse.h"
     #include "sedml/SedVectorRange.h"
 #include "libsedmlend.h"
@@ -906,9 +902,8 @@ void SimulationExperimentViewSimulationWidget::initialize(bool pReloading)
 {
     // In the case of a SED-ML file and of a COMBINE archive, we will need
     // to further initialise ourselves, to customise graph panels, etc. (see
-    // SimulationExperimentViewSimulationWidget::furtherInitialize()), so we
-    // ask our central widget to show its busy widget (which will get hidden
-    // in CentralWidget::updateGui())
+    // furtherInitialize()), so we ask our central widget to show its busy
+    // widget (which will get hidden in CentralWidget::updateGui())
 
     bool isSedmlFile = mSimulation->fileType() == SimulationSupport::Simulation::FileType::SedmlFile;
     bool isCombineArchive = mSimulation->fileType() == SimulationSupport::Simulation::FileType::CombineArchive;
@@ -1522,6 +1517,8 @@ void SimulationExperimentViewSimulationWidget::addGraphPanel()
 {
     // Ask our graph panels widget to add a new graph panel
 
+    ++mNbOfGraphPanels;
+
     mContentsWidget->graphPanelsWidget()->addGraphPanel(defaultGraphPanelProperties());
 }
 
@@ -1540,6 +1537,8 @@ void SimulationExperimentViewSimulationWidget::removeGraphPanel()
 void SimulationExperimentViewSimulationWidget::removeCurrentGraphPanel()
 {
     // Ask our graph panels widget to remove the current graph panel
+
+    mNbOfGraphPanels = qMax(1, mNbOfGraphPanels-1);
 
     if (mContentsWidget->graphPanelsWidget()->removeCurrentGraphPanel(defaultGraphPanelProperties())) {
         processEvents();
@@ -1600,8 +1599,8 @@ void SimulationExperimentViewSimulationWidget::initializeTrackers(bool pInitialz
         Core::PropertyEditorWidget *graphPanelPropertyEditor = graphPanelAndGraphsWidget->graphPanelPropertyEditor(graphPanel);
         Core::PropertyEditorWidget *graphsPropertyEditor = graphPanelAndGraphsWidget->graphsPropertyEditor(graphPanel);
 
-        mGraphPanelProperties.insert(graphPanelPropertyEditor, allPropertyValues(graphPanelPropertyEditor));
-        mGraphsProperties.insert(graphsPropertyEditor, allPropertyValues(graphsPropertyEditor));
+        mGraphPanelProperties << allPropertyValues(graphPanelPropertyEditor);
+        mGraphsProperties << allPropertyValues(graphsPropertyEditor);
 
         connect(graphPanelPropertyEditor, &Core::PropertyEditorWidget::propertyChanged,
                 this, &SimulationExperimentViewSimulationWidget::checkGraphPanelsAndGraphs,
@@ -1918,7 +1917,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
 
         annotation += SedmlProperty.arg(SEDMLSupport::GridLines,
                                          SedmlProperty.arg(SEDMLSupport::Style,
-                                                           SEDMLSupport::stringLineStyle(gridLinesProperties[0]->listValueIndex()))
+                                                           SEDMLSupport::stringLineStyleFromIndex(gridLinesProperties[0]->listValueIndex()))
                                         +SedmlProperty.arg(SEDMLSupport::Width,
                                                            gridLinesProperties[1]->stringValue())
                                         +SedmlProperty.arg(SEDMLSupport::Color,
@@ -1940,7 +1939,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
 
         annotation += SedmlProperty.arg(SEDMLSupport::PointCoordinates,
                                          SedmlProperty.arg(SEDMLSupport::Style,
-                                                           SEDMLSupport::stringLineStyle(pointCoordinatesProperties[0]->listValueIndex()))
+                                                           SEDMLSupport::stringLineStyleFromIndex(pointCoordinatesProperties[0]->listValueIndex()))
                                         +SedmlProperty.arg(SEDMLSupport::Width,
                                                            pointCoordinatesProperties[1]->stringValue())
                                         +SedmlProperty.arg(SEDMLSupport::Color,
@@ -1995,7 +1994,7 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
 
         annotation += SedmlProperty.arg(SEDMLSupport::ZoomRegion,
                                          SedmlProperty.arg(SEDMLSupport::Style,
-                                                           SEDMLSupport::stringLineStyle(zoomRegionProperties[0]->listValueIndex()))
+                                                           SEDMLSupport::stringLineStyleFromIndex(zoomRegionProperties[0]->listValueIndex()))
                                         +SedmlProperty.arg(SEDMLSupport::Width,
                                                            zoomRegionProperties[1]->stringValue())
                                         +SedmlProperty.arg(SEDMLSupport::Color,
@@ -2124,14 +2123,14 @@ bool SimulationExperimentViewSimulationWidget::createSedmlFile(SEDMLSupport::Sed
                                                                                   properties[1]->stringValue())
                                                                +SedmlProperty.arg(SEDMLSupport::Line,
                                                                                    SedmlProperty.arg(SEDMLSupport::Style,
-                                                                                                     SEDMLSupport::stringLineStyle(lineProperties[0]->listValueIndex()))
+                                                                                                     SEDMLSupport::stringLineStyleFromIndex(lineProperties[0]->listValueIndex()))
                                                                                   +SedmlProperty.arg(SEDMLSupport::Width,
                                                                                                      lineProperties[1]->stringValue())
                                                                                   +SedmlProperty.arg(SEDMLSupport::Color,
                                                                                                      lineProperties[2]->stringValue()))
                                                                +SedmlProperty.arg(SEDMLSupport::Symbol,
                                                                                    SedmlProperty.arg(SEDMLSupport::Style,
-                                                                                                     SEDMLSupport::stringSymbolStyle(symbolProperties[0]->listValueIndex()))
+                                                                                                     SEDMLSupport::stringSymbolStyleFromIndex(symbolProperties[0]->listValueIndex()))
                                                                                   +SedmlProperty.arg(SEDMLSupport::Size,
                                                                                                      symbolProperties[1]->stringValue())
                                                                                   +SedmlProperty.arg(SEDMLSupport::Color,
@@ -2688,16 +2687,16 @@ GraphPanelWidget::GraphPanelPlotGraphProperties SimulationExperimentViewSimulati
 
     return GraphPanelWidget::GraphPanelPlotGraphProperties(true,
                                                            pTitle,
-                                                           SEDMLSupport::lineStyle(PreferencesInterface::preference(PluginName,
-                                                                                                                    SettingsPreferencesGraphLineStyle,
-                                                                                                                    SEDMLSupport::stringLineStyle(SettingsPreferencesGraphLineStyleDefault)).toString()),
+                                                           qtPenStyleFromString(PreferencesInterface::preference(PluginName,
+                                                                                                                 SettingsPreferencesGraphLineStyle,
+                                                                                                                 stringLineStyleFromQtPenStyle(SettingsPreferencesGraphLineStyleDefault)).toString()),
                                                            PreferencesInterface::preference(PluginName,
                                                                                             SettingsPreferencesGraphLineWidth,
                                                                                             SettingsPreferencesGraphLineWidthDefault).toInt(),
                                                            pColor,
-                                                           SEDMLSupport::symbolStyle(PreferencesInterface::preference(PluginName,
-                                                                                                                      SettingsPreferencesGraphSymbolStyle,
-                                                                                                                      SEDMLSupport::stringSymbolStyle(SettingsPreferencesGraphSymbolStyleDefault)).toString()),
+                                                           qwtSymbolStyleFromString(PreferencesInterface::preference(PluginName,
+                                                                                                                     SettingsPreferencesGraphSymbolStyle,
+                                                                                                                     stringSymbolStyleFromQwtSymbolStyle(SettingsPreferencesGraphSymbolStyleDefault)).toString()),
                                                            PreferencesInterface::preference(PluginName,
                                                                                             SettingsPreferencesGraphSymbolSize,
                                                                                             SettingsPreferencesGraphSymbolSizeDefault).toInt(),
@@ -3038,10 +3037,6 @@ void SimulationExperimentViewSimulationWidget::delayWheelCreated(QwtWheel *pWhee
         return;
     }
 
-    QRect availableGeometry = qApp->primaryScreen()->availableGeometry();
-
-    pWheel->setFixedSize(int(0.07*availableGeometry.width()),
-                         mToolBarWidget->height()/2);
     pWheel->setRange(0.0, 55.0);
     pWheel->setValue(mDelayWheelValue);
 
@@ -3359,8 +3354,11 @@ void SimulationExperimentViewSimulationWidget::graphPanelRemoved(GraphPanelWidge
     mPlots.removeOne(plot);
 
     // Check our graph panels and their graphs
+    // Note: we use a single shot to give the GUI time to update, especially if
+    //       we removed the last graph panel in which case a new graph panel
+    //       will be added...
 
-    checkGraphPanelsAndGraphs();
+    QTimer::singleShot(0, this, &SimulationExperimentViewSimulationWidget::checkGraphPanelsAndGraphs);
 }
 
 //==============================================================================
@@ -4086,45 +4084,43 @@ void SimulationExperimentViewSimulationWidget::checkGraphPanelsAndGraphs()
         return;
     }
 
-    // Check whether any of our graph panels' height has changed
+    // Make sure that we have the expected number of graph panels
+    // Note: when adding/removing graph panels, we will come here when the graph
+    //       panel hasn't yet been added/removed. So, we want to make sure that
+    //       it has been. This is particularly important when the user deletes
+    //       the last graph panel (i.e. resets it) since
+    //       GraphPanelsWidget::removeCurrentGraphPanel() will first add a graph
+    //       panel and then delete the "last" one, which if we were not to test
+    //       things would result in the file to be considered modified for a
+    //       split second...
 
     GraphPanelWidget::GraphPanelsWidget *graphPanelsWidget = mContentsWidget->graphPanelsWidget();
+    const GraphPanelWidget::GraphPanelWidgets graphPanels = graphPanelsWidget->graphPanels();
+
+    if (mNbOfGraphPanels != graphPanels.count()) {
+        return;
+    }
+
+    // Check whether any of our graph panels' height has changed
 
     mGraphPanelsWidgetSizesModified = graphPanelsWidget->sizes() != mGraphPanelsWidgetSizes;
 
     // Check whether any of our graph panel / graphs properties has changed
-    // Note: we check that allPropertyValues is not empty since it may be when
-    //       reloading...
 
     SimulationExperimentViewInformationGraphPanelAndGraphsWidget *graphPanelAndGraphsWidget = mContentsWidget->informationWidget()->graphPanelAndGraphsWidget();
 
     mGraphPanelPropertiesModified.clear();
     mGraphsPropertiesModified.clear();
 
-    const GraphPanelWidget::GraphPanelWidgets graphPanels = graphPanelsWidget->graphPanels();
+    int i = -1;
 
     for (auto graphPanel : graphPanels) {
-        Core::PropertyEditorWidget *propertyEditor = graphPanelAndGraphsWidget->graphPanelPropertyEditor(graphPanel);
+        ++i;
 
-        if (mGraphPanelProperties.contains(propertyEditor)) {
-            QVariantList allPropertyValues = this->allPropertyValues(propertyEditor);
-
-            if (!allPropertyValues.isEmpty()) {
-                mGraphPanelPropertiesModified.insert(propertyEditor,
-                                                     allPropertyValues != mGraphPanelProperties.value(propertyEditor));
-            }
-        }
-
-        propertyEditor = graphPanelAndGraphsWidget->graphsPropertyEditor(graphPanel);
-
-        if (mGraphsProperties.contains(propertyEditor)) {
-            QVariantList allPropertyValues = this->allPropertyValues(propertyEditor);
-
-            if (!allPropertyValues.isEmpty()) {
-                mGraphsPropertiesModified.insert(propertyEditor,
-                                                 allPropertyValues != mGraphsProperties.value(propertyEditor));
-            }
-        }
+        mGraphPanelPropertiesModified << (   (i < mGraphPanelProperties.count())
+                                          && (allPropertyValues(graphPanelAndGraphsWidget->graphPanelPropertyEditor(graphPanel)) != mGraphPanelProperties[i]));
+        mGraphsPropertiesModified << (   (i < mGraphsProperties.count())
+                                      && (allPropertyValues(graphPanelAndGraphsWidget->graphsPropertyEditor(graphPanel)) != mGraphsProperties[i]));
     }
 
     // Update our file's modified status
@@ -4164,9 +4160,7 @@ void SimulationExperimentViewSimulationWidget::updateSedmlFileOrCombineArchiveMo
     // simulation, solvers, graph panel or graphs properties have changed, and
     // keeping in mind that we may have added/removed graph panels
 
-    auto graphPanelPropertiesKeys = mGraphPanelProperties.keys();
-    auto graphPanelPropertiesModifiedKeys = mGraphPanelPropertiesModified.keys();
-    bool graphPanelPropertiesModified = graphPanelPropertiesKeys != graphPanelPropertiesModifiedKeys;
+    bool graphPanelPropertiesModified = mGraphPanelProperties.count() != mGraphPanelProperties.count();
 
     if (!graphPanelPropertiesModified) {
         for (auto someGraphPanelPropertiesModified : qAsConst(mGraphPanelPropertiesModified)) {
@@ -4174,9 +4168,7 @@ void SimulationExperimentViewSimulationWidget::updateSedmlFileOrCombineArchiveMo
         }
     }
 
-    auto graphsPropertiesKeys = mGraphsProperties.keys();
-    auto graphsPropertiesModifiedKeys = mGraphsPropertiesModified.keys();
-    bool graphsPropertiesModified = graphsPropertiesKeys != graphsPropertiesModifiedKeys;
+    bool graphsPropertiesModified = mGraphsProperties.count() != mGraphsPropertiesModified.count();
 
     if (!graphsPropertiesModified) {
         for (auto someGraphsPropertiesModified : qAsConst(mGraphsPropertiesModified)) {

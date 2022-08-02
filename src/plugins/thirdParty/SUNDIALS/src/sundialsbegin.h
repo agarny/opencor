@@ -21,7 +21,10 @@ along with this program. If not, see <https://gnu.org/licenses>.
 // SUNDIALS begin
 //==============================================================================
 
-#ifdef Q_OS_MAC
+#if defined(_MSC_VER) && !defined(__clang__)
+    #pragma warning(push)
+    #pragma warning(disable: 4141)
+#elif defined(__clang__)
     #pragma clang diagnostic push
     #pragma clang diagnostic ignored "-Wreserved-id-macro"
 #endif

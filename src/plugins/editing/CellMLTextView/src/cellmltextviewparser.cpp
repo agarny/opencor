@@ -22,7 +22,6 @@ along with this program. If not, see <https://gnu.org/licenses>.
 //==============================================================================
 
 #include "cellmltextviewparser.h"
-#include "corecliutils.h"
 #include "qscintillawidget.h"
 
 //==============================================================================
@@ -2017,9 +2016,11 @@ bool CellmlTextViewParser::parseMathematicalExpression(QDomNode &pDomNode,
             // We have "sel", but is that for a sel() function or a sel...endsel
             // statement?
 
+            QDomNode dummyNode;
+
             mScanner.getNextToken();
 
-            mStatement = isTokenType(applyElement, CellmlTextViewScanner::Token::OpeningBracket)?
+            mStatement = isTokenType(dummyNode, CellmlTextViewScanner::Token::OpeningBracket)?
                              Statement::Normal:
                              Statement::PiecewiseSel;
         } else {
@@ -2031,9 +2032,27 @@ bool CellmlTextViewParser::parseMathematicalExpression(QDomNode &pDomNode,
 
     // Expect either a normal or a piecewise mathematical expression
 
-    QDomElement rhsElement = isTokenType(applyElement, CellmlTextViewScanner::Token::Sel)?
-                                 parsePiecewiseMathematicalExpression(pDomNode, true):
-                                 parseNormalMathematicalExpression(pDomNode);
+    QDomElement rhsElement;
+
+    if (mScanner.token() == CellmlTextViewScanner::Token::Sel) {
+        // We have "sel", but is that for a sel() function or a sel...endsel
+        // statement?
+
+        QDomNode dummyNode;
+        CellmlTextViewScanner origScanner(mScanner);
+
+        mScanner.getNextToken();
+
+        bool selFunction = isTokenType(dummyNode, CellmlTextViewScanner::Token::OpeningBracket);
+
+        mScanner = origScanner;
+
+        rhsElement = selFunction?
+                         parseNormalMathematicalExpression(pDomNode):
+                         parsePiecewiseMathematicalExpression(pDomNode, true);
+    } else {
+        rhsElement = parseNormalMathematicalExpression(pDomNode);
+    }
 
     if (rhsElement.isNull()) {
         return false;
@@ -3260,10 +3279,6 @@ QDomElement CellmlTextViewParser::parseNormalMathematicalExpression9(QDomNode &p
 QDomElement CellmlTextViewParser::parsePiecewiseMathematicalExpression(QDomNode &pDomNode,
                                                                        bool pAllowTopPiecewiseStatement)
 {
-    // Create our piecewise element
-
-    QDomElement piecewiseElement = newDomElement(mDomDocument, "piecewise");
-
     // If a top piecewise statement is allowed then check whether we have "(",
     // in which case it will mean that we are using the sel() function rather
     // than the sel...endsel statement, or expect "(" if a top piecewise
@@ -3275,10 +3290,8 @@ QDomElement CellmlTextViewParser::parsePiecewiseMathematicalExpression(QDomNode 
 
     if (pAllowTopPiecewiseStatement) {
         selFunction = isTokenType(pDomNode, CellmlTextViewScanner::Token::OpeningBracket);
-    } else {
-        if (!openingBracketToken(pDomNode)) {
-            return {};
-        }
+    } else if (!openingBracketToken(pDomNode)) {
+        return {};
     }
 
     // Loop while we have "case" or "otherwise", or leave if we get ")" in the
@@ -3295,6 +3308,7 @@ QDomElement CellmlTextViewParser::parsePiecewiseMathematicalExpression(QDomNode 
                                                                              CellmlTextViewScanner::Token::Otherwise,
                                                                              CellmlTextViewScanner::Token::EndSel };
 
+    QDomElement piecewiseElement = newDomElement(mDomDocument, "piecewise");
     bool hasOtherwiseClause = false;
 
     if (selFunction) {
@@ -3303,10 +3317,8 @@ QDomElement CellmlTextViewParser::parsePiecewiseMathematicalExpression(QDomNode 
         if (!tokenType(piecewiseElement, tr("'%1' or '%2'").arg("case", "otherwise"), CaseOtherwiseTokens)) {
             return {};
         }
-    } else {
-        if (!tokenType(piecewiseElement, tr("'%1', '%2' or '%3'").arg("(", "case", "otherwise"), OpeningBracketCaseOtherwiseTokens)) {
-            return {};
-        }
+    } else if (!tokenType(piecewiseElement, tr("'%1', '%2' or '%3'").arg("(", "case", "otherwise"), OpeningBracketCaseOtherwiseTokens)) {
+        return {};
     }
 
     do {

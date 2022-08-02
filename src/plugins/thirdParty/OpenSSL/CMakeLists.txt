@@ -1,30 +1,22 @@
 project(OpenSSLPlugin)
 
-# Name and version of our package
+# Our package characteristics
 
 set(PACKAGE_NAME OpenSSL)
-set(PACKAGE_VERSION 1.1.1k)
+set(PACKAGE_VERSION 1.1.1o)
+set(PACKAGE_REPOSITORY openssl)
+set(GIT_TAG OpenSSL_1_1_1o)
+set(RELEASE_TAG OpenSSL_1_1_1o)
 
-# Version of our library
+get_full_local_external_package_dir()
+
+# Version of our package's library
 
 if(WIN32)
     set(LIBRARY_VERSION 1_1)
 else()
     set(LIBRARY_VERSION 1.1)
 endif()
-
-# Git tag for our library
-
-set(GIT_TAG OpenSSL_1_1_1k)
-
-# Release tag
-
-set(RELEASE_TAG OpenSSL_1_1_1k)
-
-# Specify where our local package will be installed
-
-string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/ext"
-       FULL_LOCAL_EXTERNAL_PACKAGE_DIR "${PROJECT_SOURCE_DIR}/${EXTERNAL_PACKAGE_DIR}")
 
 # Name of our package's shared libraries (and of their import libraries, if any)
 
@@ -54,15 +46,15 @@ set(EXTERNAL_BINARIES
     ${SSL_SHARED_LIBRARY}
 )
 
-# Specify the files that need to have their SHA-1 value checked
+# Specify the files that can be stripped
 
-set(SHA1_FILES
+set(STRIPPABLE_FILES
     lib/${CRYPTO_SHARED_LIBRARY}
     lib/${SSL_SHARED_LIBRARY}
 )
 
 if(WIN32)
-    list(APPEND SHA1_FILES
+    list(APPEND STRIPPABLE_FILES
         lib/${CRYPTO_IMPORT_LIBRARY}
         lib/${SSL_IMPORT_LIBRARY}
     )
@@ -75,23 +67,13 @@ if(USE_PREBUILT_OPENSSL_PACKAGE)
 
     if(WIN32)
         if(RELEASE_MODE)
-            retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 93a4795b860cabc639eaa42956051363d8f62713
-                                  RELEASE_TAG ${RELEASE_TAG}
-                                  SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES aded421ccd47d424ec8696576bb23248fe68f122
-                                              349caa9a92ad422fb78b6dfb3ef233bb05814c9b
-                                              b3d1dc0a546887fc457bbc91eea1c57ac2ada6da
-                                              1f962949bf8a1b67959c3a8476ff786ca109bbad)
+            retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                             ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                             7c3387853da767c4ba8ccbfee34108d2aea79a2e)
         else()
-            retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                                  ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 4c3eadc1e46f15e3b64cd9843c77167d075c053c
-                                  RELEASE_TAG ${RELEASE_TAG}
-                                  SHA1_FILES ${SHA1_FILES}
-                                  SHA1_VALUES d0ce43ccc92dd66bef80b640492fff1a043df4c7
-                                              35a5c6013713ead5829fc20cec2f44b39c98c17e
-                                              b3d1dc0a546887fc457bbc91eea1c57ac2ada6da
-                                              1f962949bf8a1b67959c3a8476ff786ca109bbad)
+            retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                             ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                             f843ca66a79b6704d65edfd2e0588db80dcbf7ea)
         endif()
 
         # Make a copy of our import libraries
@@ -106,19 +88,13 @@ if(USE_PREBUILT_OPENSSL_PACKAGE)
                         COMMAND ${CMAKE_COMMAND} -E copy lib/${SSL_IMPORT_LIBRARY} lib/${REAL_SSL_IMPORT_LIBRARY}
                         WORKING_DIRECTORY ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR})
     elseif(APPLE)
-        retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} f188e5571bddd02f94ff8fa4a7b0eee8d43e6e7d
-                              RELEASE_TAG ${RELEASE_TAG}
-                              SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES 36a96b0b2975e4dc28c607dea6d68dc1cb1b9637
-                                          00afa273c9242fdc32a614ae7e1f4c5ac0c294c5)
+        retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                         ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                         4dec22a24c6fab2f18c30ad89b05bd50a6e43b8d)
     else()
-        retrieve_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                              ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR} 5132d09ae5c5e7194b055307285d08dfba9a1036
-                              RELEASE_TAG ${RELEASE_TAG}
-                              SHA1_FILES ${SHA1_FILES}
-                              SHA1_VALUES f6b8243469ed0dbcda08b10f7616c25944a6631e
-                                          24da4d03d04b4ca46759c8f5a026905e17c70ea1)
+        retrieve_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                         ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                         c9d6e540dd6b681db4dd583094ddeb6644263900)
     endif()
 else()
     # We require Perl to build OpenSSL
@@ -154,23 +130,17 @@ else()
     # Build OpenSSL as an external project
 
     set(PACKAGE_BUILD ${PACKAGE_NAME}Build)
-    set(PACKAGE_BUILD_DIR ${CMAKE_SOURCE_DIR}/ext/${PACKAGE_NAME})
 
     ExternalProject_Add(${PACKAGE_BUILD}
-        DOWNLOAD_DIR
-            ${PACKAGE_BUILD_DIR}
-        SOURCE_DIR
-            ${PACKAGE_BUILD_DIR}
-        BINARY_DIR
-            ${PACKAGE_BUILD_DIR}
         INSTALL_DIR
             ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}
         GIT_REPOSITORY
-            https://github.com/opencor/openssl
+            https://github.com/opencor/${PACKAGE_REPOSITORY}
         GIT_TAG
             ${GIT_TAG}
+        GIT_SHALLOW
         CONFIGURE_COMMAND
-            ${PERL_EXECUTABLE} Configure ${PLATFORM} ${CONFIG_OPTIONS}
+            ${PERL_EXECUTABLE} <SOURCE_DIR>/Configure ${PLATFORM} ${CONFIG_OPTIONS}
         BUILD_COMMAND
             ${MAKE_NMAKE_COMMAND}
         INSTALL_COMMAND
@@ -218,11 +188,9 @@ else()
 
     # Package our external project
 
-    create_package_file(${PACKAGE_NAME} ${PACKAGE_VERSION}
-                        RELEASE_TAG ${RELEASE_TAG}
-                        PACKAGED_FILES include ${SHA1_FILES}
-                        SHA1_FILES ${SHA1_FILES}
-                        TARGET ${PACKAGE_BUILD})
+    create_package(${PACKAGE_NAME} ${PACKAGE_VERSION}
+                   ${PACKAGE_REPOSITORY} ${RELEASE_TAG}
+                   include ${STRIPPABLE_FILES})
 
     set(DEPENDS_ON ${PACKAGE_BUILD})
 endif()

@@ -48,8 +48,6 @@ along with this program. If not, see <https://gnu.org/licenses>.
 //==============================================================================
 
 #include "qwtbegin.h"
-    #include "qwt_clipper.h"
-    #include "qwt_curve_fitter.h"
     #include "qwt_dyngrid_layout.h"
     #include "qwt_legend_label.h"
     #include "qwt_painter.h"
@@ -61,7 +59,6 @@ along with this program. If not, see <https://gnu.org/licenses>.
     #include "qwt_point_mapper.h"
     #include "qwt_scale_engine.h"
     #include "qwt_scale_map.h"
-    #include "qwt_text_label.h"
 #include "qwtend.h"
 
 //==============================================================================
@@ -1489,7 +1486,7 @@ void GraphPanelPlotLegendWidget::addGraph(GraphPanelPlotGraph *pGraph)
 {
     // Associate the given graph with our last contents widget's child
 
-    mLegendLabels.insert(pGraph, static_cast<QwtLegendLabel *>(contentsWidget()->children().last()));
+    mLegendLabels.insert(pGraph, static_cast<QwtLegendLabel *>(contentsWidget()->children().constLast()));
 }
 
 //==============================================================================
