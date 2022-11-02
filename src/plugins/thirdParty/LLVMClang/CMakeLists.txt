@@ -3,17 +3,17 @@ project(LLVMClangPlugin)
 # Our package characteristics
 
 set(PACKAGE_NAME LLVMClang)
-set(PACKAGE_VERSION 14.0.3)
+set(PACKAGE_VERSION 15.0.4)
 set(PACKAGE_REPOSITORY llvmclang)
-set(GIT_TAG v14.0.3-opencor)
-set(RELEASE_TAG v14.0.3-opencor)
+set(GIT_TAG v15.0.4)
+set(RELEASE_TAG v15.0.4)
 
 get_full_local_external_package_dir()
 
 # Version of our package's library
 
-set(MAJOR_LIBRARY_VERSION 14)
-set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.0.3)
+set(MAJOR_LIBRARY_VERSION 15)
+set(LIBRARY_VERSION ${MAJOR_LIBRARY_VERSION}.0.4)
 
 # Name of our package's shared libraries (and of their import libraries, if any)
 
@@ -120,6 +120,7 @@ else()
             -DLLVM_ENABLE_TERMINFO=OFF
             -DLLVM_ENABLE_WARNINGS=OFF
             -DLLVM_ENABLE_ZLIB=OFF
+            -DLLVM_ENABLE_ZSTD=OFF
             -DLLVM_INCLUDE_BENCHMARKS=OFF
             -DLLVM_INCLUDE_DOCS=OFF
             -DLLVM_INCLUDE_EXAMPLES=OFF
