@@ -423,7 +423,7 @@ QByteArray resource(const QString &pResource)
     QResource resource(pResource);
 
     if (resource.isValid()) {
-        if (resource.isCompressed()) {
+        if (resource.compressionAlgorithm() != QResource::NoCompression) {
             // The resource is compressed, so uncompress it before returning it
 
             return qUncompress(resource.data(), int(resource.size()));

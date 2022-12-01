@@ -365,7 +365,7 @@ int main(int pArgC, char *pArgV[])
 
         // Restart OpenCOR
 
-        QProcess::startDetached(appFilePath);
+        QProcess::startDetached(appFilePath, {});
     }
 
     // We are done running the GUI version of OpenCOR, so leave

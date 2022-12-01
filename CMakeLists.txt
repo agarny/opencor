@@ -263,13 +263,13 @@ set(QT_VERSION ${Qt5Core_VERSION})
 set(QT_VERSION_MAJOR ${Qt5Core_VERSION_MAJOR})
 set(QT_VERSION_MINOR ${Qt5Core_VERSION_MINOR})
 
-set(REQUIRED_QT_LTS_VERSION_MAJOR 5)
-set(REQUIRED_QT_LTS_VERSION_MINOR 12)
+#set(REQUIRED_QT_LTS_VERSION_MAJOR 5)
+#set(REQUIRED_QT_LTS_VERSION_MINOR 12)
 
-if(   NOT ${QT_VERSION_MAJOR} EQUAL ${REQUIRED_QT_LTS_VERSION_MAJOR}
-   OR NOT ${QT_VERSION_MINOR} EQUAL ${REQUIRED_QT_LTS_VERSION_MINOR})
-    message(FATAL_ERROR "${CMAKE_PROJECT_NAME} can only be built using Qt ${REQUIRED_QT_LTS_VERSION_MAJOR}.${REQUIRED_QT_LTS_VERSION_MINOR}.x LTS (you are using Qt ${QT_VERSION})...")
-endif()
+#if(   NOT ${QT_VERSION_MAJOR} EQUAL ${REQUIRED_QT_LTS_VERSION_MAJOR}
+#   OR NOT ${QT_VERSION_MINOR} EQUAL ${REQUIRED_QT_LTS_VERSION_MINOR})
+#    message(FATAL_ERROR "${CMAKE_PROJECT_NAME} can only be built using Qt ${REQUIRED_QT_LTS_VERSION_MAJOR}.${REQUIRED_QT_LTS_VERSION_MINOR}.x LTS (you are using Qt ${QT_VERSION})...")
+#endif()
 
 set(QT_DIR ${_qt5Core_install_prefix})
 set(QT_BINARIES_DIR ${QT_DIR}/bin)
@@ -444,14 +444,14 @@ set(REQUIRED_QT_MODULES
     Widgets
 )
 
-if(USE_PREBUILT_QTWEBKIT_PACKAGE)
-    set(WEBKIT WebKit)
-    set(WEBKITWIDGETS WebKitWidgets)
+#if(USE_PREBUILT_QTWEBKIT_PACKAGE)
+#    set(WEBKIT WebKit)
+#    set(WEBKITWIDGETS WebKitWidgets)
 
-    if(WIN32)
-        list(APPEND REQUIRED_QT_MODULES ${WEBKIT})
-    endif()
-endif()
+#    if(WIN32)
+#        list(APPEND REQUIRED_QT_MODULES ${WEBKIT})
+#    endif()
+#endif()
 
 foreach(REQUIRED_QT_MODULE ${REQUIRED_QT_MODULES})
     find_package(Qt5${REQUIRED_QT_MODULE} REQUIRED)
@@ -963,7 +963,7 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
             dataStore/CSVDataStore
             dataStore/DataStore
 
-            editing/CellMLAnnotationView
+#            editing/CellMLAnnotationView
             editing/CellMLEditingView
             editing/CellMLTextView
             editing/EditingView
@@ -974,16 +974,16 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
 
             miscellaneous/Compiler
             miscellaneous/Core
-            ${MISCELLANEOUS_HELPWINDOW}
+#            ${MISCELLANEOUS_HELPWINDOW}
             miscellaneous/JupyterKernel
             ${MISCELLANEOUS_PYTHONCONSOLEWINDOW}
             miscellaneous/PythonShell
-            miscellaneous/WebBrowserWindow
+#            miscellaneous/WebBrowserWindow
 
             organisation/FileBrowserWindow
             organisation/FileOrganiserWindow
-            organisation/PMRWindow
-            organisation/PMRWorkspacesWindow
+#            organisation/PMRWindow
+#            organisation/PMRWorkspacesWindow
 
             simulation/SimulationExperimentView
 
@@ -996,7 +996,7 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
 
             support/CellMLSupport
             support/COMBINESupport
-            support/PMRSupport
+#            support/PMRSupport
             support/PythonQtSupport
             support/PythonSupport
             support/SEDMLSupport
@@ -1023,7 +1023,7 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
             widget/MathMLViewerWidget
             widget/QScintillaWidget
             widget/ToolBarWidget
-            widget/WebViewerWidget
+#            widget/WebViewerWidget
         )
 
         # Build our sample plugins, if required

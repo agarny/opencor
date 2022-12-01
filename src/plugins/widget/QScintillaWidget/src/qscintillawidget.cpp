@@ -657,7 +657,7 @@ void QScintillaWidget::wheelEvent(QWheelEvent *pEvent)
     // Increasing/decrease the font size, if needed
 
     if (pEvent->modifiers() == Qt::ControlModifier) {
-        int delta = pEvent->delta();
+        int delta = pEvent->angleDelta().y();
 
         if (delta > 0) {
             zoomIn();

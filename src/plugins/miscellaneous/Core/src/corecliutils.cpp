@@ -1019,7 +1019,7 @@ QByteArray serialiseDomDocument(const QDomDocument &pDomDocument)
     const QStringList elementAttributeKeys = elementsAttributes.keys();
 
     for (const auto &elementAttribute : elementAttributeKeys) {
-        res.replace(elementAttribute+R"(="")", elementsAttributes.value(elementAttribute));
+        res.replace((elementAttribute+R"(="")").toUtf8(), elementsAttributes.value(elementAttribute));
     }
 
     return res;

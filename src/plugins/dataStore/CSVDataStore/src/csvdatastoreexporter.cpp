@@ -106,7 +106,7 @@ void CsvDataStoreExporterWorker::run()
             }
         }
 
-        voiValues = voiValues.toSet().toList();
+        voiValues = QDoubleSet(voiValues.begin(), voiValues.end()).values();
 
         std::sort(voiValues.begin(), voiValues.end());
 

@@ -1363,19 +1363,13 @@ void GraphPanelPlotLegendWidget::renderLegend(QPainter *pPainter,
         }
     }
 
-    int top;
-    int left;
-    int bottom;
-    int right;
+    QMargins margins = contentsMargins();
+    QRect layoutRect;
 
-    getContentsMargins(&left, &top, &right, &bottom);
-
-    QRect layoutRect = QRect();
-
-    layoutRect.setTop(qCeil(pRect.top())+top);
-    layoutRect.setLeft(qCeil(pRect.left())+left);
-    layoutRect.setBottom(qFloor(pRect.bottom())-bottom);
-    layoutRect.setRight(qFloor(pRect.right())-right);
+    layoutRect.setTop(qCeil(pRect.top())+margins.top());
+    layoutRect.setLeft(qCeil(pRect.left())+margins.left());
+    layoutRect.setBottom(qFloor(pRect.bottom())-margins.bottom());
+    layoutRect.setRight(qFloor(pRect.right())-margins.right());
 
     auto legendLayout = static_cast<QwtDynGridLayout *>(contentsWidget()->layout());
     QList<QRect> itemRects = legendLayout->layoutItems(layoutRect, legendLayout->columnsForWidth(layoutRect.width()));
@@ -3673,11 +3667,11 @@ void GraphPanelPlotWidget::wheelEvent(QWheelEvent *pEvent)
     // Handle the wheel mouse button for zooming in/out
 
     if (   (pEvent->modifiers() == Qt::NoModifier)
-        && canvas()->rect().contains(pEvent->pos()-canvas()->pos())) {
+        && canvas()->rect().contains(pEvent->position().toPoint()-canvas()->pos())) {
         // Make sure that we are not already carrying out an action
 
         if (mAction == Action::None) {
-            int delta = pEvent->delta();
+            int delta = pEvent->angleDelta().y();
             Scaling scaling = Scaling::NoScaling;
 
             if (delta > 0) {
@@ -3687,7 +3681,7 @@ void GraphPanelPlotWidget::wheelEvent(QWheelEvent *pEvent)
             }
 
             if (scaling != Scaling::NoScaling) {
-                scaleAxes(pEvent->pos(), scaling, scaling);
+                scaleAxes(pEvent->position().toPoint(), scaling, scaling);
             }
         }
 

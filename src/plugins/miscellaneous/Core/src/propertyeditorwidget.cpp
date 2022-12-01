@@ -417,7 +417,7 @@ QWidget * PropertyItemDelegate::createEditor(QWidget *pParent,
         break;
     case Property::Type::List:
     case Property::Type::Boolean:
-        connect(listEditor, QOverload<const QString &>::of(&ListEditorWidget::currentIndexChanged),
+        connect(listEditor, QOverload<int>::of(&ListEditorWidget::currentIndexChanged),
                 this, &PropertyItemDelegate::listPropertyChanged);
 
         connect(listEditor, &ListEditorWidget::goToPreviousPropertyRequested,
@@ -477,20 +477,11 @@ void PropertyItemDelegate::paint(QPainter *pPainter,
 
 //==============================================================================
 
-void PropertyItemDelegate::listPropertyChanged(const QString &pValue)
+void PropertyItemDelegate::listPropertyChanged(int pIndex)
 {
     // Force the updating of our list property value
 
-    mPropertyEditorWidget->currentProperty()->setValue(pValue);
-}
-
-//==============================================================================
-
-void PropertyItemDelegate::booleanPropertyChanged(const QString &pValue)
-{
-    // Force the updating of our boolean property value
-
-    mPropertyEditorWidget->currentProperty()->setValue(pValue);
+    mPropertyEditorWidget->updateCurrentListProperty(pIndex);
 }
 
 //==============================================================================
@@ -2370,6 +2361,17 @@ Property * PropertyEditorWidget::currentProperty() const
     // Return some information about the current property
 
     return property(currentIndex());
+}
+
+//==============================================================================
+
+void PropertyEditorWidget::updateCurrentListProperty(int pIndex) const
+{
+    // Update the current list property
+
+    if (mProperty->type() == Property::Type::List) {
+        currentProperty()->setValue(static_cast<ListEditorWidget *>(mPropertyEditor)->itemText(pIndex));
+    }
 }
 
 //==============================================================================

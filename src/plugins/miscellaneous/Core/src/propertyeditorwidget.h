@@ -196,8 +196,7 @@ signals:
     void goToNextPropertyRequested();
 
 private slots:
-    void listPropertyChanged(const QString &pValue);
-    void booleanPropertyChanged(const QString &pValue);
+    void listPropertyChanged(int pIndex);
 };
 
 //==============================================================================
@@ -418,6 +417,8 @@ public:
 
     Property * property(const QModelIndex &pIndex) const;
     Property * currentProperty() const;
+
+    void updateCurrentListProperty(int pIndex) const;
 
     bool showUnits() const;
 

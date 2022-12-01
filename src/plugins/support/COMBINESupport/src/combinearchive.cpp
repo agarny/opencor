@@ -291,7 +291,7 @@ bool CombineArchive::save(const QString &pFileName)
             break;
         }
 
-        fileList += R"(    <content location=")"+file.location()+R"(" format=")"+fileFormat+R"(")";
+        fileList += (R"(    <content location=")"+file.location()+R"(" format=")"+fileFormat+R"(")").toUtf8();
 
         if (file.isMaster()) {
             fileList += R"( master="true")";

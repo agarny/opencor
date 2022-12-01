@@ -110,7 +110,7 @@ void TabBarWidget::wheelEvent(QWheelEvent *pEvent)
 {
     // Switch to the next/previous tab
 
-    int offset = (pEvent->delta() < 0)?1:-1;
+    int offset = (pEvent->angleDelta().y() < 0)?1:-1;
 
     for (int i = currentIndex()+offset; (i >= 0) && (i < count()); i += offset) {
         if (isTabEnabled(i)) {
