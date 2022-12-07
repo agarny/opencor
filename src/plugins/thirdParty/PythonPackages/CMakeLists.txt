@@ -261,7 +261,7 @@ else()
         add_dependencies(installSphinx installNumpy)
         add_dependencies(installSphinx ${BUILD_DEPENDENCIES})
     else()
-        # Install NumPy, SciPy and Matplotlib
+        # Install Matplotlib, NumPy, and SciPy
 
         add_custom_target(sciencePackages
             COMMAND ${PIP_INSTALL_COMMAND} --only-binary all
@@ -412,13 +412,21 @@ if(NOT "${DEPENDS_ON}" STREQUAL "")
     add_dependencies(${PROJECT_NAME} ${DEPENDS_ON})
 endif()
 
-# Update the Python path in our newly copied scripts
+# Update the Python path in our Python scripts
 
-add_custom_command(TARGET ${PROJECT_NAME}
-                   POST_BUILD
-                   COMMAND ${PYTHON_EXECUTABLE} ${PYTHON_SCRIPTS_DIR}/set_python_path.py --scripts-dir ${FULL_LOCAL_EXTERNAL_PACKAGE_DIR}/${PYTHON_RELATIVE_SCRIPTS_DIR}
-                                                                                                       ${PYTHON_ROOT_DIR}
-                                                -s)
+if (WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME}
+                       POST_BUILD
+                       COMMAND ${PYTHON_EXECUTABLE}
+                               ${PYTHON_SET_PYTHON_PATH_SCRIPT} --scripts-dir ${PYTHON_SCRIPTS_DIR}
+                                                                ${PYTHON_ROOT_DIR}
+                               -s)
+else()
+    add_custom_command(TARGET ${PROJECT_NAME}
+                       POST_BUILD
+                       COMMAND ${PYTHON_EXECUTABLE}
+                               ${PYTHON_SET_PYTHON_PATH_SCRIPT} ${PYTHON_SCRIPTS_DIR})
+endif()
 
 # Update our list of Python specific dependencies
 
