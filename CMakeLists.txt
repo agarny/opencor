@@ -265,26 +265,26 @@ endif()
 # Keep track of some basic information about Qt, after making sure that we have
 # the version of Qt that we need
 
-find_package(Qt5Core REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
-set(QT_VERSION ${Qt5Core_VERSION})
-set(QT_VERSION_MAJOR ${Qt5Core_VERSION_MAJOR})
-set(QT_VERSION_MINOR ${Qt5Core_VERSION_MINOR})
+set(QT_VERSION ${Qt6Core_VERSION})
+set(QT_VERSION_MAJOR ${Qt6Core_VERSION_MAJOR})
+set(QT_VERSION_MINOR ${Qt6Core_VERSION_MINOR})
 
-set(REQUIRED_QT_LTS_VERSION_MAJOR 5)
-set(REQUIRED_QT_LTS_VERSION_MINOR 12)
+set(REQUIRED_QT_LTS_VERSION_MAJOR 6)
+set(REQUIRED_QT_LTS_VERSION_MINOR 5)
 
 if(   NOT ${QT_VERSION_MAJOR} EQUAL ${REQUIRED_QT_LTS_VERSION_MAJOR}
    OR NOT ${QT_VERSION_MINOR} EQUAL ${REQUIRED_QT_LTS_VERSION_MINOR})
     message(FATAL_ERROR "${CMAKE_PROJECT_NAME} can only be built using Qt ${REQUIRED_QT_LTS_VERSION_MAJOR}.${REQUIRED_QT_LTS_VERSION_MINOR}.x LTS (you are using Qt ${QT_VERSION})...")
 endif()
 
-set(QT_DIR ${_qt5Core_install_prefix})
+set(QT_DIR ${Qt6Core_DIR}/../../..)
 set(QT_BINARIES_DIR ${QT_DIR}/bin)
 set(QT_LIBRARIES_DIR ${QT_DIR}/lib)
 set(QT_PLUGINS_DIR ${QT_DIR}/plugins)
 
-get_target_property(QMAKE ${Qt5Core_QMAKE_EXECUTABLE} IMPORTED_LOCATION)
+find_program(QMAKE qmake)
 
 set(QMAKE_COMMAND ${QMAKE} -Wnone)
 
@@ -352,12 +352,12 @@ include(${CMAKE_SOURCE_DIR}/cmake/common.cmake)
 
 include(ExternalProject)
 
-# On macOS, make sure that we support version 10.14 and later, unless a specific
+# On macOS, make sure that we support version 11 and later, unless a specific
 # deployment target has been specified, and also make sure that we target x86_64
 
 if(APPLE)
     if("${CMAKE_OSX_DEPLOYMENT_TARGET}" STREQUAL "")
-        set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
+        set(CMAKE_OSX_DEPLOYMENT_TARGET 11)
     endif()
 
     set(BUILD_INFORMATION "${BUILD_INFORMATION} for macOS ${CMAKE_OSX_DEPLOYMENT_TARGET} and later")
@@ -464,7 +464,7 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
 endif()
 
 foreach(REQUIRED_QT_MODULE ${REQUIRED_QT_MODULES})
-    find_package(Qt5${REQUIRED_QT_MODULE} REQUIRED)
+    find_package(Qt6${REQUIRED_QT_MODULE} REQUIRED)
 endforeach()
 
 # Common Qt libraries
@@ -473,24 +473,29 @@ set(QT_LIBRARIES
     Core
     Gui
     Help
-    Multimedia
-    MultimediaWidgets
+    #---GRY---
+    # Multimedia
+    # MultimediaWidgets
     Network
     OpenGL
-    Positioning
+    #---GRY---
+    # Positioning
     PrintSupport
     Qml
     Quick
-    Sensors
+    #---GRY---
+    # Sensors
     Sql
     Svg
     ${TEST}
-    WebChannel
-    ${WEBKIT}
-    ${WEBKITWIDGETS}
+    #---GRY---
+    # WebChannel
+    # ${WEBKIT}
+    # ${WEBKITWIDGETS}
     Widgets
     Xml
-    XmlPatterns
+    #---GRY---
+    # XmlPatterns
 )
 
 # On macOS, keep track of the Qt libraries against which we need to link and
@@ -509,14 +514,15 @@ if(APPLE)
         ${QT_LIBRARIES}
         Concurrent
         DBus
-        MacExtras
+        #---GRY---
+        # MacExtras
     )
 
     foreach(QT_LIBRARY ${MACOS_QT_LIBRARIES})
-        find_package(Qt5${QT_LIBRARY} REQUIRED)
+        find_package(Qt6${QT_LIBRARY} REQUIRED)
 
-        get_target_property(QT_RELEASE_LIBRARY Qt5::${QT_LIBRARY} IMPORTED_LOCATION_RELEASE)
-        set_target_properties(Qt5::${QT_LIBRARY} PROPERTIES "IMPORTED_LOCATION_DEBUG" "${QT_RELEASE_LIBRARY}")
+        get_target_property(QT_RELEASE_LIBRARY Qt6::${QT_LIBRARY} IMPORTED_LOCATION_RELEASE)
+        set_target_properties(Qt6::${QT_LIBRARY} PROPERTIES "IMPORTED_LOCATION_DEBUG" "${QT_RELEASE_LIBRARY}")
     endforeach()
 endif()
 
@@ -859,8 +865,8 @@ if(ENABLE_TESTS)
     configure_clang_and_clang_tidy(${RUNTESTS_NAME})
 
     target_link_libraries(${RUNTESTS_NAME}
-        Qt5::Core
-        Qt5::Network
+        Qt6::Core
+        Qt6::Network
     )
 
     # Copy our main test program to our tests directory
@@ -1072,6 +1078,8 @@ if(USE_PREBUILT_QTWEBKIT_PACKAGE)
     endif()
 
     # Include different directories needed by our various plugins
+#---GRY---
+set(PLUGINS)
 
     foreach(PLUGIN ${PLUGINS})
         if("${PLUGIN}" MATCHES "^thirdParty/.*$")
@@ -1131,14 +1139,14 @@ configure_clang_and_clang_tidy(${CMAKE_PROJECT_NAME})
 
 if(WIN32)
     target_link_libraries(${CMAKE_PROJECT_NAME}
-        ${Qt5Core_QTMAIN_LIBRARIES}
+        ${Qt6Core_QTMAIN_LIBRARIES}
         ${PYTHON_LIBRARY}
     )
 endif()
 
 foreach(REQUIRED_QT_MODULE ${REQUIRED_QT_MODULES})
     target_link_libraries(${CMAKE_PROJECT_NAME}
-        Qt5::${REQUIRED_QT_MODULE}
+        Qt6::${REQUIRED_QT_MODULE}
     )
 endforeach()
 
@@ -1184,8 +1192,8 @@ if(WIN32)
     configure_clang_and_clang_tidy(${WINDOWS_CLI_PROJECT_NAME})
 
     target_link_libraries(${WINDOWS_CLI_PROJECT_NAME}
-        Qt5::Core
-        Qt5::Network
+        Qt6::Core
+        Qt6::Network
         ${PYTHON_LIBRARY}
     )
 

@@ -332,11 +332,11 @@ macro(add_plugin PLUGIN_NAME)
 
     foreach(ARG_QT_MODULE ${ARG_QT_MODULES})
         if(NOT APPLE)
-            find_package(Qt5${ARG_QT_MODULE} REQUIRED)
+            find_package(Qt6${ARG_QT_MODULE} REQUIRED)
         endif()
 
         target_link_libraries(${PROJECT_NAME}
-            Qt5::${ARG_QT_MODULE}
+            Qt6::${ARG_QT_MODULE}
         )
     endforeach()
 
@@ -566,7 +566,7 @@ macro(add_plugin PLUGIN_NAME)
 
                 foreach(ARG_QT_MODULE ${ARG_QT_MODULES} Test)
                     target_link_libraries(${TEST_NAME}
-                        Qt5::${ARG_QT_MODULE}
+                        Qt6::${ARG_QT_MODULE}
                     )
                 endforeach()
 
@@ -702,7 +702,7 @@ macro(windows_deploy_qt_library LIBRARY_NAME)
         set(BINARIES_DIR ${QT_BINARIES_DIR})
     endif()
 
-    windows_deploy_binary_file(${BINARIES_DIR} Qt5${LIBRARY_NAME}${DEBUG_TAG}${CMAKE_SHARED_LIBRARY_SUFFIX})
+    windows_deploy_binary_file(${BINARIES_DIR} Qt6${LIBRARY_NAME}${DEBUG_TAG}${CMAKE_SHARED_LIBRARY_SUFFIX})
 endmacro()
 
 #===============================================================================
@@ -855,7 +855,7 @@ macro(macos_deploy_qt_library LIBRARY_NAME)
     # Deploy the Qt library
 
     set(QT_LIBRARY_NAME Qt${LIBRARY_NAME})
-    set(QT_FRAMEWORK_DIR ${QT_LIBRARY_NAME}.framework/Versions/${QT_VERSION_MAJOR})
+    set(QT_FRAMEWORK_DIR ${QT_LIBRARY_NAME}.framework/Versions/Current)
 
     if(   "${QT_LIBRARY_NAME}" STREQUAL "Qt${WEBKIT}"
        OR "${QT_LIBRARY_NAME}" STREQUAL "Qt${WEBKITWIDGETS}")
