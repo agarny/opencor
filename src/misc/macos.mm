@@ -29,6 +29,24 @@ along with this program. If not, see <https://gnu.org/licenses>.
 
 //==============================================================================
 
+@interface OwnAppDelegate: NSObject <NSApplicationDelegate>
+- (BOOL)applicationSupportsSecureRestorableState:(NSApplication *)app;
+@end
+
+//==============================================================================
+
+@implementation OwnAppDelegate {
+}
+
+- (BOOL)applicationSupportsSecureRestorableState:(NSApplication *)app
+{
+    return YES;
+}
+
+@end
+
+//==============================================================================
+
 namespace OpenCOR {
 
 //==============================================================================
