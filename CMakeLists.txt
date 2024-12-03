@@ -1194,6 +1194,28 @@ if(WIN32)
     endif()
 endif()
 
+# Code sign OpenCOR, if possible
+
+if(WIN32)
+    set(CODE_SIGNING FALSE)
+    set(EV_CERTIFICATE "${CMAKE_SOURCE_DIR}/EVCertificate.pfx")
+
+    if(EXISTS "${EV_CERTIFICATE}")
+        find_program(SIGNTOOL signtool)
+
+        if(SIGNTOOL)
+            add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+                               COMMAND ${SIGNTOOL} sign /tr http://timestamp.globalsign.com/tsa/r6advanced1 /fd SHA256 /td SHA256 /f ${EV_CERTIFICATE} ${PROJECT_BUILD_DIR}/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX})
+
+            set(CODE_SIGNING TRUE)
+        endif()
+    endif()
+
+    if(NOT CODE_SIGNING)
+        message(WARNING "No code signing is to be done...")
+    endif()
+endif()
+
 # Some post-processing specific stuff
 
 if(APPLE)
