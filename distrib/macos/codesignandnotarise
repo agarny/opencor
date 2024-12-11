@@ -1,0 +1,44 @@
+#!/bin/bash
+
+set -e
+
+appDir=$(cd $(dirname $0); pwd)/../../build/OpenCOR.app
+appExe=$appDir/Contents/MacOS/OpenCOR
+
+if [ -f $appExe ]; then
+    codesignExe=$(which codesign)
+
+    find $appDir -type f -print0 | xargs -0 $codesignExe --force --options runtime --sign "$DEVELOPER_ID_APPLICATION_CERTIFICATE_DESCRIPTION" --strict --timestamp
+
+    exitCode=$?
+
+    if [ $exitCode -ne 0 ]; then
+        exit $exitCode
+    fi
+
+    $codesignExe --force --options runtime --sign "$DEVELOPER_ID_APPLICATION_CERTIFICATE_DESCRIPTION" --strict --timestamp $appExe
+
+    exitCode=$?
+
+    if [ $exitCode -ne 0 ]; then
+        exit $exitCode
+    fi
+
+    zip -r $appDir.zip $appDir
+
+    xcrun notarytool submit $appDir.zip --apple-id $APPLE_ID --password $APPLE_APP_SPECIFIC_PASSWORD --team-id $APPLE_TEAM_ID --wait
+
+    exitCode=$?
+
+    if [ $exitCode -ne 0 ]; then
+        exit $exitCode
+    fi
+
+    xcrun stapler staple $appDir
+
+    exit $?
+else
+    echo "OpenCOR must first be built before being code signed."
+
+    exit 1
+fi
