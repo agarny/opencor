@@ -1344,26 +1344,26 @@ if(WIN32)
     else()
         message(STATUS "Checking code signing capability - Failure")
     endif()
-elseif(APPLE)
-    message(STATUS "Checking code signing and notarising capability")
+# elseif(APPLE)
+#     message(STATUS "Checking code signing and notarising capability")
 
-    set(CODE_SIGNING_AND_NOTARISING FALSE)
+#     set(CODE_SIGNING_AND_NOTARISING FALSE)
 
-    if(    NOT "$ENV{DEVELOPER_ID_APPLICATION_CERTIFICATE_DESCRIPTION}" STREQUAL ""
-       AND NOT "$ENV{APPLE_ID}" STREQUAL ""
-       AND NOT "$ENV{APPLE_APP_SPECIFIC_PASSWORD}" STREQUAL ""
-       AND NOT "$ENV{APPLE_TEAM_ID}" STREQUAL "")
-        set(CODE_SIGNING_AND_NOTARISING TRUE)
+#     if(    NOT "$ENV{DEVELOPER_ID_APPLICATION_CERTIFICATE_DESCRIPTION}" STREQUAL ""
+#        AND NOT "$ENV{APPLE_ID}" STREQUAL ""
+#        AND NOT "$ENV{APPLE_APP_SPECIFIC_PASSWORD}" STREQUAL ""
+#        AND NOT "$ENV{APPLE_TEAM_ID}" STREQUAL "")
+#         set(CODE_SIGNING_AND_NOTARISING TRUE)
 
-        add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-                           COMMAND "${CMAKE_SOURCE_DIR}/distrib/macos/codesignandnotarise")
-    endif()
+#         add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+#                            COMMAND "${CMAKE_SOURCE_DIR}/distrib/macos/codesignandnotarise")
+#     endif()
 
-    if(CODE_SIGNING_AND_NOTARISING)
-        message(STATUS "Checking code signing and notarising capability - Success")
-    else()
-        message(STATUS "Checking code signing and notarising capability - Failure")
-    endif()
+#     if(CODE_SIGNING_AND_NOTARISING)
+#         message(STATUS "Checking code signing and notarising capability - Success")
+#     else()
+#         message(STATUS "Checking code signing and notarising capability - Failure")
+#     endif()
 endif()
 
 # Package OpenCOR
