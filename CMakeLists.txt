@@ -1322,50 +1322,6 @@ else()
     endif()
 endif()
 
-# Code sign OpenCOR, if possible
-
-if(WIN32)
-    message(STATUS "Checking code signing capability")
-
-    set(CODE_SIGNING FALSE)
-    set(EV_CERTIFICATE "${CMAKE_SOURCE_DIR}/EVCertificate.pfx")
-
-    if(EXISTS "${EV_CERTIFICATE}")
-        set(CODE_SIGNING TRUE)
-
-        find_program(SIGNTOOL signtool)
-
-        add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-                           COMMAND ${SIGNTOOL} sign /tr http://timestamp.globalsign.com/tsa/r6advanced1 /fd SHA256 /td SHA256 /f ${EV_CERTIFICATE} ${PROJECT_BUILD_DIR}/${CMAKE_PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX})
-    endif()
-
-    if(CODE_SIGNING)
-        message(STATUS "Checking code signing capability - Success")
-    else()
-        message(STATUS "Checking code signing capability - Failure")
-    endif()
-# elseif(APPLE)
-#     message(STATUS "Checking code signing and notarising capability")
-
-#     set(CODE_SIGNING_AND_NOTARISING FALSE)
-
-#     if(    NOT "$ENV{DEVELOPER_ID_APPLICATION_CERTIFICATE_DESCRIPTION}" STREQUAL ""
-#        AND NOT "$ENV{APPLE_ID}" STREQUAL ""
-#        AND NOT "$ENV{APPLE_APP_SPECIFIC_PASSWORD}" STREQUAL ""
-#        AND NOT "$ENV{APPLE_TEAM_ID}" STREQUAL "")
-#         set(CODE_SIGNING_AND_NOTARISING TRUE)
-
-#         add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-#                            COMMAND "${CMAKE_SOURCE_DIR}/distrib/macos/codesignandnotarise")
-#     endif()
-
-#     if(CODE_SIGNING_AND_NOTARISING)
-#         message(STATUS "Checking code signing and notarising capability - Success")
-#     else()
-#         message(STATUS "Checking code signing and notarising capability - Failure")
-#     endif()
-endif()
-
 # Package OpenCOR
 
 set(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")

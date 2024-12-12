@@ -10,15 +10,28 @@ CALL !AppDir!make %*
 SET ExitCode=!ERRORLEVEL!
 
 IF !ExitCode! EQU 0 (
-    TITLE Packaging OpenCOR...
-
+    SET EvCertificate=!AppDir!EVCertificate.pfx
     SET OrigDir=!CD!
 
     CD !AppDir!build
 
-    cpack
+    IF EXIST !EvCertificate! (
+        TITLE Code signing OpenCOR...
+
+        signtool sign /tr http://timestamp.globalsign.com/tsa/r6advanced1 /fd SHA256 /td SHA256 /f !EvCertificate! !AppDir!build\bin\OpenCOR.exe
+
+        SET ExitCode=!ERRORLEVEL!
+    )
 
     SET ExitCode=!ERRORLEVEL!
+
+    IF !ExitCode! EQU 0 (
+        TITLE Packaging OpenCOR...
+
+        cpack
+
+        SET ExitCode=!ERRORLEVEL!
+    )
 
     CD !OrigDir!
 )
