@@ -24,7 +24,7 @@ if [ -f $appExe ]; then
         exit $exitCode
     fi
 
-    zip -r $appDir.zip $appDir
+    ditto -c -k --keepParent $appDir $appDir.zip
 
     xcrun notarytool submit $appDir.zip --apple-id $APPLE_ID --password $APPLE_APP_SPECIFIC_PASSWORD --team-id $APPLE_TEAM_ID --wait
 
