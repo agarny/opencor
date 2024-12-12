@@ -1455,7 +1455,7 @@ if(WIN32)
 
     # Python runtime libraries and utilities
 
-    install(DIRECTORY ${PROJECT_BUILD_DIR}/Python
+    install(DIRECTORY ${PROJECT_BUILD_DIR}/.Python
             DESTINATION .)
 
     # Batch files to setup and run Python, IPython and Jupyter
@@ -1562,6 +1562,12 @@ elseif(APPLE)
             RENAME ${CMAKE_PROJECT_NAME}
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
+    # Python runtime libraries and utilities
+
+    install(DIRECTORY ${PROJECT_BUILD_DIR}/.Python
+            DESTINATION .
+            USE_SOURCE_PERMISSIONS)
+
     # Shell scripts to setup and run Python, IPython and Jupyter
 
     if(PYTHON_SUPPORT)
@@ -1666,7 +1672,7 @@ else()
 
     # Python runtime libraries and utilities
 
-    install(DIRECTORY ${PROJECT_BUILD_DIR}/Python
+    install(DIRECTORY ${PROJECT_BUILD_DIR}/.Python
             DESTINATION .
             USE_SOURCE_PERMISSIONS)
 
